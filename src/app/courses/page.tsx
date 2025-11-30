@@ -3,6 +3,7 @@ import Link from "next/link";
 import Navbar from "@/src/components/website/Navbar"
 import HeroBanner from "@/src/components/website/HeroBanner";
 import CourseCard from "@/src/components/website/CourseCard";
+import Footer from "@/src/components/website/Footer";
 
 export const metadata: Metadata = {
     title: "Courses - Women Skills Hub",
@@ -157,6 +158,8 @@ const Courses = () => {
                     </div>
                 </div>
             </section>
+
+            <Footer />
         </div>
     )
 }

@@ -53,10 +53,10 @@ const Navbar = () => {
                             </ul>
                             <ul className="nav-menu nav-menu-social align-to-right">
                                 <li className="become-tutor">
-                                    <Link href="become-tutor.html">
+                                    <a href="#" data-bs-toggle="modal" data-bs-target="#signup">
                                         <i className="bi bi-person-circle" />
                                         Register
-                                    </Link>
+                                    </a>
                                 </li>
                                 <li className="join-btn">
                                     <a href="#" data-bs-toggle="modal" data-bs-target="#login">

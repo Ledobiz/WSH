@@ -1,4 +1,6 @@
 const Footer = () => {
+    const appUrl = process.env.APP_URL;
+
     return (
         <>
             <footer className="dark-footer">
@@ -195,7 +197,7 @@ const Footer = () => {
                                 <div className="web-logo d-flex align-items-center justify-content-center mb-3">
                                     <div className="logo">
                                         <img
-                                            src="assets/img/logo-icon.png"
+                                            src={`${appUrl}/assets/img/logo-icon.png`}
                                             className="img-fluid"
                                             width={60}
                                             alt="Logo"
@@ -332,7 +334,7 @@ const Footer = () => {
                                 <div className="web-logo d-flex align-items-center justify-content-center mb-3">
                                     <div className="logo">
                                         <img
-                                            src="assets/img/logo-icon.png"
+                                            src={`${appUrl}/assets/img/logo-icon.png`}
                                             className="img-fluid"
                                             width={60}
                                             alt="Logo"
