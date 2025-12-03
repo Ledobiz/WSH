@@ -1,15 +1,48 @@
-'use client'
-
+import type { Metadata } from "next";
 import Link from "next/link";
 import Navbar from "@/src/components/website/Navbar"
-import { useParams } from "next/navigation";
 import CourseDetailsBanner from "@/src/components/website/CourseDetailsBanner";
 import Footer from "@/src/components/website/Footer";
 
-const CourseDetailsPage = () => {
+interface PageProps {
+  params: {
+    slug: string;
+  };
+}
+
+// Fetch course data on the server BEFORE rendering
+const getCourseData = async (slug: string) => {
+    // Replace with your actual database query or API call
+    const response = await fetch(`${process.env.BACKEND_URL}/api/courses/${slug}`, { 
+        next: { revalidate: 3600 } 
+    });
+  
+    if (!response.ok) throw new Error('Course not found');
+    return response.json();
+}
+
+// Generate metadata using fetched data
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+    /*const course = await getCourseData(params.slug);
+    
+    return {
+        title: course.title,
+        description: course.description,
+        openGraph: {
+            title: course.title,
+            description: course.description,
+            images: [{ url: course.image }],
+            type: 'article',
+        },
+    };*/
+}
+
+const CourseDetailsPage = async ({params}: {params: Promise<{slug: string}>}) => {
     const appUrl = process.env.APP_URL;
-    const params = useParams();
-    const slug = params.slug;
+    const { slug } = await params
+    console.log(slug);
+    
+    //const course = await getCourseData(slug);
 
     return (
         <div id="main-wrapper">

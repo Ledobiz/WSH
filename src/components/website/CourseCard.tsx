@@ -1,6 +1,6 @@
 'use client'
 
-import { formatAmount } from "@/src/app/utils/functions"
+import { formatAmount } from "@/src/utils/functions"
 import Link from "next/link"
 
 interface CardPropertyInterface {
