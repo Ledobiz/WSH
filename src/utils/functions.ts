@@ -8,3 +8,7 @@ export const formatAmount = (price: number) => {
         maximumFractionDigits: 0,
     }).format(value);
 };
+
+export const sluggify = (value: string) => {
+    return value.replace(/\s+/g, "-").toLowerCase();
+}

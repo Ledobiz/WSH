@@ -1,5 +1,5 @@
 import { auth } from "../lib/firebase";
-import { onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup  } from "firebase/auth";
+import { onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup, User as Auth } from "firebase/auth";
 import { redirect } from "next/navigation";
 import { toast } from "react-toastify";
 
@@ -59,13 +59,6 @@ const signinWithGoogle = async () => {
         toast.error(formatFirebaseError(error));
     }
 }
-
-onAuthStateChanged(auth, (user) => {
-    if (!user) { // User is signed out
-        toast.error('You have been logged out. Please sign in');
-        redirect('/login');
-    }
-});
 
 
 export { signup, login, logout };
