@@ -8,7 +8,7 @@ interface BannerInterface {
 }
 
 const CourseDetailsBanner = ({title, description, duration, lectures, totalEnrolled, level}: BannerInterface) => {
-    const appUrl = process.env.APP_URL;
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL;
 
     return (
         <div

@@ -1,0 +1,211 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String?
+  email     String   @unique
+  image     String?
+  phone     String?
+  uid       String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // relationships
+  carts        Cart[]
+  wishlists    Wishlist[]
+  transactions Transaction[]
+  students     Student[]
+
+  @@index(email)
+  @@index(uid)
+  @@index(createdAt)
+}
+
+model Course {
+  id            String         @id @default(cuid())
+  title         String
+  description   String
+  slug          String         @unique
+  isPublished   Boolean?       @default(false)
+  category      Category       @relation(fields: [categoryId], references: [id])
+  categoryId    String
+  price         Int
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  cartItems     CartItem[]
+  wishlists     Wishlist[]
+  courseModules CourseModule[]
+  students      Student[]
+
+  @@index(slug)
+  @@index(isPublished)
+  @@index(createdAt)
+}
+
+model CourseModule {
+  id               String            @id @default(cuid())
+  courseId         String
+  course           Course            @relation(fields: [courseId], references: [id])
+  name             String
+  description      String?
+  isActive         Boolean           @default(true)
+  sorting          Int?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  moduleComponents ModuleComponent[]
+
+  @@index(isActive)
+  @@index(sorting)
+}
+
+model ModuleComponent {
+  id             String        @id @default(cuid())
+  courseModuleId String
+  courseModule   CourseModule  @relation(fields: [courseModuleId], references: [id])
+  name           String
+  description    String?
+  isActive       Boolean       @default(true)
+  type           ComponentType @default(video)
+  vimeoVideoUrl  String?
+  embedVideoUrl  String?
+  fileName       String?
+  isPrerequisite Boolean       @default(false)
+  isFree         Boolean       @default(false)
+  sorting        Int?
+  duration       Int?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index(isActive)
+  @@index(sorting)
+}
+
+enum ComponentType {
+  video
+  file
+}
+
+model Category {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  courses   Course[]
+}
+
+model Cart {
+  id                   String       @id @default(cuid())
+  user                 User         @relation(fields: [userId], references: [id])
+  userId               String
+  isPaid               Boolean?     @default(false)
+  transactionReference String?
+  reference            Transaction? @relation(fields: [transactionReference], references: [reference])
+  createdAt            DateTime     @default(now())
+  updatedAt            DateTime     @updatedAt
+  cartItems            CartItem[]
+
+  @@index(isPaid)
+}
+
+model CartItem {
+  id        String   @id @default(cuid())
+  cartId    String
+  cart      Cart     @relation(fields: [cartId], references: [id])
+  courseId  String
+  course    Course   @relation(fields: [courseId], references: [id])
+  couponId  String?
+  coupon    Coupon?  @relation(fields: [couponId], references: [id])
+  price     Int
+  currency  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Coupon {
+  id             String     @id @default(cuid())
+  code           String
+  name           String?
+  description    String?
+  maxUse         Int
+  totalUsed      Int
+  isFixedAmount  Boolean    @default(false)
+  discountAmount Int
+  startDate      DateTime
+  endDate        DateTime
+  isActive       Boolean    @default(true)
+  cartItems      CartItem[]
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  @@index(code)
+  @@index(endDate)
+  @@index(isActive)
+}
+
+model Wishlist {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  courseId  String
+  course    Course   @relation(fields: [courseId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Transaction {
+  id               String        @id @default(cuid())
+  userId           String
+  user             User          @relation(fields: [userId], references: [id])
+  reference        String        @unique
+  carts            Cart[]
+  gateway          String
+  name             String?
+  email            String?
+  phone            String?
+  currency         String
+  amount           Int
+  first4Digits     String?
+  last4Digits      String?
+  cardBrand        String?
+  status           PaymentStatus @default(pending)
+  confirmationSent DateTime?
+  paymentSource    PaymentSource @default(website)
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  @@index(reference)
+  @@index(status)
+}
+
+enum PaymentStatus {
+  pending
+  success
+  failed
+}
+
+enum PaymentSource {
+  website
+  manual
+  app
+}
+
+model Student {
+  id                    String   @id @default(cuid())
+  userId                String
+  user                  User     @relation(fields: [userId], references: [id])
+  courseId              String
+  course                Course   @relation(fields: [courseId], references: [id])
+  courseContentAssigned Boolean  @default(false)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@index(courseContentAssigned)
+}

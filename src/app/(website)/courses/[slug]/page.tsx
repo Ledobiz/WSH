@@ -38,7 +38,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 const CourseDetailsPage = async ({params}: {params: Promise<{slug: string}>}) => {
-    const appUrl = process.env.APP_URL;
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL;
     const { slug } = await params
     console.log(slug);
     

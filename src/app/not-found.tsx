@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Navbar from "../components/website/Navbar"
 
-const appUrl = process.env.APP_URL;
+const appUrl = process.env.NEXT_PUBLIC_APP_URL;
 
 const PageNotFound = () => {
     return (

@@ -1,5 +1,5 @@
 const Footer = () => {
-    const appUrl = process.env.APP_URL;
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL;
 
     return (
         <>
