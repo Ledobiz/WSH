@@ -2,12 +2,10 @@
 
 import { createContext, useContext, useState, useEffect } from "react"
 import { onAuthStateChanged, User as FirebaseUser, signOut } from "firebase/auth";
-import { redirect } from "next/navigation";
 import { toast } from "react-toastify";
-import { User } from "../types"
+import { NewUser, User } from "../types"
 import { auth } from "../lib/firebase";
-import prisma from "../lib/prisma";
-import { loginUrl } from "../utils/url";
+import { createNewStudent, getUserByEmail, getUserByUid, updateUserGoogleUid } from "../services/user";
 
 
 interface AuthInterface {
@@ -64,37 +62,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
                     // Try to load user data from database, fallback to email-based creation
                     try {
-                        const userData = prisma.user.findFirst({
-                            where: {
-                                uid: firebaseUser.uid,
-                            },
-                        });
+                        let userData = await getUserByUid(firebaseUser.uid);
 
                         if (!userData) {
-                            const userData = prisma.user.findFirst({
-                                where: {
-                                    email: firebaseUser.email
-                                }
-                            });
+                            // Try finding the user by email
+                            userData = await getUserByEmail(firebaseUser.email);
 
-                            if (!userData) { // Create the user.
-                                const userData = await prisma.user.create({
-                                    data: {
-                                        name: firebaseUser.displayName,
-                                        email: firebaseUser.email,
-                                        image: firebaseUser.photoURL,
-                                        phone: firebaseUser.phoneNumber || undefined,
-                                        uid: firebaseUser.uid,
-                                        role: 'student',
-                                        isActive: true,
-                                    }
-                                })
-                            }
-                            else if (userData && !userData.uid) { // If the user is present but with no google ID
-                                await prisma.user.update({
-                                    where: { id: userData.id },
-                                    data: { uid: firebaseUser.uid },
-                                })
+                            if (!userData) {
+                                // Create the user if it does not exist
+                                const newUserData: NewUser = {
+                                    name: firebaseUser.displayName,
+                                    email: firebaseUser.email,
+                                    image: firebaseUser.photoURL,
+                                    phone: firebaseUser.phoneNumber || undefined,
+                                    uid: firebaseUser.uid,
+                                };
+
+                                userData = await createNewStudent(newUserData);
+                            } else if (!userData.uid) {
+                                // If the user exists but has no UID recorded, update it
+                                await updateUserGoogleUid(userData.id, firebaseUser.uid);
+                                // Reload the user record (optional) to include the updated uid
+                                userData = await getUserByUid(firebaseUser.uid) || userData;
                             }
                         }
 
@@ -127,8 +116,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                     console.log('AuthProvider - No Firebase user, clearing state');
                     setUser(null);
                     setLoading(false);
-                    toast.error('You have been logged out. Please sign in');
-                    redirect(loginUrl);
                 }
             },
             (error) => {

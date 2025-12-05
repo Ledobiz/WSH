@@ -10,4 +10,6 @@ export const studentDashboardUrl = '/learners/dashboard'
 export const adminDashboardUrl = '/admin/dashboard'
 
 // Authentication Routes
-export const loginUrl = '/login'
+export const loginUrl = '/sign-in'
+export const forgotPasswordUrl = '/forgot-password'
+export const registerUrl = '/sign-up'

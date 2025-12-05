@@ -1,6 +1,6 @@
 import Script from "next/script";
 import "./globals.css";
-import Loading from "../components/website/loading";
+import { AuthProvider } from "../providers/AuthProvider";
 
 export default function RootLayout({
   children,
@@ -19,9 +19,9 @@ export default function RootLayout({
         <link rel="icon" type="image/svg+xml" href={`${appUrl}/assets/img/logo-icon.png`}></link>
       </head>
       <body>
-        <Loading />
-
-        {children}
+        <AuthProvider>
+          {children}
+        </AuthProvider>
 
         <Script src={`${appUrl}/assets/js/jquery.min.js`}></Script>
         <Script src={`${appUrl}/assets/js/popper.min.js`}></Script>

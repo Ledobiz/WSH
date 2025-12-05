@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-const HeroBanner = () => {
+const HeroBanner = ({page}) => {
     return (
         <section className="bg-light page-title">
             <div className="container">
@@ -10,12 +10,12 @@ const HeroBanner = () => {
                             <nav aria-label="breadcrumb">
                                 <ol className="breadcrumb simple">
                                     <li className="breadcrumb-item"><Link href="/">Home</Link></li>
-                                    <li className="breadcrumb-item active" aria-current="page">Courses</li>
+                                    <li className="breadcrumb-item active" aria-current="page">{page}</li>
                                 </ol>
                             </nav>
                         </div>
                         <div className="pageTitle-wrap">
-                            <h1 className="text-dark">Courses</h1>
+                            <h1 className="text-dark">{page}</h1>
                         </div>
                     </div>
                 </div>

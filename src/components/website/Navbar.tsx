@@ -1,5 +1,6 @@
 'use client';
 
+import { loginUrl, registerUrl } from "@/src/utils/url";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -53,16 +54,16 @@ const Navbar = () => {
                             </ul>
                             <ul className="nav-menu nav-menu-social align-to-right">
                                 <li className="become-tutor">
-                                    <a href="#" data-bs-toggle="modal" data-bs-target="#signup">
+                                    <Link href={registerUrl}>
                                         <i className="bi bi-person-circle" />
                                         Register
-                                    </a>
+                                    </Link>
                                 </li>
                                 <li className="join-btn">
-                                    <a href="#" data-bs-toggle="modal" data-bs-target="#login">
+                                    <Link href={loginUrl}>
                                         <i className="bi bi-box-arrow-in-right" />
                                         Sign In
-                                    </a>
+                                    </Link>
                                 </li>
                             </ul>
                         </div>

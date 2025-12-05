@@ -1,5 +1,5 @@
 import { auth } from "../lib/firebase";
-import { onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup, User as Auth } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup, User as Auth } from "firebase/auth";
 import { redirect } from "next/navigation";
 import { toast } from "react-toastify";
 
