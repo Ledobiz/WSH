@@ -13,10 +13,10 @@ const links = [
         uri: "/courses",
         label: "Courses"
     },
-    {
+    /*{
         uri: "/trainings",
         label: "Trainings"
-    },
+    },*/
     {
         uri: "/wishlist",
         label: "Wishlist"

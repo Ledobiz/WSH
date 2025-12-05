@@ -48,13 +48,13 @@
 	Color Variables
 ------------------------------------*/
 :root, [data-bs-theme=light] {
-	--maincolor:#0068D9;
-	--backupcolor:#0496FF;
+	--maincolor:#9868A7;
+	--backupcolor:#a57cb2;
 	--graycolor:#edf1fb;
 	--navcolor:#00305c;
 	--darkcolor: #13293D;
 	--lightcolor:#f1f4f9;
-	--headingcolor: #003384;
+	--headingcolor: #9868A7;
 	--bodycolor: #334155;
 	--mutedcolor:#768ea7;
 	--greencolor:#4caf84;
@@ -66,7 +66,7 @@
 	--formbg:#edf1fb;
 	--form-color:#3b515a;
 	--inversecolor:#00305c;
-	--footerbg:#13293D;
+	--footerbg:#9868A7;
 	--footercolor:#536775;
 }
 

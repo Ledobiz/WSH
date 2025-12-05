@@ -11,6 +11,8 @@ export const metadata: Metadata = {
 };
 
 export default function Home() {
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL;
+
   	return (
         <Suspense fallback={<Loading />}>
             <div id="main-wrapper">
@@ -1850,160 +1852,25 @@ export default function Home() {
                         </div>
                         
                         <div className="row">
-                            <div className="col-xl-12 col-lg-12 col-lg-12">
-                                <div className="arrow_slide four_slide arrow_middle">
-                                    <div className="singles_items">
+                            <div className="col-lg-12 col-md-12 col-sm-12">
+                                <div className="row g-3">
+                                    {/* Single Slide */}
+                                    <div className="col-xl-4 col-lg-4 col-md-6">
                                         <div className="education_block_grid border">
                                             <div className="education-thumb position-relative">
-                                                <div className="save-course position-absolute top-0 end-0 me-3 mt-3">
-                                                    <a href="#" className="bookmark-button">
-                                                        <i className="bi bi-suit-heart" />
-                                                    </a>
-                                                </div>
                                                 <a href="course-detail.html">
-                                                    <img src="assets/img/co-1.jpg" className="img-fluid" alt="" />
+                                                    <img
+                                                        src={`${appUrl}/assets/img/courses-3.jpg`}
+                                                        className="img-fluid"
+                                                        alt=""
+                                                    />
                                                 </a>
-                                            </div>
-                                            <div className="education-body p-3">
-                                                <div className="education-title">
-                                                    <h4 className="fs-6 fw-medium">
-                                                        <a href="course-detail.html">
-                                                            HTML Mastery: Complete Guide to HTML from Basics to
-                                                            Advanced
-                                                        </a>
-                                                    </h4>
+                                                <div className="course-hours position-absolute top-0 start-0 ms-3 mt-3">
+                                                    <span className="badge bg-dark rounded-pill">
+                                                        <i className="bi bi-clock-history me-1" />
+                                                        10h 50m
+                                                    </span>
                                                 </div>
-                                                <div className="cources-info">
-                                                    <ul>
-                                                        <li>
-                                                            <i className="bi bi-camera-reels" />
-                                                            32 Lectures
-                                                        </li>
-                                                        <li>
-                                                            <i className="bi bi-bar-chart" />
-                                                            Beginner
-                                                        </li>
-                                                        <li>
-                                                            <i className="bi bi-coin" />
-                                                            $149
-                                                        </li>
-                                                        <li>
-                                                            <i className="bi bi-star-fill text-warning" />
-                                                            <span className="overall-rates text-dark fw-medium ms-1">
-                                                                4.9
-                                                            </span>
-                                                            <span className="total-reviews">(2.22k)</span>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                            <div className="education-footer p-3">
-                                                <div className="education_block_author">
-                                                    <a
-                                                        href="#"
-                                                        className="d-flex align-items-center justify-content-start gap-2"
-                                                    >
-                                                        <span className="square--30">
-                                                            <img
-                                                                src="assets/img/avatar-1.jpg"
-                                                                className="img-fluid circle"
-                                                                alt="Author"
-                                                            />
-                                                        </span>
-                                                        <span className="text-dark fw-medium">Cody L.</span>
-                                                    </a>
-                                                </div>
-                                                <div className="enrolled-link">
-                                                    <a href="#" className="main-link fw-medium">
-                                                        Enrolled Now
-                                                        <i className="bi bi-arrow-right ms-2" />
-                                                    </a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div className="singles_items">
-                                        <div className="education_block_grid border">
-                                            <div className="education-thumb position-relative">
-                                                <div className="save-course position-absolute top-0 end-0 me-3 mt-3">
-                                                    <a href="#" className="bookmark-button">
-                                                        <i className="bi bi-suit-heart" />
-                                                    </a>
-                                                </div>
-                                                <a href="course-detail.html">
-                                                    <img src="assets/img/co-2.jpg" className="img-fluid" alt="" />
-                                                </a>
-                                            </div>
-                                            <div className="education-body p-3">
-                                                <div className="education-title">
-                                                    <h4 className="fs-6 fw-medium">
-                                                        <a href="course-detail.html">
-                                                            Python Unleashed: Mastering JavaScript for Web Development
-                                                        </a>
-                                                    </h4>
-                                                </div>
-                                                <div className="cources-info">
-                                                    <ul>
-                                                        <li>
-                                                            <i className="bi bi-camera-reels" />
-                                                            45 Lectures
-                                                        </li>
-                                                        <li>
-                                                            <i className="bi bi-bar-chart" />
-                                                            Advance
-                                                        </li>
-                                                        <li>
-                                                            <i className="bi bi-coin" />
-                                                            $179
-                                                        </li>
-                                                        <li>
-                                                            <i className="bi bi-star-fill text-warning" />
-                                                            <span className="overall-rates text-dark fw-medium ms-1">
-                                                                4.9
-                                                            </span>
-                                                            <span className="total-reviews">(1.34k)</span>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                            <div className="education-footer p-3">
-                                                <div className="education_block_author">
-                                                    <a
-                                                        href="#"
-                                                        className="d-flex align-items-center justify-content-start gap-2"
-                                                    >
-                                                        <span className="square--30">
-                                                            <img
-                                                                src="assets/img/avatar-2.jpg"
-                                                                className="img-fluid circle"
-                                                                alt="Author"
-                                                            />
-                                                        </span>
-                                                        <span className="text-dark fw-medium">Adam Lobby.</span>
-                                                    </a>
-                                                </div>
-                                                <div className="enrolled-link">
-                                                    <a href="#" className="main-link fw-medium">
-                                                        Enrolled Now
-                                                        <i className="bi bi-arrow-right ms-2" />
-                                                    </a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div className="singles_items">
-                                        <div className="education_block_grid border">
-                                            <div className="education-thumb position-relative">
-                                                <div className="save-course position-absolute top-0 end-0 me-3 mt-3">
-                                                    <a href="#" className="bookmark-button">
-                                                        <i className="bi bi-suit-heart" />
-                                                    </a>
-                                                </div>
-                                                <a href="course-detail.html">
-                                                    <img src="assets/img/co-3.jpg" className="img-fluid" alt="" />
-                                                </a>
                                             </div>
                                             <div className="education-body p-3">
                                                 <div className="education-title">
@@ -2014,335 +1881,360 @@ export default function Home() {
                                                         </a>
                                                     </h4>
                                                 </div>
-                                                <div className="cources-info">
-                                                    <ul>
-                                                        <li>
-                                                            <i className="bi bi-camera-reels" />
-                                                            22 Lectures
-                                                        </li>
-                                                        <li>
-                                                            <i className="bi bi-bar-chart" />
-                                                            Beginner
-                                                        </li>
-                                                        <li>
-                                                            <i className="bi bi-coin" />
-                                                            $129
-                                                        </li>
-                                                        <li>
-                                                            <i className="bi bi-star-fill text-warning" />
-                                                            <span className="overall-rates text-dark fw-medium ms-1">
-                                                                4.9
-                                                            </span>
-                                                            <span className="total-reviews">(3.45k)</span>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                            <div className="education-footer p-3">
-                                                <div className="education_block_author">
-                                                    <a
-                                                        href="#"
-                                                        className="d-flex align-items-center justify-content-start gap-2"
-                                                    >
-                                                        <span className="square--30">
-                                                            <img
-                                                                src="assets/img/avatar-3.jpg"
-                                                                className="img-fluid circle"
-                                                                alt="Author"
+                                                <div className="progress-info mt-3">
+                                                    {/* Title with info */}
+                                                    <div className="d-flex align-items-center justify-content-between">
+                                                        <h6 className="text-mid fw-normal">
+                                                            12 of 12 lessons complete
+                                                        </h6>
+                                                        <h6 className="fw-semibold">100%</h6>
+                                                    </div>
+                                                    <div className="d-flex">
+                                                        <div
+                                                            className="progress w-100"
+                                                            role="progressbar"
+                                                            aria-label="Success striped example"
+                                                            aria-valuenow={100}
+                                                            aria-valuemin={0}
+                                                            aria-valuemax={100}
+                                                            style={{ height: 8 }}
+                                                        >
+                                                            <div
+                                                                className="progress-bar progress-bar-striped bg-success"
+                                                                style={{ width: "100%" }}
                                                             />
-                                                        </span>
-                                                        <span className="text-dark fw-medium">Akkie Lume</span>
-                                                    </a>
-                                                </div>
-                                                <div className="enrolled-link">
-                                                    <a href="#" className="main-link fw-medium">
-                                                        Enrolled Now
-                                                        <i className="bi bi-arrow-right ms-2" />
-                                                    </a>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div className="singles_items">
-                                        <div className="education_block_grid border">
-                                            <div className="education-thumb position-relative">
-                                                <div className="save-course position-absolute top-0 end-0 me-3 mt-3">
-                                                    <a href="#" className="bookmark-button">
-                                                        <i className="bi bi-suit-heart" />
-                                                    </a>
-                                                </div>
-                                                <a href="course-detail.html">
-                                                    <img src="assets/img/co-4.jpg" className="img-fluid" alt="" />
+                                            <div className="education-footer border-0 p-3 pt-2">
+                                                <a
+                                                href="student-course-resume.html"
+                                                className="btn btn-md btn-outline-gray border-2 rounded-pill w-100"
+                                                >
+                                                    Course Resume
+                                                    <i className="bi bi-arrow-right ms-2" />
                                                 </a>
-                                            </div>
-                                            <div className="education-body p-3">
-                                                <div className="education-title">
-                                                    <h4 className="fs-6 fw-medium">
-                                                        <a href="course-detail.html">
-                                                            Backend Development with Node.js: Building Scalable Web
-                                                            Apps
-                                                        </a>
-                                                    </h4>
-                                                </div>
-                                                <div className="cources-info">
-                                                    <ul>
-                                                        <li>
-                                                            <i className="bi bi-camera-reels" />
-                                                            39 Lectures
-                                                        </li>
-                                                        <li>
-                                                            <i className="bi bi-bar-chart" />
-                                                            Advance
-                                                        </li>
-                                                        <li>
-                                                            <i className="bi bi-coin" />
-                                                            $129
-                                                        </li>
-                                                        <li>
-                                                            <i className="bi bi-star-fill text-warning" />
-                                                            <span className="overall-rates text-dark fw-medium ms-1">
-                                                                4.9
-                                                            </span>
-                                                            <span className="total-reviews">(2.45k)</span>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                            <div className="education-footer p-3">
-                                                <div className="education_block_author">
-                                                    <a
-                                                        href="#"
-                                                        className="d-flex align-items-center justify-content-start gap-2"
-                                                    >
-                                                        <span className="square--30">
-                                                            <img
-                                                                src="assets/img/avatar-4.jpg"
-                                                                className="img-fluid circle"
-                                                                alt="Author"
-                                                            />
-                                                        </span>
-                                                        <span className="text-dark fw-medium">Luer Luke</span>
-                                                    </a>
-                                                </div>
-                                                <div className="enrolled-link">
-                                                    <a href="#" className="main-link fw-medium">
-                                                        Enrolled Now
-                                                        <i className="bi bi-arrow-right ms-2" />
-                                                    </a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div className="singles_items">
-                                        <div className="education_block_grid border">
-                                            <div className="education-thumb position-relative">
-                                                <div className="save-course position-absolute top-0 end-0 me-3 mt-3">
-                                                    <a href="#" className="bookmark-button">
-                                                        <i className="bi bi-suit-heart" />
-                                                    </a>
-                                                </div>
-                                                <a href="course-detail.html">
-                                                    <img src="assets/img/co-5.jpg" className="img-fluid" alt="" />
-                                                </a>
-                                            </div>
-                                            <div className="education-body p-3">
-                                                <div className="education-title">
-                                                    <h4 className="fs-6 fw-medium">
-                                                        <a href="course-detail.html">
-                                                            Web Development Bootcamp: Learn to Build Modern Websites
-                                                        </a>
-                                                    </h4>
-                                                </div>
-                                                <div className="cources-info">
-                                                    <ul>
-                                                        <li>
-                                                            <i className="bi bi-camera-reels" />
-                                                            48 Lectures
-                                                        </li>
-                                                        <li>
-                                                            <i className="bi bi-bar-chart" />
-                                                            Beginner
-                                                        </li>
-                                                        <li>
-                                                            <i className="bi bi-coin" />
-                                                            $199
-                                                        </li>
-                                                        <li>
-                                                            <i className="bi bi-star-fill text-warning" />
-                                                            <span className="overall-rates text-dark fw-medium ms-1">
-                                                                4.8
-                                                            </span>
-                                                            <span className="total-reviews">(4.45k)</span>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                            <div className="education-footer p-3">
-                                                <div className="education_block_author">
-                                                    <a
-                                                        href="#"
-                                                        className="d-flex align-items-center justify-content-start gap-2"
-                                                    >
-                                                        <span className="square--30">
-                                                            <img
-                                                                src="assets/img/avatar-5.jpg"
-                                                                className="img-fluid circle"
-                                                                alt="Author"
-                                                            />
-                                                        </span>
-                                                        <span className="text-dark fw-medium">Armika John</span>
-                                                    </a>
-                                                </div>
-                                                <div className="enrolled-link">
-                                                    <a href="#" className="main-link fw-medium">
-                                                        Enrolled Now
-                                                        <i className="bi bi-arrow-right ms-2" />
-                                                    </a>
-                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                     {/* Single Slide */}
-                                    <div className="singles_items">
+                                    <div className="col-xl-4 col-lg-4 col-md-6">
                                         <div className="education_block_grid border">
                                             <div className="education-thumb position-relative">
-                                                <div className="save-course position-absolute top-0 end-0 me-3 mt-3">
-                                                    <a href="#" className="bookmark-button">
-                                                        <i className="bi bi-suit-heart" />
-                                                    </a>
-                                                </div>
                                                 <a href="course-detail.html">
-                                                    <img src="assets/img/co-6.jpg" className="img-fluid" alt="" />
+                                                    <img
+                                                        src={`${appUrl}/assets/img/courses-4.jpg`}
+                                                        className="img-fluid"
+                                                        alt=""
+                                                    />
                                                 </a>
+                                                <div className="course-hours position-absolute top-0 start-0 ms-3 mt-3">
+                                                    <span className="badge bg-dark rounded-pill">
+                                                        <i className="bi bi-clock-history me-1" />
+                                                        20h 10m
+                                                    </span>
+                                                </div>
                                             </div>
                                             <div className="education-body p-3">
                                                 <div className="education-title">
                                                     <h4 className="fs-6 fw-medium">
                                                         <a href="course-detail.html">
-                                                            The Complete AI Guide: Learn ChatGPT, Generative AI &amp;
-                                                            More..
+                                                            Backend Development with Node.js: Building Scalable
+                                                            Web Apps
                                                         </a>
                                                     </h4>
                                                 </div>
-                                                <div className="cources-info">
-                                                    <ul>
-                                                        <li>
-                                                            <i className="bi bi-camera-reels" />
-                                                            28 Lectures
-                                                        </li>
-                                                        <li>
-                                                            <i className="bi bi-bar-chart" />
-                                                            Advance
-                                                        </li>
-                                                        <li>
-                                                            <i className="bi bi-coin" />
-                                                            $120
-                                                        </li>
-                                                        <li>
-                                                            <i className="bi bi-star-fill text-warning" />
-                                                            <span className="overall-rates text-dark fw-medium ms-1">
-                                                                4.7
-                                                            </span>
-                                                            <span className="total-reviews">(3.65k)</span>
-                                                        </li>
-                                                    </ul>
+                                                <div className="progress-info mt-3">
+                                                    {/* Title with info */}
+                                                    <div className="d-flex align-items-center justify-content-between">
+                                                        <h6 className="text-mid fw-normal">
+                                                            7 of 18 lessons complete
+                                                        </h6>
+                                                        <h6 className="fw-semibold">40%</h6>
+                                                    </div>
+                                                    <div className="d-flex">
+                                                        <div
+                                                            className="progress w-100"
+                                                            role="progressbar"
+                                                            aria-label="warning striped example"
+                                                            aria-valuenow={40}
+                                                            aria-valuemin={0}
+                                                            aria-valuemax={40}
+                                                            style={{ height: 8 }}
+                                                        >
+                                                            <div
+                                                                className="progress-bar progress-bar-striped bg-warning"
+                                                                style={{ width: "40%" }}
+                                                            />
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <div className="education-footer p-3">
-                                                <div className="education_block_author">
-                                                    <a
-                                                        href="#"
-                                                        className="d-flex align-items-center justify-content-start gap-2"
-                                                    >
-                                                        <span className="square--30">
-                                                        <img
-                                                            src="assets/img/avatar-3.jpg"
-                                                            className="img-fluid circle"
-                                                            alt="Author"
-                                                        />
-                                                        </span>
-                                                        <span className="text-dark fw-medium">Luke Lumbus</span>
-                                                    </a>
-                                                </div>
-                                                <div className="enrolled-link">
-                                                    <a href="#" className="main-link fw-medium">
-                                                        Enrolled Now
-                                                        <i className="bi bi-arrow-right ms-2" />
-                                                    </a>
-                                                </div>
+                                            <div className="education-footer border-0 p-3 pt-2">
+                                                <a
+                                                    href="student-course-resume.html"
+                                                    className="btn btn-md btn-outline-gray border-2 rounded-pill w-100"
+                                                >
+                                                    Course Resume
+                                                    <i className="bi bi-arrow-right ms-2" />
+                                                </a>
                                             </div>
                                         </div>
                                     </div>
                                     {/* Single Slide */}
-                                    <div className="singles_items">
+                                    <div className="col-xl-4 col-lg-4 col-md-6">
                                         <div className="education_block_grid border">
                                             <div className="education-thumb position-relative">
-                                                <div className="save-course position-absolute top-0 end-0 me-3 mt-3">
-                                                    <a href="#" className="bookmark-button">
-                                                        <i className="bi bi-suit-heart" />
-                                                    </a>
-                                                </div>
                                                 <a href="course-detail.html">
-                                                    <img src="assets/img/co-7.jpg" className="img-fluid" alt="" />
+                                                    <img
+                                                        src={`${appUrl}/assets/img/courses-5.jpg`}
+                                                        className="img-fluid"
+                                                        alt=""
+                                                    />
                                                 </a>
+                                                <div className="course-hours position-absolute top-0 start-0 ms-3 mt-3">
+                                                    <span className="badge bg-dark rounded-pill">
+                                                        <i className="bi bi-clock-history me-1" />
+                                                        12h 40m
+                                                    </span>
+                                                </div>
                                             </div>
                                             <div className="education-body p-3">
                                                 <div className="education-title">
                                                     <h4 className="fs-6 fw-medium">
                                                         <a href="course-detail.html">
-                                                            Advanced WordPress Techniques: Dive Deep into Styling and
-                                                            Layout
+                                                            Web Development Bootcamp: Learn to Build Modern
+                                                            Websites
                                                         </a>
                                                     </h4>
                                                 </div>
-                                                <div className="cources-info">
-                                                    <ul>
-                                                        <li>
-                                                            <i className="bi bi-camera-reels" />
-                                                            65 Lectures
-                                                        </li>
-                                                        <li>
-                                                            <i className="bi bi-bar-chart" />
-                                                            Advance
-                                                        </li>
-                                                        <li>
-                                                            <i className="bi bi-coin" />
-                                                            $199
-                                                        </li>
-                                                        <li>
-                                                            <i className="bi bi-star-fill text-warning" />
-                                                            <span className="overall-rates text-dark fw-medium ms-1">
-                                                                4.8
-                                                            </span>
-                                                            <span className="total-reviews">(4.36k)</span>
-                                                        </li>
-                                                    </ul>
+                                                <div className="progress-info mt-3">
+                                                    {/* Title with info */}
+                                                    <div className="d-flex align-items-center justify-content-between">
+                                                        <h6 className="text-mid fw-normal">
+                                                            17 of 17 lessons complete
+                                                        </h6>
+                                                        <h6 className="fw-semibold">100%</h6>
+                                                    </div>
+                                                    <div className="d-flex">
+                                                        <div
+                                                            className="progress w-100"
+                                                            role="progressbar"
+                                                            aria-label="Success striped example"
+                                                            aria-valuenow={100}
+                                                            aria-valuemin={0}
+                                                            aria-valuemax={100}
+                                                            style={{ height: 8 }}
+                                                        >
+                                                            <div
+                                                                className="progress-bar progress-bar-striped bg-success"
+                                                                style={{ width: "100%" }}
+                                                            />
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <div className="education-footer p-3">
-                                                <div className="education_block_author">
-                                                    <a
-                                                        href="#"
-                                                        className="d-flex align-items-center justify-content-start gap-2"
-                                                    >
-                                                        <span className="square--30">
-                                                        <img
-                                                            src="assets/img/avatar-6.jpg"
-                                                            className="img-fluid circle"
-                                                            alt="Author"
-                                                        />
-                                                        </span>
-                                                        <span className="text-dark fw-medium">Ambus Kornil</span>
-                                                    </a>
+                                            <div className="education-footer border-0 p-3 pt-2">
+                                                <a
+                                                    href="student-course-resume.html"
+                                                    className="btn btn-md btn-outline-gray border-2 rounded-pill w-100"
+                                                >
+                                                    Course Resume
+                                                    <i className="bi bi-arrow-right ms-2" />
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {/* Single Slide */}
+                                    <div className="col-xl-4 col-lg-4 col-md-6">
+                                        <div className="education_block_grid border">
+                                            <div className="education-thumb position-relative">
+                                                <a href="course-detail.html">
+                                                    <img
+                                                        src={`${appUrl}/assets/img/courses-6.jpg`}
+                                                        className="img-fluid"
+                                                        alt=""
+                                                    />
+                                                </a>
+                                                <div className="course-hours position-absolute top-0 start-0 ms-3 mt-3">
+                                                    <span className="badge bg-dark rounded-pill">
+                                                        <i className="bi bi-clock-history me-1" />
+                                                        17h 15m
+                                                    </span>
                                                 </div>
-                                                <div className="enrolled-link">
-                                                    <a href="#" className="main-link fw-medium">
-                                                        Enrolled Now
-                                                        <i className="bi bi-arrow-right ms-2" />
-                                                    </a>
+                                            </div>
+                                            <div className="education-body p-3">
+                                                <div className="education-title">
+                                                    <h4 className="fs-6 fw-medium">
+                                                        <a href="course-detail.html">
+                                                            The Complete AI Guide: Learn ChatGPT, Generative AI
+                                                            &amp; More..
+                                                        </a>
+                                                    </h4>
                                                 </div>
+                                                <div className="progress-info mt-3">
+                                                    {/* Title with info */}
+                                                    <div className="d-flex align-items-center justify-content-between">
+                                                        <h6 className="text-mid fw-normal">
+                                                            6 of 10 lessons complete
+                                                        </h6>
+                                                        <h6 className="fw-semibold">60%</h6>
+                                                    </div>
+                                                    <div className="d-flex">
+                                                        <div
+                                                            className="progress w-100"
+                                                            role="progressbar"
+                                                            aria-label="warning striped example"
+                                                            aria-valuenow={60}
+                                                            aria-valuemin={0}
+                                                            aria-valuemax={60}
+                                                            style={{ height: 8 }}
+                                                        >
+                                                            <div
+                                                                className="progress-bar progress-bar-striped bg-warning"
+                                                                style={{ width: "60%" }}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="education-footer border-0 p-3 pt-2">
+                                                <a
+                                                    href="student-course-resume.html"
+                                                    className="btn btn-md btn-outline-gray border-2 rounded-pill w-100"
+                                                >
+                                                    Course Resume
+                                                    <i className="bi bi-arrow-right ms-2" />
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {/* Single Slide */}
+                                    <div className="col-xl-4 col-lg-4 col-md-6">
+                                        <div className="education_block_grid border">
+                                            <div className="education-thumb position-relative">
+                                                <a href="course-detail.html">
+                                                    <img
+                                                        src={`${appUrl}/assets/img/courses-7.jpg`}
+                                                        className="img-fluid"
+                                                        alt=""
+                                                    />
+                                                </a>
+                                                <div className="course-hours position-absolute top-0 start-0 ms-3 mt-3">
+                                                    <span className="badge bg-dark rounded-pill">
+                                                        <i className="bi bi-clock-history me-1" />
+                                                        14h 20m
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div className="education-body p-3">
+                                                <div className="education-title">
+                                                    <h4 className="fs-6 fw-medium">
+                                                        <a href="course-detail.html">
+                                                            Advanced WordPress Techniques: Dive Deep into Styling
+                                                            and Layout
+                                                        </a>
+                                                    </h4>
+                                                </div>
+                                                <div className="progress-info mt-3">
+                                                    {/* Title with info */}
+                                                    <div className="d-flex align-items-center justify-content-between">
+                                                        <h6 className="text-mid fw-normal">
+                                                            32 of 32 lessons complete
+                                                        </h6>
+                                                        <h6 className="fw-semibold">100%</h6>
+                                                    </div>
+                                                    <div className="d-flex">
+                                                        <div
+                                                            className="progress w-100"
+                                                            role="progressbar"
+                                                            aria-label="Success striped example"
+                                                            aria-valuenow={100}
+                                                            aria-valuemin={0}
+                                                            aria-valuemax={100}
+                                                            style={{ height: 8 }}
+                                                        >
+                                                            <div
+                                                                className="progress-bar progress-bar-striped bg-success"
+                                                                style={{ width: "100%" }}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="education-footer border-0 p-3 pt-2">
+                                                <a
+                                                    href="student-course-resume.html"
+                                                    className="btn btn-md btn-outline-gray border-2 rounded-pill w-100"
+                                                >
+                                                    Course Resume
+                                                    <i className="bi bi-arrow-right ms-2" />
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {/* Single Slide */}
+                                    <div className="col-xl-4 col-lg-4 col-md-6">
+                                        <div className="education_block_grid border">
+                                            <div className="education-thumb position-relative">
+                                                <a href="course-detail.html">
+                                                    <img
+                                                        src={`${appUrl}/assets/img/courses-8.jpg`}
+                                                        className="img-fluid"
+                                                        alt=""
+                                                    />
+                                                </a>
+                                                <div className="course-hours position-absolute top-0 start-0 ms-3 mt-3">
+                                                    <span className="badge bg-dark rounded-pill">
+                                                        <i className="bi bi-clock-history me-1" />
+                                                        22h 10m
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div className="education-body p-3">
+                                                <div className="education-title">
+                                                    <h4 className="fs-6 fw-medium">
+                                                        <a href="course-detail.html">
+                                                        Backend Development with Node.js: Building Scalable
+                                                        Web Apps
+                                                        </a>
+                                                    </h4>
+                                                </div>
+                                                <div className="progress-info mt-3">
+                                                    {/* Title with info */}
+                                                    <div className="d-flex align-items-center justify-content-between">
+                                                        <h6 className="text-mid fw-normal">
+                                                        15 of 22 lessons complete
+                                                        </h6>
+                                                        <h6 className="fw-semibold">70%</h6>
+                                                    </div>
+                                                    <div className="d-flex">
+                                                        <div
+                                                            className="progress w-100"
+                                                            role="progressbar"
+                                                            aria-label="warning striped example"
+                                                            aria-valuenow={70}
+                                                            aria-valuemin={0}
+                                                            aria-valuemax={70}
+                                                            style={{ height: 8 }}
+                                                        >
+                                                            <div
+                                                                className="progress-bar progress-bar-striped bg-warning"
+                                                                style={{ width: "70%" }}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="education-footer border-0 p-3 pt-2">
+                                                <a
+                                                    href="student-course-resume.html"
+                                                    className="btn btn-md btn-outline-gray border-2 rounded-pill w-100"
+                                                >
+                                                    Course Resume
+                                                    <i className="bi bi-arrow-right ms-2" />
+                                                </a>
                                             </div>
                                         </div>
                                     </div>
@@ -2439,112 +2331,9 @@ export default function Home() {
                             </div>
                         </div>
                         
-                        <div className="row">
-                            <div className="col-xl-12 col-lg-12 col-lg-12">
-                                <div className="arrow_slide reviews-slide arrow_middle">
-                                    <div className="singles_items">
-                                        <div className="card-hover p-4 rounded-3 card card-body m-0">
-                                            <div className="rating-star">
-                                                <div className="d-flex align-items-center gap-1 mb-2">
-                                                    <span className="text-warning">
-                                                        <i className="bi bi-star-fill" />
-                                                    </span>
-                                                    <span className="text-warning">
-                                                        <i className="bi bi-star-fill" />
-                                                    </span>
-                                                    <span className="text-warning">
-                                                        <i className="bi bi-star-fill" />
-                                                    </span>
-                                                    <span className="text-warning">
-                                                        <i className="bi bi-star-fill" />
-                                                    </span>
-                                                    <span className="text-warning">
-                                                        <i className="bi bi-star-fill" />
-                                                    </span>
-                                                    </div>
-                                                </div>
-                                                <div className="review-caption d-block mb-4">
-                                                    <h5 className="text-dark fw-semibold mb-0 lh-base">
-                                                        "Awesome service and courses."
-                                                    </h5>
-                                                    <p className="text-muted-2">
-                                                        In a professional context it often happens that private or
-                                                        corporate clients corder a publication to be made and
-                                                        presented with the actual.
-                                                    </p>
-                                                </div>
-                                                <div className="d-flex bg-light align-items-center justify-content-between rounded-3 p-3">
-                                                    <div className="revierwer-avatar d-flex align-items-center gap-2">
-                                                        <div className="avatar-box">
-                                                            <img
-                                                                src="assets/img/avatar-1.jpg"
-                                                                className="img-fluid square--50 circle"
-                                                                alt="Avatar Image"
-                                                            />
-                                                        </div>
-                                                        <div className="reviewer-caps">
-                                                            <h6 className="fw-semibold text-dark m-0">Taylor Morgan</h6>
-                                                            <p className="text-muted-2 m-0 text-mid">10 Jul 2025</p>
-                                                        </div>
-                                                    </div>
-                                                    <div className="reviewer-post">
-                                                        <span className="badge bg-green rounded-pill">Student</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="singles_items">
-                                            <div className="card-hover p-4 rounded-3 card card-body m-0">
-                                            <div className="rating-star">
-                                                <div className="d-flex align-items-center gap-1 mb-2">
-                                                <span className="text-warning">
-                                                    <i className="bi bi-star-fill" />
-                                                </span>
-                                                <span className="text-warning">
-                                                    <i className="bi bi-star-fill" />
-                                                </span>
-                                                <span className="text-warning">
-                                                    <i className="bi bi-star-fill" />
-                                                </span>
-                                                <span className="text-warning">
-                                                    <i className="bi bi-star-fill" />
-                                                </span>
-                                                <span className="text-warning">
-                                                    <i className="bi bi-star-fill" />
-                                                </span>
-                                                </div>
-                                            </div>
-                                            <div className="review-caption d-block mb-4">
-                                                <h5 className="text-dark fw-semibold mb-0 lh-base">
-                                                    "Awesome service and courses."
-                                                </h5>
-                                                <p className="text-muted-2">
-                                                    In a professional context it often happens that private or
-                                                    corporate clients corder a publication to be made and
-                                                    presented with the actual.
-                                                </p>
-                                            </div>
-                                            <div className="d-flex bg-light align-items-center justify-content-between rounded-3 p-3">
-                                                <div className="revierwer-avatar d-flex align-items-center gap-2">
-                                                <div className="avatar-box">
-                                                    <img
-                                                    src="assets/img/avatar-2.jpg"
-                                                    className="img-fluid square--50 circle"
-                                                    alt="Avatar Image"
-                                                    />
-                                                </div>
-                                                <div className="reviewer-caps">
-                                                    <h6 className="fw-semibold text-dark m-0">Cameron Lee</h6>
-                                                    <p className="text-muted-2 m-0 text-mid">10 Jul 2025</p>
-                                                </div>
-                                            </div>
-                                            <div className="reviewer-post">
-                                                <span className="badge bg-green rounded-pill">Student</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="singles_items">
+                        <div className="col-xl-12 col-lg-12">
+                            <div className="row">
+                                <div className="col-xl-4 col-lg-4 col-md-6">
                                     <div className="card-hover p-4 rounded-3 card card-body m-0">
                                         <div className="rating-star">
                                             <div className="d-flex align-items-center gap-1 mb-2">
@@ -2563,7 +2352,110 @@ export default function Home() {
                                                 <span className="text-warning">
                                                     <i className="bi bi-star-fill" />
                                                 </span>
+                                            </div>
+                                        </div>
+                                        <div className="review-caption d-block mb-4">
+                                            <h5 className="text-dark fw-semibold mb-0 lh-base">
+                                                "Awesome service and courses."
+                                            </h5>
+                                            <p className="text-muted-2">
+                                                In a professional context it often happens that private or
+                                                corporate clients corder a publication to be made and
+                                                presented with the actual.
+                                            </p>
+                                        </div>
+                                        <div className="d-flex bg-light align-items-center justify-content-between rounded-3 p-3">
+                                            <div className="revierwer-avatar d-flex align-items-center gap-2">
+                                                <div className="avatar-box">
+                                                    <img
+                                                        src="assets/img/avatar-1.jpg"
+                                                        className="img-fluid square--50 circle"
+                                                        alt="Avatar Image"
+                                                    />
                                                 </div>
+                                                <div className="reviewer-caps">
+                                                    <h6 className="fw-semibold text-dark m-0">Taylor Morgan</h6>
+                                                    <p className="text-muted-2 m-0 text-mid">10 Jul 2025</p>
+                                                </div>
+                                            </div>
+                                            <div className="reviewer-post">
+                                                <span className="badge bg-green rounded-pill">Student</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="col-xl-4 col-lg-4 col-md-6">
+                                    <div className="card-hover p-4 rounded-3 card card-body m-0">
+                                        <div className="rating-star">
+                                            <div className="d-flex align-items-center gap-1 mb-2">
+                                                <span className="text-warning">
+                                                    <i className="bi bi-star-fill" />
+                                                </span>
+                                                <span className="text-warning">
+                                                    <i className="bi bi-star-fill" />
+                                                </span>
+                                                <span className="text-warning">
+                                                    <i className="bi bi-star-fill" />
+                                                </span>
+                                                <span className="text-warning">
+                                                    <i className="bi bi-star-fill" />
+                                                </span>
+                                                <span className="text-warning">
+                                                    <i className="bi bi-star-fill" />
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div className="review-caption d-block mb-4">
+                                            <h5 className="text-dark fw-semibold mb-0 lh-base">
+                                                "Awesome service and courses."
+                                            </h5>
+                                            <p className="text-muted-2">
+                                                In a professional context it often happens that private or
+                                                corporate clients corder a publication to be made and
+                                                presented with the actual.
+                                            </p>
+                                        </div>
+                                        <div className="d-flex bg-light align-items-center justify-content-between rounded-3 p-3">
+                                            <div className="revierwer-avatar d-flex align-items-center gap-2">
+                                                <div className="avatar-box">
+                                                    <img
+                                                    src="assets/img/avatar-2.jpg"
+                                                    className="img-fluid square--50 circle"
+                                                    alt="Avatar Image"
+                                                    />
+                                                </div>
+                                                <div className="reviewer-caps">
+                                                    <h6 className="fw-semibold text-dark m-0">Cameron Lee</h6>
+                                                    <p className="text-muted-2 m-0 text-mid">10 Jul 2025</p>
+                                                </div>
+                                            </div>
+                                            <div className="reviewer-post">
+                                                <span className="badge bg-green rounded-pill">Student</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="col-xl-4 col-lg-4 col-md-6">
+                                    <div className="card-hover p-4 rounded-3 card card-body m-0">
+                                        <div className="rating-star">
+                                            <div className="d-flex align-items-center gap-1 mb-2">
+                                                <span className="text-warning">
+                                                    <i className="bi bi-star-fill" />
+                                                </span>
+                                                <span className="text-warning">
+                                                    <i className="bi bi-star-fill" />
+                                                </span>
+                                                <span className="text-warning">
+                                                    <i className="bi bi-star-fill" />
+                                                </span>
+                                                <span className="text-warning">
+                                                    <i className="bi bi-star-fill" />
+                                                </span>
+                                                <span className="text-warning">
+                                                    <i className="bi bi-star-fill" />
+                                                </span>
                                             </div>
                                             <div className="review-caption d-block mb-4">
                                                 <h5 className="text-dark fw-semibold mb-0 lh-base">
@@ -2595,156 +2487,159 @@ export default function Home() {
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="singles_items">
-                                        <div className="card-hover p-4 rounded-3 card card-body m-0">
-                                            <div className="rating-star">
-                                                <div className="d-flex align-items-center gap-1 mb-2">
-                                                    <span className="text-warning">
-                                                        <i className="bi bi-star-fill" />
-                                                    </span>
-                                                    <span className="text-warning">
-                                                        <i className="bi bi-star-fill" />
-                                                    </span>
-                                                    <span className="text-warning">
-                                                        <i className="bi bi-star-fill" />
-                                                    </span>
-                                                    <span className="text-warning">
-                                                        <i className="bi bi-star-fill" />
-                                                    </span>
-                                                    <span className="text-warning">
-                                                        <i className="bi bi-star-fill" />
-                                                    </span>
+                                </div>
+
+                                <div className="col-xl-4 col-lg-4 col-md-6">
+                                    <div className="card-hover p-4 rounded-3 card card-body m-0">
+                                        <div className="rating-star">
+                                            <div className="d-flex align-items-center gap-1 mb-2">
+                                                <span className="text-warning">
+                                                    <i className="bi bi-star-fill" />
+                                                </span>
+                                                <span className="text-warning">
+                                                    <i className="bi bi-star-fill" />
+                                                </span>
+                                                <span className="text-warning">
+                                                    <i className="bi bi-star-fill" />
+                                                </span>
+                                                <span className="text-warning">
+                                                    <i className="bi bi-star-fill" />
+                                                </span>
+                                                <span className="text-warning">
+                                                    <i className="bi bi-star-fill" />
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div className="review-caption d-block mb-4">
+                                            <h5 className="text-dark fw-semibold mb-0 lh-base">
+                                                "Awesome service and courses."
+                                            </h5>
+                                            <p className="text-muted-2">
+                                                In a professional context it often happens that private or
+                                                corporate clients corder a publication to be made and
+                                                presented with the actual.
+                                            </p>
+                                        </div>
+                                        <div className="d-flex bg-light align-items-center justify-content-between rounded-3 p-3">
+                                            <div className="revierwer-avatar d-flex align-items-center gap-2">
+                                                <div className="avatar-box">
+                                                    <img
+                                                        src="assets/img/avatar-4.jpg"
+                                                        className="img-fluid square--50 circle"
+                                                        alt="Avatar Image"
+                                                    />
+                                                </div>
+                                                <div className="reviewer-caps">
+                                                    <h6 className="fw-semibold text-dark m-0">Riley James</h6>
+                                                    <p className="text-muted-2 m-0 text-mid">10 Jul 2025</p>
                                                 </div>
                                             </div>
-                                            <div className="review-caption d-block mb-4">
-                                                <h5 className="text-dark fw-semibold mb-0 lh-base">
-                                                    "Awesome service and courses."
-                                                </h5>
-                                                <p className="text-muted-2">
-                                                    In a professional context it often happens that private or
-                                                    corporate clients corder a publication to be made and
-                                                    presented with the actual.
-                                                </p>
-                                            </div>
-                                            <div className="d-flex bg-light align-items-center justify-content-between rounded-3 p-3">
-                                                <div className="revierwer-avatar d-flex align-items-center gap-2">
-                                                    <div className="avatar-box">
-                                                        <img
-                                                            src="assets/img/avatar-4.jpg"
-                                                            className="img-fluid square--50 circle"
-                                                            alt="Avatar Image"
-                                                        />
-                                                    </div>
-                                                    <div className="reviewer-caps">
-                                                        <h6 className="fw-semibold text-dark m-0">Riley James</h6>
-                                                        <p className="text-muted-2 m-0 text-mid">10 Jul 2025</p>
-                                                    </div>
-                                                </div>
-                                                <div className="reviewer-post">
-                                                    <span className="badge bg-green rounded-pill">Student</span>
-                                                </div>
+                                            <div className="reviewer-post">
+                                                <span className="badge bg-green rounded-pill">Student</span>
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="singles_items">
-                                        <div className="card-hover p-4 rounded-3 card card-body m-0">
-                                            <div className="rating-star">
-                                                <div className="d-flex align-items-center gap-1 mb-2">
-                                                    <span className="text-warning">
-                                                        <i className="bi bi-star-fill" />
-                                                    </span>
-                                                    <span className="text-warning">
-                                                        <i className="bi bi-star-fill" />
-                                                    </span>
-                                                    <span className="text-warning">
-                                                        <i className="bi bi-star-fill" />
-                                                    </span>
-                                                    <span className="text-warning">
-                                                        <i className="bi bi-star-fill" />
-                                                    </span>
-                                                    <span className="text-warning">
-                                                        <i className="bi bi-star-fill" />
-                                                    </span>
+                                </div>
+
+                                <div className="col-xl-4 col-lg-4 col-md-6">
+                                    <div className="card-hover p-4 rounded-3 card card-body m-0">
+                                        <div className="rating-star">
+                                            <div className="d-flex align-items-center gap-1 mb-2">
+                                                <span className="text-warning">
+                                                    <i className="bi bi-star-fill" />
+                                                </span>
+                                                <span className="text-warning">
+                                                    <i className="bi bi-star-fill" />
+                                                </span>
+                                                <span className="text-warning">
+                                                    <i className="bi bi-star-fill" />
+                                                </span>
+                                                <span className="text-warning">
+                                                    <i className="bi bi-star-fill" />
+                                                </span>
+                                                <span className="text-warning">
+                                                    <i className="bi bi-star-fill" />
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div className="review-caption d-block mb-4">
+                                            <h5 className="text-dark fw-semibold mb-0 lh-base">
+                                                "Awesome service and courses."
+                                            </h5>
+                                            <p className="text-muted-2">
+                                                In a professional context it often happens that private or
+                                                corporate clients corder a publication to be made and
+                                                presented with the actual.
+                                            </p>
+                                        </div>
+                                        <div className="d-flex bg-light align-items-center justify-content-between rounded-3 p-3">
+                                            <div className="revierwer-avatar d-flex align-items-center gap-2">
+                                                <div className="avatar-box">
+                                                    <img
+                                                        src="assets/img/avatar-5.jpg"
+                                                        className="img-fluid square--50 circle"
+                                                        alt="Avatar Image"
+                                                    />
+                                                </div>
+                                                <div className="reviewer-caps">
+                                                    <h6 className="fw-semibold text-dark m-0">Casey Allen</h6>
+                                                    <p className="text-muted-2 m-0 text-mid">10 Jul 2025</p>
                                                 </div>
                                             </div>
-                                            <div className="review-caption d-block mb-4">
-                                                <h5 className="text-dark fw-semibold mb-0 lh-base">
-                                                    "Awesome service and courses."
-                                                </h5>
-                                                <p className="text-muted-2">
-                                                    In a professional context it often happens that private or
-                                                    corporate clients corder a publication to be made and
-                                                    presented with the actual.
-                                                </p>
-                                            </div>
-                                            <div className="d-flex bg-light align-items-center justify-content-between rounded-3 p-3">
-                                                <div className="revierwer-avatar d-flex align-items-center gap-2">
-                                                    <div className="avatar-box">
-                                                        <img
-                                                            src="assets/img/avatar-5.jpg"
-                                                            className="img-fluid square--50 circle"
-                                                            alt="Avatar Image"
-                                                        />
-                                                    </div>
-                                                    <div className="reviewer-caps">
-                                                        <h6 className="fw-semibold text-dark m-0">Casey Allen</h6>
-                                                        <p className="text-muted-2 m-0 text-mid">10 Jul 2025</p>
-                                                    </div>
-                                                </div>
-                                                <div className="reviewer-post">
-                                                    <span className="badge bg-green rounded-pill">Student</span>
-                                                </div>
+                                            <div className="reviewer-post">
+                                                <span className="badge bg-green rounded-pill">Student</span>
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="singles_items">
-                                        <div className="card-hover p-4 rounded-3 card card-body m-0">
-                                            <div className="rating-star">
-                                                <div className="d-flex align-items-center gap-1 mb-2">
-                                                    <span className="text-warning">
-                                                        <i className="bi bi-star-fill" />
-                                                    </span>
-                                                    <span className="text-warning">
-                                                        <i className="bi bi-star-fill" />
-                                                    </span>
-                                                    <span className="text-warning">
-                                                        <i className="bi bi-star-fill" />
-                                                    </span>
-                                                    <span className="text-warning">
-                                                        <i className="bi bi-star-fill" />
-                                                    </span>
-                                                    <span className="text-warning">
-                                                        <i className="bi bi-star-fill" />
-                                                    </span>
+                                </div>
+                                
+                                <div className="col-xl-4 col-lg-4 col-md-6">
+                                    <div className="card-hover p-4 rounded-3 card card-body m-0">
+                                        <div className="rating-star">
+                                            <div className="d-flex align-items-center gap-1 mb-2">
+                                                <span className="text-warning">
+                                                    <i className="bi bi-star-fill" />
+                                                </span>
+                                                <span className="text-warning">
+                                                    <i className="bi bi-star-fill" />
+                                                </span>
+                                                <span className="text-warning">
+                                                    <i className="bi bi-star-fill" />
+                                                </span>
+                                                <span className="text-warning">
+                                                    <i className="bi bi-star-fill" />
+                                                </span>
+                                                <span className="text-warning">
+                                                    <i className="bi bi-star-fill" />
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div className="review-caption d-block mb-4">
+                                            <h5 className="text-dark fw-semibold mb-0 lh-base">
+                                                "Awesome service and courses."
+                                            </h5>
+                                            <p className="text-muted-2">
+                                                In a professional context it often happens that private or
+                                                corporate clients corder a publication to be made and
+                                                presented with the actual.
+                                            </p>
+                                        </div>
+                                        <div className="d-flex bg-light align-items-center justify-content-between rounded-3 p-3">
+                                            <div className="revierwer-avatar d-flex align-items-center gap-2">
+                                                <div className="avatar-box">
+                                                    <img
+                                                        src="assets/img/avatar-6.jpg"
+                                                        className="img-fluid square--50 circle"
+                                                        alt="Avatar Image"
+                                                    />
+                                                </div>
+                                                <div className="reviewer-caps">
+                                                    <h6 className="fw-semibold text-dark m-0">Jordan Blake</h6>
+                                                    <p className="text-muted-2 m-0 text-mid">10 Jul 2025</p>
                                                 </div>
                                             </div>
-                                            <div className="review-caption d-block mb-4">
-                                                <h5 className="text-dark fw-semibold mb-0 lh-base">
-                                                    "Awesome service and courses."
-                                                </h5>
-                                                <p className="text-muted-2">
-                                                    In a professional context it often happens that private or
-                                                    corporate clients corder a publication to be made and
-                                                    presented with the actual.
-                                                </p>
-                                            </div>
-                                            <div className="d-flex bg-light align-items-center justify-content-between rounded-3 p-3">
-                                                <div className="revierwer-avatar d-flex align-items-center gap-2">
-                                                    <div className="avatar-box">
-                                                        <img
-                                                            src="assets/img/avatar-6.jpg"
-                                                            className="img-fluid square--50 circle"
-                                                            alt="Avatar Image"
-                                                        />
-                                                    </div>
-                                                    <div className="reviewer-caps">
-                                                        <h6 className="fw-semibold text-dark m-0">Jordan Blake</h6>
-                                                        <p className="text-muted-2 m-0 text-mid">10 Jul 2025</p>
-                                                    </div>
-                                                </div>
-                                                <div className="reviewer-post">
-                                                    <span className="badge bg-green rounded-pill">Student</span>
-                                                </div>
+                                            <div className="reviewer-post">
+                                                <span className="badge bg-green rounded-pill">Student</span>
                                             </div>
                                         </div>
                                     </div>

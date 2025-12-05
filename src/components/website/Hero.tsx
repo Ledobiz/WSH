@@ -1,8 +1,10 @@
 const Hero = () => {
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL;
+
     return (
         <div
             className="hero_banner home-2 position-relative"
-            style={{ background: "#e7eff6 url(assets/img/map.svg)no-repeat" }}
+            style={{ background: `#e7eff6 url(${appUrl}/assets/img/map.svg)no-repeat` }}
         >
             <div className="container">
                 <div className="row align-items-center justify-content-center">
@@ -134,14 +136,14 @@ const Hero = () => {
                 </div>
             </div>
             <div className="position-absolute start-0 bottom-0">
-                <img src="assets/img/banner-catalog-4.png" className="img-fluid" />
+                <img src={`${appUrl}/assets/img/designer-girl.png`} style={{width: '400px'}} className="img-fluid" />
             </div>
-            <div className="position-absolute end-0 bottom-0">
-                <img src="assets/img/banner-catalog-5.png" className="img-fluid" />
+            <div className="position-absolute end-0 bottom-0 d-none d-md-block">
+                <img src={`${appUrl}/assets/img/banner-catalog-5.png`} className="img-fluid" />
             </div>
             <div className="position-absolute end-0 top-0 me-5">
                 <img
-                    src="assets/img/banner-lamp-2.png"
+                    src={`${appUrl}/assets/img/banner-lamp-2.png`}
                     className="img-fluid"
                     width={70}
                 />
