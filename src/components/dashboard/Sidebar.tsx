@@ -107,6 +107,12 @@ const Sidebar = () => {
                                         </Link>
                                     </li>
                                 ))}
+                                <li>
+                                    <a href="#" className="text-danger">
+                                        <i className="bi bi-power me-2" />
+                                        Logout
+                                    </a>
+                                </li>
                             </ul>
                         </div>
                     </div>

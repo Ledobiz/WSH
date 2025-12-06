@@ -1,0 +1,30 @@
+/* Scrollbar styling for course content */
+.courseScroll {
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+/* Webkit browsers (Chrome, Safari, Edge) */
+.courseScroll::-webkit-scrollbar {
+  width: 8px;
+}
+
+.courseScroll::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.courseScroll::-webkit-scrollbar-thumb {
+  background: #9868A7;
+  border-radius: 4px;
+}
+
+.courseScroll::-webkit-scrollbar-thumb:hover {
+  background: #9868A7;
+}
+
+/* Firefox */
+.courseScroll {
+  scrollbar-color: #9868A7 #f1f1f1;
+  scrollbar-width: thin;
+}

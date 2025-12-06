@@ -3279,7 +3279,7 @@ nav a {
     justify-content: space-between;
 }
 .navigation-portrait .mobile_nav {
-    margin-right: 4rem;
+    /* margin-right: 4rem; */
     display: block;
 }
 .navigation-portrait .mobile_nav ul {
@@ -7579,8 +7579,14 @@ ul.edu_list li {
 }
 
 .video-box {
-    height: 360px;
+    height: 600px;
     background: linear-gradient(135deg, #3a7bd5, #6f36ff);
+}
+
+@media (max-width: 500px) {
+    .video-box {
+        height: 300px;
+    }
 }
 
 .course-scroll {
@@ -7592,7 +7598,7 @@ ul.edu_list li {
 .lesson-number {
     width: 34px;
     height: 34px;
-    background: #0062ff;
+    background: var(--maincolor);
     color: #fff;
     border-radius: 50%;
     display: flex;
@@ -7605,9 +7611,17 @@ ul.edu_list li {
 .lesson-dot {
     width: 12px;
     height: 12px;
-    background: #0062ff;
+    background: var(--maincolor);
     border-radius: 50%;
     display: inline-block;
+}
+
+.lesson-dot.ongoing {
+    background: #ffc107;
+}
+
+.lesson-dot.completed {
+    background: #1d6f22ff;
 }
 
 .lesson-item {

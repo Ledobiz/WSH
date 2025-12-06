@@ -51,9 +51,9 @@ const Navbar = () => {
                                 {/* <img src="assets/img/logo.svg" className="logo" alt="Logo" /> */}
                                 <h1>WSH</h1>
                             </Link>
-                            <a className="nav-toggle" data-bs-toggle="offcanvas" href="#offcanvasExample" role="button"
+                            {/* <a className="nav-toggle" data-bs-toggle="offcanvas" href="#offcanvasExample" role="button"
                                 aria-controls="offcanvasExample" 
-                            />
+                            /> */}
 
                             <div className="mobile_nav">
                                 <ul>
@@ -98,6 +98,12 @@ const Navbar = () => {
                                                                 </Link>
                                                             </li>
                                                         ))}
+                                                        <li>
+                                                            <a href="#" className="text-danger">
+                                                                <i className="bi bi-power me-2" />
+                                                                Logout
+                                                            </a>
+                                                        </li>
                                                     </ul>
                                                 </div>
                                             </div>
@@ -109,12 +115,6 @@ const Navbar = () => {
 
                         <div className="nav-menus-wrapper" style={{transitionProperty: 'none'}}>
                             <ul className="nav-menu nav-menu-social align-to-right">
-                                <li className="become-tutor">
-                                    <Link href="/learners/resume-course">
-                                        <i className="bi bi-play-circle" />
-                                        Resume Last Course
-                                    </Link>
-                                </li>
                                 <li>
                                     <div className="btn-group account-drop">
                                         <button
@@ -156,6 +156,12 @@ const Navbar = () => {
                                                             </Link>
                                                         </li>
                                                     ))}
+                                                    <li>
+                                                        <a href="#" className="text-danger">
+                                                            <i className="bi bi-power me-2" />
+                                                            Logout
+                                                        </a>
+                                                    </li>
                                                 </ul>
                                             </div>
                                         </div>
