@@ -12,7 +12,7 @@ const PageNotFound = () => {
                             <div className="text-center">
                                 <img src={`${appUrl}/assets/img/404.png`} className="img-fluid" alt="404 page" />
                                 <p>
-                                    Sorry! We are unable to locate the page or resource you are trying to get. Please check for the right URL or page and try again.
+                                    Sorry, the page you are looking for could not be found. It's just an accident that was not intentional.
                                 </p>
                                 <Link className="btn btn-main px-4" href="/">
                                     Back To Home

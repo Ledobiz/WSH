@@ -7545,3 +7545,119 @@ ul.edu_list li {
 
 	}
 }
+
+.stat-card {
+    overflow: hidden;
+    position: relative;
+    transition: all 0.3s ease;
+    transform: translateZ(0); /* smoother animation */
+}
+
+.circle-bg {
+    position: absolute;
+    top: -40px;
+    right: -40px;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+}
+
+.stat-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 1rem 2.5rem rgba(0, 0, 0, 0.25) !important;
+}
+
+.hover {
+    transition: all 0.3s ease;
+    transform: translateZ(0); /* smoother animation */
+}
+
+.hover:hover {
+    transform: scale(1.05);
+    box-shadow: 0 1rem 2.5rem rgba(0, 0, 0, 0.25) !important;
+}
+
+.video-box {
+    height: 360px;
+    background: linear-gradient(135deg, #3a7bd5, #6f36ff);
+}
+
+.course-scroll {
+    max-height: 480px;
+    overflow-y: auto;
+}
+
+/* Lesson Number Circle */
+.lesson-number {
+    width: 34px;
+    height: 34px;
+    background: #0062ff;
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+}
+
+/* Lesson Dot */
+.lesson-dot {
+    width: 12px;
+    height: 12px;
+    background: #0062ff;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.lesson-item {
+    background: #eaf1ff;
+}
+
+.lesson-item.active {
+    background: #d6e6ff;
+}
+
+.course-scroll {
+    max-height: 70vh; /* or any height you prefer */
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 6px; /* prevents content from being hidden under scrollbar */
+}
+
+/* Optional: style scrollbar (Chrome/Edge/Safari) */
+.course-scroll::-webkit-scrollbar {
+    width: 6px;
+}
+
+.course-scroll::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 10px;
+}
+
+.course-scroll::-webkit-scrollbar-thumb:hover {
+    background: #bbb;
+}
+
+/* Default arrow direction */
+.toggle-arrow {
+  transition: transform 0.25s ease;
+}
+
+/* Rotate arrow when collapse is open */
+.collapse.show + .toggle-arrow,
+.module-toggle[aria-expanded="true"] .toggle-arrow {
+  transform: rotate(180deg);
+}
+
+.menu-toggle {
+    text-align: left !important;
+}
+
+.module-toggle .toggle-arrow {
+  transition: transform 0.25s ease;
+}
+
+.module-toggle[aria-expanded="true"] .toggle-arrow {
+  transform: rotate(180deg);
+}

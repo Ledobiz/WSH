@@ -1,13 +1,14 @@
 import Navbar from "@/src/components/dashboard/Navbar";
-import NavBreadcrumb from "@/src/components/dashboard/NavBreadcrumb";
 import Sidebar from "@/src/components/dashboard/Sidebar";
 import Footer from "@/src/components/website/Footer";
 import Loading from "@/src/components/website/loading"
+import { courseContentUrl, myCoursesUrl, studentDashboardUrl } from "@/src/utils/url";
 import { Metadata } from "next";
+import Link from "next/link";
 import { Suspense } from "react"
 
 export const metadata: Metadata = {
-    title: "Resume Course - Women Skills Hub",
+    title: "Course Details - Women Skills Hub",
     description: "The home for upskilling for financial independence"
 };
 
@@ -34,7 +35,23 @@ const MyCourses = () => {
                         <Sidebar />
 
                         <div className="col-lg-9 col-md-12 col-sm-12">
-                            <NavBreadcrumb page="Resume Coruse" />
+                            <div className="row">
+                                <div className="col-lg-12 col-md-12 col-sm-12 pb-4">
+                                    <nav aria-label="breadcrumb">
+                                        <ol className="breadcrumb">
+                                            <li className="breadcrumb-item">
+                                                <Link href={studentDashboardUrl}>Student Dashboard</Link>
+                                            </li>
+                                            <li className="breadcrumb-item">
+                                                <Link href={myCoursesUrl}>Course</Link>
+                                            </li>
+                                            <li className="breadcrumb-item active" aria-current="page">
+                                                Details
+                                            </li>
+                                        </ol>
+                                    </nav>
+                                </div>
+                            </div>
                             
                             <Suspense fallback={<Loading />}>
                                 <div className="row mb-4">
@@ -100,54 +117,54 @@ const MyCourses = () => {
                                                                         <ul className="d-flex flex-column gap-3 mb-0 px-0">
                                                                             <li className="d-flex flex-row justify-content-between align-items-center">
                                                                                 <div className="d-flex align-items-center flex-row gap-2">
-                                                                                    <a href="#" className="square--30 circle btn-green">
+                                                                                    <Link href={`${courseContentUrl}/sweet-little-pizza`} className="square--30 circle btn-green">
                                                                                         <i className="bi bi-play-fill fs-5" />
-                                                                                    </a>
+                                                                                    </Link>
                                                                                     <span className="d-inline-block text-truncate w-shrunk">
                                                                                         Intro to Blade
                                                                                     </span>
-                                                                                    <a href="#" className="badge bg-dark text-white">
+                                                                                    <Link href={`${courseContentUrl}/sweet-little-pizza`} className="badge bg-dark text-white">
                                                                                         Play again
-                                                                                    </a>
+                                                                                    </Link>
                                                                                 </div>
                                                                                 <span className="text-mid text-muted">10:20</span>
                                                                             </li>
                                                                             <li className="d-flex flex-row justify-content-between align-items-center">
                                                                                 <div className="d-flex align-items-center flex-row gap-2">
-                                                                                    <a href="#" className="square--30 circle btn-green">
+                                                                                    <Link href={`${courseContentUrl}/sweet-little-pizza`} className="square--30 circle btn-green">
                                                                                         <i className="bi bi-play-fill fs-5" />
-                                                                                    </a>
+                                                                                    </Link>
                                                                                     <span className="d-inline-block text-truncate w-shrunk">
                                                                                         Create layout file
                                                                                     </span>
-                                                                                    <a href="#" className="badge bg-dark text-white">
+                                                                                    <Link href={`${courseContentUrl}/sweet-little-pizza`} className="badge bg-dark text-white">
                                                                                         Play again
-                                                                                    </a>
+                                                                                    </Link>
                                                                                 </div>
                                                                                 <span className="text-mid text-muted">05:10</span>
                                                                             </li>
                                                                             <li className="d-flex flex-row justify-content-between align-items-center">
                                                                                 <div className="d-flex align-items-center flex-row gap-2">
-                                                                                    <a href="#" className="square--30 circle btn-green">
+                                                                                    <Link href={`${courseContentUrl}/sweet-little-pizza`} className="square--30 circle btn-green">
                                                                                         <i className="bi bi-play-fill fs-5" />
-                                                                                    </a>
+                                                                                    </Link>
                                                                                     <span className="d-inline-block text-truncate w-shrunk">
                                                                                         Add header and footer
                                                                                     </span>
-                                                                                    <a href="#" className="badge bg-dark text-white">
+                                                                                    <Link href={`${courseContentUrl}/sweet-little-pizza`} className="badge bg-dark text-white">
                                                                                         Play again
-                                                                                    </a>
+                                                                                    </Link>
                                                                                 </div>
                                                                                 <span className="text-mid text-muted">08:20</span>
                                                                             </li>
                                                                             <li className="d-flex flex-row justify-content-between align-items-center">
                                                                                 <div className="d-flex align-items-center flex-row gap-2">
-                                                                                    <a
-                                                                                        href="#"
+                                                                                    <Link
+                                                                                        href={`${courseContentUrl}/sweet-little-pizza`}
                                                                                         className="square--30 circle btn-light-red"
                                                                                     >
                                                                                         <i className="bi bi-play-fill fs-5" />
-                                                                                    </a>
+                                                                                    </Link>
                                                                                     <span className="d-inline-block text-truncate w-shrunk">
                                                                                         Use @section and @yield
                                                                                     </span>

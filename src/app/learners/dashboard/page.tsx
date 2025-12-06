@@ -3,7 +3,9 @@ import NavBreadcrumb from "@/src/components/dashboard/NavBreadcrumb";
 import Sidebar from "@/src/components/dashboard/Sidebar";
 import Footer from "@/src/components/website/Footer";
 import Loading from "@/src/components/website/loading"
+import { courseContentUrl } from "@/src/utils/url";
 import { Metadata } from "next";
+import Link from "next/link";
 import { Suspense } from "react"
 
 export const metadata: Metadata = {
@@ -37,44 +39,114 @@ const Dashboard = () => {
                             <NavBreadcrumb page="Dashboard" />
                             
                             <Suspense fallback={<Loading />}>
-                                <div className="row gy-3 mb-4">
-                                    <div className="col-xl-4 col-lg-4 col-md-6 col-sm-6">
-                                        <div className="card rounded-3 border px-3 py-4">
-                                            <div className="d-flex align-items-center gap-3">
-                                                <div className="square--60 circle bg-light-green fs-3">
-                                                    <i className="bi bi-laptop text-green" />
-                                                </div>
-                                                <div className="d-flex flex-column gap-1">
-                                                    <h2 className="fw-semibold m-0">42</h2>
-                                                    <span className="text-muted">Total Courses</span>
+                                <div className="row g-3 mb-4">
+                                    {/* CARD 1 */}
+                                    <div className="col-12 col-sm-6 col-lg-3">
+                                        <div
+                                            className="stat-card position-relative shadow-lg text-white p-4 rounded-4"
+                                            style={{ background: "linear-gradient(135deg, #4666ff, #7b38ff)" }}
+                                        >
+                                            <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16"></div>
+                                            {/* Top-right number */}
+                                            <span className="position-absolute top-0 end-0 m-3 fw-bold fs-4">
+                                            3
+                                            </span>
+                                            {/* Icon */}
+                                            <div className="mb-3">
+                                                <div
+                                                    className="icon-box d-inline-flex align-items-center justify-content-center rounded-3"
+                                                    style={{
+                                                    background: "rgba(255,255,255,0.15)",
+                                                    width: 45,
+                                                    height: 45
+                                                    }}
+                                                >
+                                                    <i className="bi bi-book fs-4" />
                                                 </div>
                                             </div>
+                                            {/* Text */}
+                                            <h5 className="opacity-75 text-white mb-1">Active Courses</h5>
+                                            <p className="opacity-75 mb-0">In progress</p>
+                                            {/* Circular highlight */}
+                                            <div className="circle-bg" />
                                         </div>
                                     </div>
-                                    <div className="col-xl-4 col-lg-4 col-md-6 col-sm-6">
-                                        <div className="card rounded-3 border px-3 py-4">
-                                            <div className="d-flex align-items-center gap-3">
-                                                <div className="square--60 circle bg-light-red fs-3">
-                                                    <i className="fas fa-user-graduate text-red" />
-                                                </div>
-                                                <div className="d-flex flex-column gap-1">
-                                                    <h2 className="fw-semibold m-0">38</h2>
-                                                    <span className="text-muted">Complete Lesson</span>
+                                    {/* CARD 2 */}
+                                    <div className="col-12 col-sm-6 col-lg-3">
+                                        <div
+                                            className="stat-card position-relative shadow-lg text-white p-4 rounded-4"
+                                            style={{ background: "linear-gradient(135deg, #b83aff, #7b38ff)" }}
+                                        >
+                                            <span className="position-absolute top-0 end-0 m-3 fw-bold fs-4">
+                                            0
+                                            </span>
+                                            <div className="mb-3">
+                                                <div
+                                                    className="icon-box d-inline-flex align-items-center justify-content-center rounded-3"
+                                                    style={{
+                                                    background: "rgba(255,255,255,0.15)",
+                                                    width: 45,
+                                                    height: 45
+                                                    }}
+                                                >
+                                                    <i className="bi bi-check-circle fs-4" />
                                                 </div>
                                             </div>
+                                            <h5 className="opacity-75 text-white mb-1">Lessons Complete</h5>
+                                            <p className="opacity-75 mb-0">Keep learning!</p>
+                                            <div className="circle-bg" />
                                         </div>
                                     </div>
-                                    <div className="col-xl-4 col-lg-4 col-md-6 col-sm-6">
-                                        <div className="card rounded-3 border px-3 py-4">
-                                            <div className="d-flex align-items-center gap-3">
-                                                <div className="square--60 circle bg-light-main fs-3">
-                                                    <i className="bi bi-shield-lock text-main" />
-                                                </div>
-                                                <div className="d-flex flex-column gap-1">
-                                                    <h2 className="fw-semibold m-0">4</h2>
-                                                    <span className="text-muted">Achieved Certificates</span>
+                                    {/* CARD 3 */}
+                                    <div className="col-12 col-sm-6 col-lg-3">
+                                        <div
+                                            className="stat-card position-relative shadow-lg text-white p-4 rounded-4"
+                                            style={{ background: "linear-gradient(135deg, #ff9800, #f44336)" }}
+                                        >
+                                            <span className="position-absolute top-0 end-0 m-3 fw-bold fs-4">
+                                            0
+                                            </span>
+                                            <div className="mb-3">
+                                                <div
+                                                    className="icon-box d-inline-flex align-items-center justify-content-center rounded-3"
+                                                    style={{
+                                                    background: "rgba(255,255,255,0.15)",
+                                                    width: 45,
+                                                    height: 45
+                                                    }}
+                                                >
+                                                    <i className="bi bi-patch-check-fill fs-4" />
                                                 </div>
                                             </div>
+                                            <h5 className="opacity-75 text-white mb-1">Certificates</h5>
+                                            <p className="opacity-75 mb-0">From specified courses</p>
+                                            <div className="circle-bg" />
+                                        </div>
+                                    </div>
+                                    {/* CARD 4 */}
+                                    <div className="col-12 col-sm-6 col-lg-3">
+                                        <div
+                                            className="stat-card position-relative shadow-lg text-white p-4 rounded-4"
+                                            style={{ background: "linear-gradient(135deg, #00b97c, #0ca77f)" }}
+                                        >
+                                            <span className="position-absolute top-0 end-0 m-3 fw-bold fs-4">
+                                            0
+                                            </span>
+                                            <div className="mb-3">
+                                                <div
+                                                    className="icon-box d-inline-flex align-items-center justify-content-center rounded-3"
+                                                    style={{
+                                                    background: "rgba(255,255,255,0.15)",
+                                                    width: 45,
+                                                    height: 45
+                                                    }}
+                                                >
+                                                    <i className="bi bi-lightning-charge fs-4" />
+                                                </div>
+                                            </div>
+                                            <h5 className="opacity-75 text-white mb-1">Day Streak</h5>
+                                            <p className="opacity-75 mb-0">Start learning today!</p>
+                                            <div className="circle-bg" />
                                         </div>
                                     </div>
                                 </div>
@@ -89,8 +161,8 @@ const Dashboard = () => {
                                         </div>
                                     </div>
 
-                                    <div className="card border-0 shadow-sm mb-3 rounded-4 p-3">
-                                        <div className="row g-3 g-md-4 align-items-center">
+                                    <div className="card border-0 hover shadow-sm mb-3 rounded-4 p-3">
+                                        <Link href={`${courseContentUrl}/mack-and-cheeze`} className="row g-3 g-md-4 align-items-center">
                                             <div className="col-12 col-xl-4 col-lg-4 col-md-4">
                                                 <div
                                                     className="rounded-3 p-3 bg-light d-flex align-items-center justify-content-center mx-auto mx-sm-0"
@@ -127,11 +199,11 @@ const Dashboard = () => {
                                             <div className="col-auto d-none d-sm-block">
                                                 <i className="bi bi-chevron-right fs-5 text-muted" />
                                             </div>
-                                        </div>
+                                        </Link>
                                     </div>
 
-                                    <div className="card border-0 shadow-sm mb-3 rounded-4 p-3">
-                                        <div className="row g-3 g-md-4 align-items-center">
+                                    <div className="card border-0 hover shadow-sm mb-3 rounded-4 p-3">
+                                        <Link href={`${courseContentUrl}/mack-and-cheeze`} className="row g-3 g-md-4 align-items-center">
                                             <div className="col-12 col-xl-4 col-lg-4 col-md-4">
                                                 <div
                                                     className="rounded-3 p-3 bg-light d-flex align-items-center justify-content-center mx-auto mx-sm-0"
@@ -168,7 +240,7 @@ const Dashboard = () => {
                                             <div className="col-auto d-none d-sm-block">
                                                 <i className="bi bi-chevron-right fs-5 text-muted" />
                                             </div>
-                                        </div>
+                                        </Link>
                                     </div>
                                 </div>
 
