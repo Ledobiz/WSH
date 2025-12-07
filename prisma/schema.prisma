@@ -8,12 +8,13 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  name      String?
-  email     String   @unique
+  id        String   @id @default(uuid()) @db.VarChar(191)
+  name      String?  @db.VarChar(191)
+  email     String   @unique @db.VarChar(191)
+  password  String?  @db.VarChar(191)
   image     String?
-  phone     String?
-  uid       String?
+  phone     String?  @db.VarChar(191)
+  uid       String?  @db.VarChar(191)
   role      UserRole @default(student)
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
@@ -36,13 +37,13 @@ enum UserRole {
 }
 
 model Course {
-  id            String         @id @default(cuid())
-  title         String
-  description   String
-  slug          String         @unique
+  id            String         @id @default(uuid()) @db.VarChar(191)
+  title         String         @db.VarChar(191)
+  description   String?
+  slug          String         @unique @db.VarChar(191)
   isPublished   Boolean?       @default(false)
   category      Category       @relation(fields: [categoryId], references: [id])
-  categoryId    String
+  categoryId    String         @db.VarChar(191)
   price         Int
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
@@ -57,10 +58,10 @@ model Course {
 }
 
 model CourseModule {
-  id               String            @id @default(cuid())
-  courseId         String
+  id               String            @id @default(uuid()) @db.VarChar(191)
+  courseId         String            @db.VarChar(191)
   course           Course            @relation(fields: [courseId], references: [id])
-  name             String
+  name             String            @db.VarChar(191)
   description      String?
   isActive         Boolean           @default(true)
   sorting          Int?
@@ -73,10 +74,10 @@ model CourseModule {
 }
 
 model ModuleComponent {
-  id             String        @id @default(cuid())
-  courseModuleId String
+  id             String        @id @default(uuid()) @db.VarChar(191)
+  courseModuleId String        @db.VarChar(191)
   courseModule   CourseModule  @relation(fields: [courseModuleId], references: [id])
-  name           String
+  name           String        @db.VarChar(191)
   description    String?
   isActive       Boolean       @default(true)
   type           ComponentType @default(video)
@@ -100,20 +101,20 @@ enum ComponentType {
 }
 
 model Category {
-  id        String   @id @default(cuid())
-  name      String
-  slug      String
+  id        String   @id @default(uuid()) @db.VarChar(191)
+  name      String   @db.VarChar(191)
+  slug      String   @db.VarChar(191)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   courses   Course[]
 }
 
 model Cart {
-  id                   String       @id @default(cuid())
+  id                   String       @id @default(uuid()) @db.VarChar(191)
   user                 User         @relation(fields: [userId], references: [id])
-  userId               String
+  userId               String       @db.VarChar(191)
   isPaid               Boolean?     @default(false)
-  transactionReference String?
+  transactionReference String?      @db.VarChar(191)
   reference            Transaction? @relation(fields: [transactionReference], references: [reference])
   createdAt            DateTime     @default(now())
   updatedAt            DateTime     @updatedAt
@@ -123,23 +124,23 @@ model Cart {
 }
 
 model CartItem {
-  id        String   @id @default(cuid())
-  cartId    String
+  id        String   @id @default(uuid()) @db.VarChar(191)
+  cartId    String   @db.VarChar(191)
   cart      Cart     @relation(fields: [cartId], references: [id])
-  courseId  String
+  courseId  String   @db.VarChar(191)
   course    Course   @relation(fields: [courseId], references: [id])
-  couponId  String?
+  couponId  String?  @db.VarChar(191)
   coupon    Coupon?  @relation(fields: [couponId], references: [id])
   price     Int
-  currency  String?
+  currency  String?  @db.VarChar(3)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model Coupon {
-  id             String     @id @default(cuid())
-  code           String
-  name           String?
+  id             String     @id @default(uuid()) @db.VarChar(191)
+  code           String     @db.VarChar(191)
+  name           String?    @db.VarChar(191)
   description    String?
   maxUse         Int
   totalUsed      Int
@@ -158,30 +159,30 @@ model Coupon {
 }
 
 model Wishlist {
-  id        String   @id @default(cuid())
-  userId    String
+  id        String   @id @default(uuid()) @db.VarChar(191)
+  userId    String   @db.VarChar(191)
   user      User     @relation(fields: [userId], references: [id])
-  courseId  String
+  courseId  String   @db.VarChar(191)
   course    Course   @relation(fields: [courseId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model Transaction {
-  id               String        @id @default(cuid())
-  userId           String
+  id               String        @id @default(uuid()) @db.VarChar(191)
+  userId           String        @db.VarChar(191)
   user             User          @relation(fields: [userId], references: [id])
-  reference        String        @unique
+  reference        String        @unique @db.VarChar(191)
   carts            Cart[]
-  gateway          String
-  name             String?
-  email            String?
-  phone            String?
-  currency         String
+  gateway          String        @db.VarChar(191)
+  name             String?       @db.VarChar(191)
+  email            String?       @db.VarChar(191)
+  phone            String?       @db.VarChar(191)
+  currency         String        @db.VarChar(3)
   amount           Int
-  first4Digits     String?
-  last4Digits      String?
-  cardBrand        String?
+  first4Digits     String?       @db.VarChar(4)
+  last4Digits      String?       @db.VarChar(4)
+  cardBrand        String?       @db.VarChar(191)
   status           PaymentStatus @default(pending)
   confirmationSent DateTime?
   paymentSource    PaymentSource @default(website)
@@ -205,10 +206,10 @@ enum PaymentSource {
 }
 
 model Student {
-  id                    String   @id @default(cuid())
-  userId                String
+  id                    String   @id @default(uuid()) @db.VarChar(191)
+  userId                String   @db.VarChar(191)
   user                  User     @relation(fields: [userId], references: [id])
-  courseId              String
+  courseId              String   @db.VarChar(191)
   course                Course   @relation(fields: [courseId], references: [id])
   courseContentAssigned Boolean  @default(false)
   createdAt             DateTime @default(now())

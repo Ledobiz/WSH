@@ -1,6 +1,7 @@
 import Footer from "@/src/components/website/Footer";
 import Loading from "@/src/components/website/loading"
 import Navbar from "@/src/components/website/Navbar"
+import SignupForm from "@/src/components/website/SignupForm";
 import { forgotPasswordUrl, loginUrl } from "@/src/utils/url";
 import { Metadata } from "next";
 import Link from "next/link";
@@ -70,77 +71,35 @@ const GetStarted = () => {
                                     </div>
                                     
                                     <div className="login-form">
-                                        <form>
-                                            <div className="social-login-wrap">
-                                                <div className="d-flex align-items-center justify-content-between flex-wrap gap-4">
-                                                    <a
-                                                        href="#"
-                                                        className="btn btn-md btn-gray rounded-3 border-2 flex-fill"
-                                                    >
-                                                        SignUp with
-                                                        <i className="bi bi-google text-red ms-2" />
-                                                    </a>
-                                                </div>
+                                        <div className="social-login-wrap">
+                                            <div className="d-flex align-items-center justify-content-between flex-wrap gap-4">
+                                                <a
+                                                    href="#"
+                                                    className="btn btn-md btn-gray rounded-3 border-2 flex-fill"
+                                                >
+                                                    SignUp with
+                                                    <i className="bi bi-google text-red ms-2" />
+                                                </a>
                                             </div>
-                                            <div className="deider-wrap w-100 mt-4 mb-4">
-                                                <div className="d-block border-top position-relative">
-                                                    <span className="position-absolute top-50 start-50 translate-middle square--40 circle bg-white text-muted z-1">
-                                                        OR
-                                                    </span>
-                                                </div>
+                                        </div>
+                                        <div className="deider-wrap w-100 mt-4 mb-4">
+                                            <div className="d-block border-top position-relative">
+                                                <span className="position-absolute top-50 start-50 translate-middle square--40 circle bg-white text-muted z-1">
+                                                    OR
+                                                </span>
                                             </div>
-                                            <div className="form-group mb-3">
-                                                <div className="row g-3">
-                                                    <div className="form-group col-6">
-                                                        <input
-                                                            type="email"
-                                                            className="form-control"
-                                                            placeholder="First Name"
-                                                        />
-                                                    </div>
-                                                    <div className="form-group col-6">
-                                                        <input
-                                                            type="email"
-                                                            className="form-control"
-                                                            placeholder="Last Name"
-                                                        />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className="form-group mb-3">
-                                                <input
-                                                    type="email"
-                                                    className="form-control"
-                                                    placeholder="Enter your email.."
-                                                />
-                                            </div>
-                                            <div className="form-group mb-3">
-                                                <div className="position-relative">
-                                                    <input
-                                                        type="password"
-                                                        className="form-control"
-                                                        placeholder="********"
-                                                    />
-                                                    <span className="position-absolute top-50 end-0 translate-middle-y me-3">
-                                                        <i className="bi bi-eye text-muted" />
-                                                    </span>
-                                                </div>
-                                            </div>
-                                            <div className="form-group mb-3">
-                                                <button type="button" className="btn btn-main w-100">
-                                                    Sign Up
-                                                </button>
-                                            </div>
+                                        </div>
+                                        
+                                        <SignupForm />
 
-                                            <div className="form-group mb-3">
-                                                <div className="text-center text-muted">
-                                                    Already have an account?{" "}
-                                                    <Link href={loginUrl}>
-                                                        Log In
-                                                    </Link>
-                                                </div>
+                                        <div className="form-group mb-3">
+                                            <div className="text-center text-muted">
+                                                Already have an account?{" "}
+                                                <Link href={loginUrl}>
+                                                    Log In
+                                                </Link>
                                             </div>
-                                        </form>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

@@ -1,0 +1,89 @@
+'use server'
+
+import * as z from "zod";
+import { signInSchema, signUpSchema } from "../utils/auth_schemas";
+import { redirect } from "next/navigation";
+import { loginUrl } from "../utils/url";
+import prisma from "../lib/prisma";
+import { getUserByEmail } from "./user";
+import { createUserSession, hashPassword } from "../utils/session";
+import { cookies } from "next/headers";
+import { getFirstErrorFromFieldSubmission } from "../utils/functions";
+
+export async function signIn(unsafeData: z.infer<typeof signInSchema>)
+{
+    const { success, data } = signInSchema.safeParse(unsafeData)
+
+    if (!success) return "Unable to sign you in"
+}
+
+export async function signUp(unsafeData: z.infer<typeof signUpSchema>)
+{
+    const { success, error, data } = signUpSchema.safeParse(unsafeData)
+
+    if (!success) {
+        return {
+            success: false,
+            errors: getFirstErrorFromFieldSubmission(error.flatten().fieldErrors),
+            message: 'Validation error'
+        }
+    }
+    
+    const existingUser = await getUserByEmail(data.email);
+
+    if (existingUser != null) {
+        return {
+            success: false,
+            errors: 'Account already exists for this email',
+            message: 'Validation error'
+        }
+    }
+
+    try {
+        const hashedPassword = await hashPassword(data.password);
+
+        const user = await prisma.user.create({
+            data: {
+                name: data.name,
+                email: data.email,
+                password: hashedPassword,
+                role: 'student',
+                isActive: true,
+            }
+        })
+
+        if (user == null) {
+            return {
+                success: false,
+                errors: 'Something went wrong. Please try',
+                message: null
+            }
+        }
+
+        console.log('Got here 4')
+        console.log('User details:', user)
+        await createUserSession(user, await cookies())
+
+        return {
+            success: true,
+            errors: null,
+            message: 'Registration success'
+        }
+    } catch (error) {
+        console.log(error);
+
+        return {
+            success: false,
+            errors: 'Something went wrong. Please try',
+            message: null
+        }
+    }
+    
+
+    redirect(loginUrl);
+}
+
+export async function logOut() 
+{
+    redirect(loginUrl)
+}

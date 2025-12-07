@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import Logout from "./Logout";
 
 const links = [
     {
@@ -108,10 +109,7 @@ const Sidebar = () => {
                                     </li>
                                 ))}
                                 <li>
-                                    <a href="#" className="text-danger">
-                                        <i className="bi bi-power me-2" />
-                                        Logout
-                                    </a>
+                                    <Logout />
                                 </li>
                             </ul>
                         </div>

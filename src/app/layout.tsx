@@ -1,6 +1,7 @@
 import Script from "next/script";
 import "./globals.css";
 import { AuthProvider } from "../providers/AuthProvider";
+import { ToastContainer } from 'react-toastify';
 
 export default function RootLayout({
   children,
@@ -19,6 +20,7 @@ export default function RootLayout({
         <link rel="icon" type="image/svg+xml" href={`${appUrl}/assets/img/logo-icon.png`}></link>
       </head>
       <body>
+        <ToastContainer />
         <AuthProvider>
           {children}
         </AuthProvider>
