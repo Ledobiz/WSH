@@ -1,6 +1,7 @@
 'use client'
 
 import { signUp } from '@/src/services/auth'
+import { encrypt } from '@/src/utils/server_encryption'
 import { studentDashboardUrl } from '@/src/utils/url'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
@@ -40,6 +41,10 @@ const SignupForm = () => {
 
             if (user.success) {
                 toast.success('Congratulations! Your registration was successful.');
+
+                const encryptedUser = encrypt(user.user);
+                localStorage.setItem(process.env.NEXT_PUBLIC_LOCAL_STORAGE_AUTH_KEY!, encryptedUser);
+
                 setLoading(false);
                 router.push(studentDashboardUrl);
             }

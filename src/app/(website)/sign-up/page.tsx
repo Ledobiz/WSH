@@ -83,25 +83,6 @@ const GetStarted = async () => {
                                     </div>
                                     
                                     <div className="login-form">
-                                        <div className="social-login-wrap">
-                                            <div className="d-flex align-items-center justify-content-between flex-wrap gap-4">
-                                                <a
-                                                    href="#"
-                                                    className="btn btn-md btn-gray rounded-3 border-2 flex-fill"
-                                                >
-                                                    SignUp with
-                                                    <i className="bi bi-google text-red ms-2" />
-                                                </a>
-                                            </div>
-                                        </div>
-                                        <div className="deider-wrap w-100 mt-4 mb-4">
-                                            <div className="d-block border-top position-relative">
-                                                <span className="position-absolute top-50 start-50 translate-middle square--40 circle bg-white text-muted z-1">
-                                                    OR
-                                                </span>
-                                            </div>
-                                        </div>
-                                        
                                         <SignupForm />
 
                                         <div className="form-group mb-3">

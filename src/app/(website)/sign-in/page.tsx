@@ -1,4 +1,3 @@
-import GoogleLoginButton from "@/src/components/dashboard/GoogleLoginButton";
 import Footer from "@/src/components/website/Footer";
 import Loading from "@/src/components/website/loading"
 import LoginForm from "@/src/components/website/LoginForm";
@@ -83,17 +82,7 @@ const SignIn = async () => {
                                         </div>
                                     </div>
                                     
-                                    <div className="login-form">
-                                        <GoogleLoginButton />
-                                        
-                                        <div className="deider-wrap w-100 mt-4 mb-4">
-                                            <div className="d-block border-top position-relative">
-                                                <span className="position-absolute top-50 start-50 translate-middle square--40 circle bg-white text-muted z-1">
-                                                    OR
-                                                </span>
-                                            </div>
-                                        </div>
-                                        
+                                    <div className="login-form">                                        
                                         <LoginForm />
 
                                         <div className="form-group">

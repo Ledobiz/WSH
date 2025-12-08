@@ -20,7 +20,7 @@ export default function Error({
   }, [error]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 mt-6 px-4">
       <div className="max-w-md w-full">
         <div className="bg-white shadow-lg rounded-lg p-8">
           <div className="flex items-center justify-center w-12 h-12 bg-red-100 rounded-full mx-auto mb-4">

@@ -1,3 +1,5 @@
+import { exec } from "node:child_process";
+
 export const formatAmount = (price: number) => {
     const value = Number(price);
 

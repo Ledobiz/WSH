@@ -1,8 +1,9 @@
 'use client';
 
-import { studentDashboardUrl } from "@/src/utils/url";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { studentDashboardUrl } from "@/src/utils/url";
+import { useAuth } from "@/src/providers/AuthProvider";
 import Logout from "./Logout";
 
 const links = [
@@ -41,6 +42,9 @@ const links = [
 const Navbar = () => {
     const pathName = usePathname();
     const appUrl = process.env.NEXT_PUBLIC_APP_URL;
+    const { user } = useAuth();
+
+    console.log("User from context:", user);
 
     return (  
         <>

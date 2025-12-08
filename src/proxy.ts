@@ -27,7 +27,7 @@ async function middlewareAuth(request: NextRequest) {
             return NextResponse.redirect(new URL(loginUrl, request.url))
         }
         else {
-            refreshSessionIfAlmostExpired(user, sessionId, request.cookies);
+            refreshSessionIfAlmostExpired(user, sessionId);
         }
     }
 

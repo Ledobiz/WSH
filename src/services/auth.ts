@@ -45,7 +45,7 @@ export async function signIn(unsafeData: z.infer<typeof signInSchema>) {
         success: true,
         errors: null,
         message: 'Login was successful',
-        user: user,
+        user,
     }
 }
 
@@ -96,7 +96,8 @@ export async function signUp(unsafeData: z.infer<typeof signUpSchema>) {
         return {
             success: true,
             errors: null,
-            message: 'Registration success'
+            message: 'Registration success',
+            user,
         }
     } catch (error) {
         console.log(error);

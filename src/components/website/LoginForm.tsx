@@ -1,6 +1,7 @@
 'use client'
 
 import { signIn } from "@/src/services/auth"
+import { encrypt } from "@/src/utils/server_encryption"
 import { adminDashboardUrl, forgotPasswordUrl, studentDashboardUrl } from "@/src/utils/url"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
@@ -39,6 +40,10 @@ const LoginForm = () => {
             const user = await signIn(formData);
 
             if (user.success) {
+                const encryptedUser = encrypt(user.user);
+                console.log(encryptedUser);
+                localStorage.setItem(process.env.NEXT_PUBLIC_LOCAL_STORAGE_AUTH_KEY!, encryptedUser);
+
                 toast.success('You are signed in successfully.');
                 setLoading(false);
 
