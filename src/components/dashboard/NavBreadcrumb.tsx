@@ -1,7 +1,11 @@
 import { studentDashboardUrl } from "@/src/utils/url"
 import Link from "next/link"
 
-const NavBreadcrumb = ({page}) => {
+interface NavBreadcrumbProps {
+    page: string;
+}
+
+const NavBreadcrumb = ({page}: NavBreadcrumbProps) => {
     return (
         <div className="row">
             <div className="col-lg-12 col-md-12 col-sm-12 pb-4">

@@ -1,7 +1,7 @@
 'use client'
 
 import { signIn } from "@/src/services/auth"
-import { encrypt } from "@/src/utils/server_encryption"
+import { encrypt } from "@/src/utils/encryption"
 import { adminDashboardUrl, forgotPasswordUrl, studentDashboardUrl } from "@/src/utils/url"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
@@ -52,7 +52,7 @@ const LoginForm = () => {
                 toast.success('You are signed in successfully.');
                 setLoading(false);
 
-                if (user.user.role == 'admin') {
+                if (user?.user?.role == 'admin') {
                     router.push(adminDashboardUrl);
                 }
                 else {

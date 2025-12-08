@@ -1,6 +1,10 @@
 import Link from "next/link";
 
-const HeroBanner = ({page}) => {
+interface HerobannerProps {
+    page: string;
+}
+
+const HeroBanner = ({page}: HerobannerProps) => {
     return (
         <section className="bg-light page-title">
             <div className="container">

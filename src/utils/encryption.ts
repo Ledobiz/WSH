@@ -27,9 +27,12 @@ async function getKey(): Promise<CryptoKey> {
         throw new Error('NEXT_PUBLIC_APP_KEY must be 32 bytes (64 hex chars)');
     }
 
+    // Create a new ArrayBuffer to ensure proper type compatibility
+    const keyBuffer = new Uint8Array(keyBytes).buffer;
+
     cachedKey = await crypto.subtle.importKey(
         'raw',
-        keyBytes,
+        keyBuffer,
         { name: ALGORITHM },
         false,
         ['encrypt', 'decrypt']

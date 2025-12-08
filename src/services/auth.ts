@@ -28,7 +28,14 @@ export async function signIn(unsafeData: z.infer<typeof signInSchema>) {
         }
     }
 
-    const passwordIsCorrect = await verifyPassword(data.password, user.password);
+    if (!user.password) {
+        return {
+            success: false,
+            errors: 'Invalid login credentials',
+        }
+    }
+
+    const passwordIsCorrect = await verifyPassword(data.password, user.password!);
 
     if (!passwordIsCorrect) {
         return {
@@ -37,7 +44,24 @@ export async function signIn(unsafeData: z.infer<typeof signInSchema>) {
         }
     }
 
-    await createUserSession(user, await cookies())
+    if (!user.name) {
+        return {
+            success: false,
+            errors: 'User account is missing required information',
+        }
+    }
+
+    await createUserSession({
+        id: user.id,
+        name: user.name!,
+        email: user.email,
+        phone: user.phone ?? null,
+        image: user.image ?? null,
+        uid: user.uid ?? null,
+        role: user.role,
+        isActive: user.isActive,
+        createdAt: user.createdAt,
+    }, await cookies())
 
     return {
         success: true,
@@ -89,7 +113,24 @@ export async function signUp(unsafeData: z.infer<typeof signUpSchema>) {
             }
         }
 
-        await createUserSession(user, await cookies())
+        if (!user.name) {
+            return {
+                success: false,
+                errors: 'User account is missing required information',
+            }
+        }
+
+        await createUserSession({
+            id: user.id,
+            name: user.name!,
+            email: user.email,
+            phone: user.phone ?? null,
+            image: user.image ?? null,
+            uid: user.uid ?? null,
+            role: user.role,
+            isActive: user.isActive,
+            createdAt: user.createdAt,
+        }, await cookies())
 
         return {
             success: true,

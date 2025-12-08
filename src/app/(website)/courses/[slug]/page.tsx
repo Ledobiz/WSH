@@ -13,7 +13,7 @@ interface PageProps {
 }
 
 // Fetch course data on the server BEFORE rendering
-const getCourseData = async (slug: string) => {
+/*const getCourseData = async (slug: string) => {
     // Replace with your actual database query or API call
     const response = await fetch(`${process.env.BACKEND_URL}/api/courses/${slug}`, { 
         next: { revalidate: 3600 } 
@@ -25,7 +25,7 @@ const getCourseData = async (slug: string) => {
 
 // Generate metadata using fetched data
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-    /*const course = await getCourseData(params.slug);
+    const course = await getCourseData(params.slug);
     
     return {
         title: course.title,
@@ -36,8 +36,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
             images: [{ url: course.image }],
             type: 'article',
         },
-    };*/
-}
+    };
+}*/
 
 const CourseDetailsPage = async ({params}: {params: Promise<{slug: string}>}) => {
     const appUrl = process.env.NEXT_PUBLIC_APP_URL;

@@ -1,7 +1,7 @@
 'use client'
 
 import { createContext, useContext, useState, useEffect } from "react"
-import { decrypt } from "../utils/server_encryption"
+import { decrypt } from "../utils/encryption"
 import { User } from "../types"
 
 interface AuthInterface {

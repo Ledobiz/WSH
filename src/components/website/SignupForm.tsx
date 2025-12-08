@@ -1,7 +1,7 @@
 'use client'
 
 import { signUp } from '@/src/services/auth'
-import { encrypt } from '@/src/utils/server_encryption'
+import { encrypt } from '@/src/utils/encryption'
 import { studentDashboardUrl } from '@/src/utils/url'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
