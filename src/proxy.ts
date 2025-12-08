@@ -10,6 +10,16 @@ const adminRoutes = ["/admin"]
 
 // This function can be marked `async` if using `await` inside
 export async function proxy(request: NextRequest) {
+    const pathname = request.nextUrl.pathname;
+
+    // Early return if route doesn't need authentication
+    const isPrivateRoute = privateRoutes.some(route => pathname.startsWith(route));
+    const isAdminRoute = adminRoutes.some(route => pathname.startsWith(route));
+
+    if (!isPrivateRoute && !isAdminRoute) {
+        return NextResponse.next();
+    }
+
     const response = (await middlewareAuth(request)) ?? NextResponse.next();
 
     return response
@@ -93,6 +103,10 @@ async function refreshSessionIfAlmostExpired(user: any, sessionId: string | unde
 export const config = {
     matcher: [
         // Skip Next.js internals and all static files, unless found in search params
-        "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
+        // "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
+
+        // Only run middleware on private and admin routes
+        "/learners/:path*",
+        "/admin/:path*",
     ],
 }
