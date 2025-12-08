@@ -1,8 +1,12 @@
-import { logout } from "@/src/services/auth"
+import { logOut } from "@/src/services/core_auth"
 
-const Logout = () => {
+const Logout = async () => {
+    const handleLogout = () => {
+        logOut();
+    }
+
     return (
-        <a href="#" onClick={logout} className="text-danger">
+        <a href="#" onClick={handleLogout} className="text-danger">
             <i className="bi bi-power me-2" />
             Logout
         </a>

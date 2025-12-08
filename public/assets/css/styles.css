@@ -7675,3 +7675,8 @@ ul.edu_list li {
 .module-toggle[aria-expanded="true"] .toggle-arrow {
   transform: rotate(180deg);
 }
+
+.Toastify, .Toastify__toast-container {
+  margin: 0 !important;
+  padding: 0 !important;
+}

@@ -6,19 +6,49 @@ import { redirect } from "next/navigation";
 import { loginUrl } from "../utils/url";
 import prisma from "../lib/prisma";
 import { getUserByEmail } from "./user";
-import { createUserSession, hashPassword } from "../utils/session";
+import { createUserSession, hashPassword, removeUserFromSession, verifyPassword } from "../utils/session";
 import { cookies } from "next/headers";
 import { getFirstErrorFromFieldSubmission } from "../utils/functions";
 
-export async function signIn(unsafeData: z.infer<typeof signInSchema>)
-{
-    const { success, data } = signInSchema.safeParse(unsafeData)
+export async function signIn(unsafeData: z.infer<typeof signInSchema>) {
+    const { success, data, error } = signInSchema.safeParse(unsafeData)
 
-    if (!success) return "Unable to sign you in"
+    if (!success) {
+        return {
+            success: false,
+            errors: getFirstErrorFromFieldSubmission(error.flatten().fieldErrors),
+            message: 'Validation error'
+        }
+    }
+
+    const user = await getUserByEmail(data.email);
+
+    if (user != null) {
+        return {
+            success: false,
+            errors: 'Invalid login credentials',
+        }
+    }
+
+    const passwordIsCorrect = await verifyPassword(data.password, user.password);
+
+    if (!passwordIsCorrect) {
+        return {
+            success: false,
+            errors: 'Invalid login credentials',
+        }
+    }
+
+    await createUserSession(user, await cookies())
+
+    return {
+        success: true,
+        errors: null,
+        message: 'Login was successful'
+    }
 }
 
-export async function signUp(unsafeData: z.infer<typeof signUpSchema>)
-{
+export async function signUp(unsafeData: z.infer<typeof signUpSchema>) {
     const { success, error, data } = signUpSchema.safeParse(unsafeData)
 
     if (!success) {
@@ -28,7 +58,7 @@ export async function signUp(unsafeData: z.infer<typeof signUpSchema>)
             message: 'Validation error'
         }
     }
-    
+
     const existingUser = await getUserByEmail(data.email);
 
     if (existingUser != null) {
@@ -60,8 +90,6 @@ export async function signUp(unsafeData: z.infer<typeof signUpSchema>)
             }
         }
 
-        console.log('Got here 4')
-        console.log('User details:', user)
         await createUserSession(user, await cookies())
 
         return {
@@ -78,12 +106,12 @@ export async function signUp(unsafeData: z.infer<typeof signUpSchema>)
             message: null
         }
     }
-    
+
 
     redirect(loginUrl);
 }
 
-export async function logOut() 
-{
+export async function logOut() {
+    await removeUserFromSession(await cookies());
     redirect(loginUrl)
 }
