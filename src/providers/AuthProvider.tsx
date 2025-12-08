@@ -34,6 +34,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        console.log("Inside the provider");
+        
         // Check if auth is available before setting up listener
         if (!auth) {
             console.warn('Firebase Auth not initialized');
@@ -90,7 +92,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                         if (userData) {
                             console.log('AuthProvider - User data loaded successfully:', userData);
                             setUser(userData);
-                            setLoading(false);
 
                             return;
                         }

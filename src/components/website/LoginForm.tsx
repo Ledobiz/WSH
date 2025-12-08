@@ -1,17 +1,17 @@
 'use client'
 
-import { signUp } from '@/src/services/auth'
-import { studentDashboardUrl } from '@/src/utils/url'
-import { useRouter } from 'next/navigation'
-import { useState } from 'react'
-import { toast } from 'react-toastify'
+import { signIn } from "@/src/services/auth"
+import { adminDashboardUrl, forgotPasswordUrl, studentDashboardUrl } from "@/src/utils/url"
+import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { useState } from "react"
+import { toast } from "react-toastify"
 
-const SignupForm = () => {
+const LoginForm = () => {
     const router = useRouter();
-    const [showPassword, setShowPassword] = useState(false)
     const [loading, setLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
     const [formData, setFormData] = useState({
-        name: '',
         email: '',
         password: '',
     });
@@ -20,10 +20,10 @@ const SignupForm = () => {
         setFormData(prev => ({ ...prev, [field]: value }));
     };
 
-    const handleRegistration = async (e: React.FormEvent) => {
+    const handleSignIn = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!formData.name.trim() || !formData.email.trim() || !formData.password.trim()) {
+        if (!formData.email.trim() || !formData.password.trim()) {
             toast.error('Please fill in all fields');
             return;
         }
@@ -36,12 +36,18 @@ const SignupForm = () => {
         setLoading(true);
 
         try {
-            const user = await signUp(formData);
+            const user = await signIn(formData);
 
             if (user.success) {
-                toast.success('Congratulations! Your registration was successful.');
+                toast.success('You are signed in successfully.');
                 setLoading(false);
-                router.push(studentDashboardUrl);
+
+                if (user.user.role == 'admin') {
+                    router.push(adminDashboardUrl);
+                }
+                else {
+                    router.push(studentDashboardUrl)
+                }
             }
             else {
                 setLoading(false);
@@ -55,19 +61,8 @@ const SignupForm = () => {
     }
 
     return (
-        <form onSubmit={handleRegistration}>
-            <div className="form-group mb-3">
-                <input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={(e) => handleInputChange('name', e.target.value)}
-                    className="form-control"
-                    placeholder="Enter your name"
-                    disabled={loading}
-                />
-            </div>
-            <div className="form-group mb-3">
+        <form onSubmit={handleSignIn}>
+            <div className="form-group mb-4">
                 <input
                     type="email"
                     name="email"
@@ -78,7 +73,7 @@ const SignupForm = () => {
                     disabled={loading}
                 />
             </div>
-            <div className="form-group mb-3">
+            <div className="form-group mb-4">
                 <div className="position-relative">
                     <input
                         type={showPassword ? "text" : "password"}
@@ -89,7 +84,7 @@ const SignupForm = () => {
                         onChange={(e) => handleInputChange('password', e.target.value)}
                         disabled={loading}
                     />
-                    <span className="position-absolute top-50 end-0 translate-middle-y me-3 cursor-pointer"
+                    <span className="position-absolute top-50 end-0 translate-middle-y me-3"
                         onClick={() => setShowPassword(!showPassword)}
                         style={{cursor: 'pointer'}}
                     >
@@ -97,12 +92,32 @@ const SignupForm = () => {
                     </span>
                 </div>
             </div>
+            <div className="form-group mb-4">
+                <div className="d-flex align-items-center justify-content-between">
+                    <div className="form-check">
+                        <input
+                            id="saveinfo"
+                            className="form-check-input"
+                            name="saveinfo"
+                            type="checkbox"
+                        />
+                        <label htmlFor="saveinfo" className="form-check-label">
+                            Remember me
+                        </label>
+                    </div>
+                    <div className="forget-password">
+                        <Link href={forgotPasswordUrl} className="text-decoration-underline">
+                            Forgot Password?
+                        </Link>
+                    </div>
+                </div>
+            </div>
             <div className="form-group mb-3">
                 <button type="submit" className="btn btn-main w-100" disabled={loading}>
-                    {loading ? "Processing..." : "Sign Up"}
+                    {loading ? "Processing..." : "Sign In"}
                 </button>
             </div>
         </form>
     )
 }
-export default SignupForm
+export default LoginForm    

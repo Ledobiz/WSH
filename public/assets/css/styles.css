@@ -3332,7 +3332,13 @@ nav a {
 	margin:0 !important;
     width: 100%;
 }
-.dropdown-body ul li a {
+
+.dropdown-body ul li button {
+    border: none;
+    background: transparent;
+}
+
+.dropdown-body ul li a, .dropdown-body ul li button {
     padding: 0.6rem 1rem !important;
     display: flex;
 	width: 100%;
@@ -6467,7 +6473,13 @@ ul.cart_list li strong {
     list-style: none;
     width: 100%;
 }
-.d-navigation #side-menu li a {
+
+.d-navigation #side-menu li button {
+    border: none;
+    background: transparent;
+}
+
+.d-navigation #side-menu li a, .d-navigation #side-menu li button {
     padding: 0.7rem 1.2rem;
     background: transparent;
     transition: all ease 0.4s;

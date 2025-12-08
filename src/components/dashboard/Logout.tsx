@@ -1,15 +1,19 @@
-import { logOut } from "@/src/services/core_auth"
+import { logOut } from "@/src/services/auth"
 
-const Logout = async () => {
+type LogoutProps = {
+    style?: React.CSSProperties;
+};
+
+const Logout = async ({style}: LogoutProps) => {
     const handleLogout = () => {
         logOut();
     }
 
     return (
-        <a href="#" onClick={handleLogout} className="text-danger">
+        <button onClick={handleLogout} style={style} className="text-danger logout">
             <i className="bi bi-power me-2" />
             Logout
-        </a>
+        </button>
     )
 }
 export default Logout

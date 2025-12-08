@@ -2,9 +2,11 @@ import Footer from "@/src/components/website/Footer";
 import Loading from "@/src/components/website/loading"
 import Navbar from "@/src/components/website/Navbar"
 import SignupForm from "@/src/components/website/SignupForm";
-import { forgotPasswordUrl, loginUrl } from "@/src/utils/url";
+import { currentUser } from "@/src/utils/current_user";
+import { adminDashboardUrl, loginUrl, studentDashboardUrl } from "@/src/utils/url";
 import { Metadata } from "next";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { Suspense } from "react"
 
 export const metadata: Metadata = {
@@ -12,9 +14,19 @@ export const metadata: Metadata = {
     description: "The home for upskilling for financial independence"
 };
 
-const GetStarted = () => {
+const GetStarted = async () => {
     const appUrl = process.env.NEXT_PUBLIC_APP_URL;
     const appName = process.env.NEXT_PUBLIC_APP_NAME;
+
+    const user = await currentUser();
+    
+    if (user) {
+        if (user.role == 'admin') {
+            redirect(adminDashboardUrl);
+        }
+
+        redirect(studentDashboardUrl)
+    }
 
     return (
         <Suspense fallback={<Loading />}>

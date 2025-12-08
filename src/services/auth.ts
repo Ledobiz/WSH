@@ -1,64 +1,115 @@
-import { auth } from "../lib/firebase";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup, User as Auth } from "firebase/auth";
+'use server'
+
+import * as z from "zod";
+import { signInSchema, signUpSchema } from "../utils/auth_schemas";
 import { redirect } from "next/navigation";
-import { toast } from "react-toastify";
+import { loginUrl } from "../utils/url";
+import prisma from "../lib/prisma";
+import { getUserByEmail } from "./user";
+import { createUserSession, hashPassword, removeUserFromSession, verifyPassword } from "../utils/session";
+import { cookies } from "next/headers";
+import { getFirstErrorFromFieldSubmission } from "../utils/functions";
 
-const formatFirebaseError = (err) => {
-  const raw = err && err.code ? (err.code.split('/')[1] || '') : (err && err.message ? err.message : 'Error');
-  return raw
-    .toString()
-    .replace(/[-_]+/g, ' ')
-    .split(/\s+/)
-    .filter(Boolean)
-    .map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
-    .join(' ');
+export async function signIn(unsafeData: z.infer<typeof signInSchema>) {
+    const { success, data, error } = signInSchema.safeParse(unsafeData)
+
+    if (!success) {
+        return {
+            success: false,
+            errors: getFirstErrorFromFieldSubmission(error.flatten().fieldErrors),
+            message: 'Validation error'
+        }
+    }
+
+    const user = await getUserByEmail(data.email);
+
+    if (user == null) {
+        return {
+            success: false,
+            errors: 'Invalid login credentials',
+        }
+    }
+
+    const passwordIsCorrect = await verifyPassword(data.password, user.password);
+
+    if (!passwordIsCorrect) {
+        return {
+            success: false,
+            errors: 'Invalid login credentials',
+        }
+    }
+
+    await createUserSession(user, await cookies())
+
+    return {
+        success: true,
+        errors: null,
+        message: 'Login was successful',
+        user: user,
+    }
 }
 
-const signup = async (name: string, email: string, password: string) => {
-    try {
-        const res = await createUserWithEmailAndPassword(auth, email, password);
-        const user = res.user;
+export async function signUp(unsafeData: z.infer<typeof signUpSchema>) {
+    const { success, error, data } = signUpSchema.safeParse(unsafeData)
 
-        /**
-         * User would contain the following:
-         * uid,
-         * name,
-         * email,
-         * phoneNumber, - This may not have a value so treat accordingly
-         * photoURL
-         */
+    if (!success) {
+        return {
+            success: false,
+            errors: getFirstErrorFromFieldSubmission(error.flatten().fieldErrors),
+            message: 'Validation error'
+        }
     }
-    catch (error) {
-        console.error("Error signing up:", error);
-        toast.error(formatFirebaseError(error));
-    }
-}
 
-const login = async (email: string, password: string) => {
+    const existingUser = await getUserByEmail(data.email);
+
+    if (existingUser != null) {
+        return {
+            success: false,
+            errors: 'Account already exists for this email',
+            message: 'Validation error'
+        }
+    }
+
     try {
-        await signInWithEmailAndPassword(auth, email, password);
+        const hashedPassword = await hashPassword(data.password);
+
+        const user = await prisma.user.create({
+            data: {
+                name: data.name,
+                email: data.email,
+                password: hashedPassword,
+                role: 'student',
+                isActive: true,
+            }
+        })
+
+        if (user == null) {
+            return {
+                success: false,
+                errors: 'Something went wrong. Please try',
+                message: null
+            }
+        }
+
+        await createUserSession(user, await cookies())
+
+        return {
+            success: true,
+            errors: null,
+            message: 'Registration success'
+        }
     } catch (error) {
-        console.log("Error logging in using email & password:", error);
-        toast.error(formatFirebaseError(error));
+        console.log(error);
+
+        return {
+            success: false,
+            errors: 'Something went wrong. Please try',
+            message: null
+        }
     }
 }
 
-const logout = () => {
-  signOut(auth);
-  toast.success("Logged out successfully");
+export async function logOut() {
+    await removeUserFromSession(await cookies());
+    redirect(loginUrl)
 }
-
-const signinWithGoogle = async () => {
-    const provider = new GoogleAuthProvider();
-
-    try {
-        const res = await signInWithPopup(auth, provider);
-        const user = res.user;
-    } catch (error) {
-        console.log("Error signing in using Google SSO:", error);
-        toast.error(formatFirebaseError(error));
-    }
-}
-
-
-export { signup, login, logout };
