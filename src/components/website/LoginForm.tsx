@@ -40,9 +40,14 @@ const LoginForm = () => {
             const user = await signIn(formData);
 
             if (user.success) {
-                const encryptedUser = encrypt(user.user);
-                console.log(encryptedUser);
-                localStorage.setItem(process.env.NEXT_PUBLIC_LOCAL_STORAGE_AUTH_KEY!, encryptedUser);
+                const encryptedUser = await encrypt(user.user);
+                const storageKey = process.env.NEXT_PUBLIC_LOCAL_STORAGE_AUTH_KEY!;
+                localStorage.setItem(storageKey, encryptedUser);
+                
+                // Dispatch custom event to notify AuthProvider
+                window.dispatchEvent(new CustomEvent('localStorageChange', {
+                    detail: { key: storageKey, value: encryptedUser }
+                }));
 
                 toast.success('You are signed in successfully.');
                 setLoading(false);

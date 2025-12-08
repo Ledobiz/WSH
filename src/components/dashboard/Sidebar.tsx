@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Logout from "./Logout";
+import { useAuth } from "@/src/providers/AuthProvider";
+import { formatDate } from "@/src/utils/functions";
 
 const links = [
     {
@@ -15,11 +17,11 @@ const links = [
         label: "My Courses",
         icon: "bi-play-circle"
     },
-    /*{
-        uri: "/learners/resume-course",
-        label: "Resume Course",
-        icon: "bi-patch-plus"
-    },*/
+    {
+        uri: "/learners/profile",
+        label: "Profile",
+        icon: "bi-person"
+    },
     {
         uri: "/learners/wishlist",
         label: "Wishlist",
@@ -38,6 +40,7 @@ const links = [
 ];
 
 const Sidebar = () => {
+    const { user } = useAuth();
     const pathName = usePathname();
     const appUrl = process.env.NEXT_PUBLIC_APP_URL;
 
@@ -66,7 +69,7 @@ const Sidebar = () => {
                             <div className="avatar-box d-flex justify-content-center mb-4">
                                 <div className="square--120 circle shadow-sm border border-3 position-relative">
                                     <img
-                                        src={`${appUrl}/assets/img/avatar-1.jpg`}
+                                        src={ user?.image ? user?.image : `${appUrl}/assets/img/female-avatar.webp`}
                                         className="img-fluid circle"
                                         alt="Avatar"
                                     />
@@ -78,11 +81,11 @@ const Sidebar = () => {
                             <div className="author-caps text-center mb-4">
                                 <div className="d-flex flex-column gap-2">
                                     <div className="d-flex align-items-center justify-content-center">
-                                        <h5 className="fw-semibold m-0">Ryan Mitchell</h5>
+                                        <h5 className="fw-semibold m-0">{ user?.name }</h5>
                                     </div>
                                     <div className="d-flex align-items-center justify-content-center gap-1">
                                         <span className="text-mid text-muted-2">
-                                            Date Joined: 15 Dec 2025
+                                            Date Joined: { formatDate(user?.createdAt) }
                                         </span>
                                     </div>
                                 </div>

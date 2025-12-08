@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { studentDashboardUrl } from "@/src/utils/url";
 import { useAuth } from "@/src/providers/AuthProvider";
 import Logout from "./Logout";
+import { formatDate } from "@/src/utils/functions";
 
 const links = [
     {
@@ -17,11 +18,11 @@ const links = [
         label: "My Courses",
         icon: "bi-play-circle"
     },
-    /*{
-        uri: "/learners/resume-course",
-        label: "Resume Course",
-        icon: "bi-patch-plus"
-    },*/
+    {
+        uri: "/learners/profile",
+        label: "Profile",
+        icon: "bi-person",
+    },
     {
         uri: "/learners/wishlist",
         label: "Wishlist",
@@ -43,8 +44,6 @@ const Navbar = () => {
     const pathName = usePathname();
     const appUrl = process.env.NEXT_PUBLIC_APP_URL;
     const { user } = useAuth();
-
-    console.log("User from context:", user);
 
     return (  
         <>
@@ -71,7 +70,7 @@ const Navbar = () => {
                                                 aria-haspopup="true"
                                                 aria-expanded="false"
                                             >
-                                                <img src={`${appUrl}/assets/img/avatar-1.jpg`} className="avater-img" alt="" />
+                                                <img src={ user?.image ? user?.image : `${appUrl}/assets/img/female-avatar.webp`} className="avater-img" alt="" />
                                             </button>
                                             <div className="dropdown-menu pull-right animated flipInX box-shadow-sm">
                                                 <div className="dropdown-header py-3 border-bottom">
@@ -79,16 +78,16 @@ const Navbar = () => {
                                                         <div className="avatar-flex">
                                                             <div className="square--50 circle">
                                                                 <img
-                                                                    src={`${appUrl}/assets/img/avatar-1.jpg`}
+                                                                    src={ user?.image ? user?.image : `${appUrl}/assets/img/female-avatar.webp`}
                                                                     className="img-fluid circle"
                                                                     alt=""
                                                                 />
                                                             </div>
                                                         </div>
                                                         <div className="caps d-flex flex-column gap-1">
-                                                            <h6 className="fw-semibold m-0">Ryan Mitchell</h6>
+                                                            <h6 className="fw-semibold m-0">{ user?.name }</h6>
                                                             <span className="text-mid text-muted-2">
-                                                                Date Joined: 15 Dec 2025
+                                                                Date Joined: { formatDate(user?.createdAt) }
                                                             </span>
                                                         </div>
                                                     </div>
@@ -104,10 +103,7 @@ const Navbar = () => {
                                                             </li>
                                                         ))}
                                                         <li>
-                                                            <a href="#" className="text-danger">
-                                                                <i className="bi bi-power me-2" />
-                                                                Logout
-                                                            </a>
+                                                            <Logout />
                                                         </li>
                                                     </ul>
                                                 </div>
@@ -129,7 +125,7 @@ const Navbar = () => {
                                             aria-haspopup="true"
                                             aria-expanded="false"
                                         >
-                                            <img src={`${appUrl}/assets/img/avatar-1.jpg`} className="avater-img" alt="" />
+                                            <img src={ user?.image ? user?.image : `${appUrl}/assets/img/female-avatar.webp`} className="avater-img" alt="" />
                                         </button>
                                         <div className="dropdown-menu pull-right animated flipInX box-shadow-sm">
                                             <div className="dropdown-header py-3 border-bottom">
@@ -137,16 +133,16 @@ const Navbar = () => {
                                                     <div className="avatar-flex">
                                                         <div className="square--50 circle">
                                                             <img
-                                                                src={`${appUrl}/assets/img/avatar-1.jpg`}
+                                                                src={ user?.image ? user?.image : `${appUrl}/assets/img/female-avatar.webp`}
                                                                 className="img-fluid circle"
                                                                 alt=""
                                                             />
                                                         </div>
                                                     </div>
                                                     <div className="caps d-flex flex-column gap-1">
-                                                        <h6 className="fw-semibold m-0">Ryan Mitchell</h6>
+                                                        <h6 className="fw-semibold m-0">{ user?.name }</h6>
                                                         <span className="text-mid text-muted-2">
-                                                            Platinum - Exp. 15 Dec 2025
+                                                            Date Joined: { formatDate(user?.createdAt) }
                                                         </span>
                                                     </div>
                                                 </div>

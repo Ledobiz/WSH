@@ -40,11 +40,16 @@ const SignupForm = () => {
             const user = await signUp(formData);
 
             if (user.success) {
+                const encryptedUser = await encrypt(user.user);
+                const storageKey = process.env.NEXT_PUBLIC_LOCAL_STORAGE_AUTH_KEY!;
+                localStorage.setItem(storageKey, encryptedUser);
+                
+                // Dispatch custom event to notify AuthProvider
+                window.dispatchEvent(new CustomEvent('localStorageChange', {
+                    detail: { key: storageKey, value: encryptedUser }
+                }));
+
                 toast.success('Congratulations! Your registration was successful.');
-
-                const encryptedUser = encrypt(user.user);
-                localStorage.setItem(process.env.NEXT_PUBLIC_LOCAL_STORAGE_AUTH_KEY!, encryptedUser);
-
                 setLoading(false);
                 router.push(studentDashboardUrl);
             }

@@ -2,8 +2,6 @@
 
 import * as z from "zod";
 import { signInSchema, signUpSchema } from "../utils/auth_schemas";
-import { redirect } from "next/navigation";
-import { loginUrl } from "../utils/url";
 import prisma from "../lib/prisma";
 import { getUserByEmail } from "./user";
 import { createUserSession, hashPassword, removeUserFromSession, verifyPassword } from "../utils/session";
@@ -112,5 +110,4 @@ export async function signUp(unsafeData: z.infer<typeof signUpSchema>) {
 
 export async function logOut() {
     await removeUserFromSession(await cookies());
-    redirect(loginUrl)
 }

@@ -1,40 +1,89 @@
 'use client'
 
-import crypto from "crypto";
+const ALGORITHM = 'AES-GCM';
+const KEY_HEX = process.env.NEXT_PUBLIC_APP_KEY;
 
-const ALGORITHM = "aes-256-gcm";
+let cachedKey: CryptoKey | null = null;
 
-const KEY = Buffer.from(process.env.APP_KEY!, "hex");
-
-if (KEY.length !== 32) {
-    throw new Error("APP_KEY must be 32 bytes (64 hex characters)");
+function hexToBytes(hex: string): Uint8Array {
+    if (hex.length % 2 !== 0) {
+        throw new Error('NEXT_PUBLIC_APP_KEY must be even-length hex');
+    }
+    const bytes = new Uint8Array(hex.length / 2);
+    for (let i = 0; i < hex.length; i += 2) {
+        bytes[i / 2] = parseInt(hex.substr(i, 2), 16);
+    }
+    return bytes;
 }
 
-export function encrypt<T>(data: T): string {
-    const iv = crypto.randomBytes(16); // AES GCM uses 12–16 byte IV
+async function getKey(): Promise<CryptoKey> {
+    if (cachedKey) return cachedKey;
+    if (!KEY_HEX) {
+        throw new Error('Missing NEXT_PUBLIC_APP_KEY env variable');
+    }
 
-    const cipher = crypto.createCipheriv(ALGORITHM, KEY, iv);
+    const keyBytes = hexToBytes(KEY_HEX);
+    if (keyBytes.length !== 32) {
+        throw new Error('NEXT_PUBLIC_APP_KEY must be 32 bytes (64 hex chars)');
+    }
 
-    const json = JSON.stringify(data);
-    const encrypted = Buffer.concat([cipher.update(json, "utf8"), cipher.final()]);
-
-    const authTag = cipher.getAuthTag();
-
-    // Return Base64 encoded string: iv.encrypted.authTag
-    return Buffer.concat([iv, encrypted, authTag]).toString("base64");
+    cachedKey = await crypto.subtle.importKey(
+        'raw',
+        keyBytes,
+        { name: ALGORITHM },
+        false,
+        ['encrypt', 'decrypt']
+    );
+    return cachedKey;
 }
 
-export function decrypt<T>(encryptedBase64: string): T {
-    const buffer = Buffer.from(encryptedBase64, "base64");
+function toBase64(bytes: Uint8Array): string {
+    let binary = '';
+    bytes.forEach(b => binary += String.fromCharCode(b));
+    return btoa(binary);
+}
 
-    const iv = buffer.subarray(0, 16);
-    const authTag = buffer.subarray(buffer.length - 16);
-    const encrypted = buffer.subarray(16, buffer.length - 16);
+function fromBase64(base64: string): Uint8Array {
+    const binary = atob(base64);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) {
+        bytes[i] = binary.charCodeAt(i);
+    }
+    return bytes;
+}
 
-    const decipher = crypto.createDecipheriv(ALGORITHM, KEY, iv);
-    decipher.setAuthTag(authTag);
+export async function encrypt<T>(data: T): Promise<string> {
+    const key = await getKey();
+    const iv = crypto.getRandomValues(new Uint8Array(12)); // AES-GCM prefers 12-byte IV
+    const encoded = new TextEncoder().encode(JSON.stringify(data));
 
-    const decrypted = Buffer.concat([decipher.update(encrypted), decipher.final()]);
+    const encrypted = await crypto.subtle.encrypt(
+        { name: ALGORITHM, iv },
+        key,
+        encoded
+    );
 
-    return JSON.parse(decrypted.toString("utf8"));
+    const encryptedBytes = new Uint8Array(encrypted);
+    const payload = new Uint8Array(iv.length + encryptedBytes.length);
+    payload.set(iv, 0);
+    payload.set(encryptedBytes, iv.length);
+
+    return toBase64(payload);
+}
+
+export async function decrypt<T>(encryptedBase64: string): Promise<T> {
+    const key = await getKey();
+    const payload = fromBase64(encryptedBase64);
+
+    const iv = payload.slice(0, 12);
+    const cipherBytes = payload.slice(12);
+
+    const decrypted = await crypto.subtle.decrypt(
+        { name: ALGORITHM, iv },
+        key,
+        cipherBytes
+    );
+
+    const decoded = new TextDecoder().decode(decrypted);
+    return JSON.parse(decoded);
 }
