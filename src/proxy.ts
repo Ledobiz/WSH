@@ -20,7 +20,8 @@ export async function proxy(request: NextRequest) {
         return NextResponse.next();
     }
 
-    const response = (await middlewareAuth(request)) ?? NextResponse.next();
+    //const response = (await middlewareAuth(request)) ?? NextResponse.next();
+    const response = NextResponse.next();
 
     return response
 }

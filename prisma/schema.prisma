@@ -71,6 +71,7 @@ model CourseModule {
 
   @@index(isActive)
   @@index(sorting)
+  @@index(createdAt)
 }
 
 model ModuleComponent {
@@ -93,6 +94,7 @@ model ModuleComponent {
 
   @@index(isActive)
   @@index(sorting)
+  @@index(createdAt)
 }
 
 enum ComponentType {
@@ -103,10 +105,12 @@ enum ComponentType {
 model Category {
   id        String   @id @default(uuid()) @db.VarChar(191)
   name      String   @db.VarChar(191)
-  slug      String   @db.VarChar(191)
+  slug      String   @unique @db.VarChar(191)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   courses   Course[]
+
+  @@index(createdAt)
 }
 
 model Cart {
@@ -121,6 +125,7 @@ model Cart {
   cartItems            CartItem[]
 
   @@index(isPaid)
+  @@index(createdAt)
 }
 
 model CartItem {
@@ -135,6 +140,8 @@ model CartItem {
   currency  String?  @db.VarChar(3)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index(createdAt)
 }
 
 model Coupon {
@@ -156,6 +163,7 @@ model Coupon {
   @@index(code)
   @@index(endDate)
   @@index(isActive)
+  @@index(createdAt)
 }
 
 model Wishlist {
@@ -166,6 +174,8 @@ model Wishlist {
   course    Course   @relation(fields: [courseId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index(createdAt)
 }
 
 model Transaction {
@@ -191,6 +201,7 @@ model Transaction {
 
   @@index(reference)
   @@index(status)
+  @@index(createdAt)
 }
 
 enum PaymentStatus {
@@ -216,4 +227,5 @@ model Student {
   updatedAt             DateTime @updatedAt
 
   @@index(courseContentAssigned)
+  @@index(createdAt)
 }

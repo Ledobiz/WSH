@@ -1,14 +1,30 @@
 -- CreateEnum
-CREATE TYPE "UserRole" AS ENUM ('student', 'admin');
+DO $$ BEGIN
+    CREATE TYPE "UserRole" AS ENUM ('student', 'admin');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
 
 -- CreateEnum
-CREATE TYPE "ComponentType" AS ENUM ('video', 'file');
+DO $$ BEGIN
+    CREATE TYPE "ComponentType" AS ENUM ('video', 'file');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
 
 -- CreateEnum
-CREATE TYPE "PaymentStatus" AS ENUM ('pending', 'success', 'failed');
+DO $$ BEGIN
+    CREATE TYPE "PaymentStatus" AS ENUM ('pending', 'success', 'failed');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
 
 -- CreateEnum
-CREATE TYPE "PaymentSource" AS ENUM ('website', 'manual', 'app');
+DO $$ BEGIN
+    CREATE TYPE "PaymentSource" AS ENUM ('website', 'manual', 'app');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
 
 -- CreateTable
 CREATE TABLE "User" (

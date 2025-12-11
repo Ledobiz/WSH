@@ -1,16 +1,14 @@
-import DashboardPage from "@/src/components/dashboard/pages/DashboardPage";
 import { Metadata } from "next";
+import AdminDashboard from "@/src/components/admin/pages/AdminDashboard"
 
 export const metadata: Metadata = {
-    title: "Student Dashboard - Women Skills Hub",
+    title: "Admin Dashboard - Women Skills Hub",
     description: "The home for upskilling for financial independence"
 };
 
 const Dashboard = () => {
     return (
-        <div id="main-wrapper">
-            <DashboardPage />
-        </div>
+        <AdminDashboard />
     )
 }
 export default Dashboard

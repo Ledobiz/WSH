@@ -1,25 +1,3 @@
-/*
-* Theme Name: LearnUp - Education HTML Template
-* Author: Themezhub
-* Version: 2.1
-* Last Change: 18 May 2025
-  Author URI    : https://themezhub.com/
--------------------------------------------------------------------*/
-/*------------- List Of Table -----------
-# Fonts
-# Preloader
-# Global Settings
-# Header Navigation Styles
-# Homes Banner
-# Education Elements
-# Education Common Page & Elements
-# Blog Styles
-# Shop Page Designs
-# Dashboard Design 
-# Footer Start   
-# Responsiveness Designs
-------------- List Of Table ----------*/
-
 /* CSS Document */
 @import url(./plugins/animation.css);
 @import url(./plugins/bootstrap.min.css);
@@ -48,13 +26,13 @@
 	Color Variables
 ------------------------------------*/
 :root, [data-bs-theme=light] {
-	--maincolor:#9868A7;
+	--maincolor:#6a1b9a;
 	--backupcolor:#a57cb2;
 	--graycolor:#edf1fb;
 	--navcolor:#00305c;
 	--darkcolor: #13293D;
 	--lightcolor:#f1f4f9;
-	--headingcolor: #9868A7;
+	--headingcolor: #6a1b9a;
 	--bodycolor: #334155;
 	--mutedcolor:#768ea7;
 	--greencolor:#4caf84;
@@ -66,7 +44,7 @@
 	--formbg:#edf1fb;
 	--form-color:#3b515a;
 	--inversecolor:#00305c;
-	--footerbg:#9868A7;
+	--footerbg:#6a1b9a;
 	--footercolor:#536775;
 }
 
