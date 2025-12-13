@@ -5,7 +5,8 @@ import NavBreadcrumb from "../NavBreadcrumb"
 import { toast } from "react-toastify";
 import ButtonLoader from "../ButtonLoader";
 import PageLoader from "../../website/PageLoader";
-import { createCategory, fetchAllCategories } from "@/src/services/admin/category";
+import { createCategory, deleteCategory, editCategory, fetchAllCategories } from "@/src/services/admin/category";
+import CustomModal from "../CustomModal";
 
 interface CategoryInterface {
     id: string;
@@ -19,7 +20,13 @@ const CategoriesPage = () => {
     const [loading, setLoading] = useState(false);
     const [tableLoading, setTableLoading] = useState(false);
     const [name, setName] = useState('');
+    const [categoryId, setCategoryId] = useState('');
     const [categories, setCategories] = useState<CategoryInterface[] | null>(null);
+    const [openCreateModal, setOpenCreateModal] = useState(false);
+    const [showEditModal, setShowEditModal] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL;
 
     const fetchCategories = useCallback(async () => {
         setTableLoading(true);
@@ -59,17 +66,95 @@ const CategoriesPage = () => {
                 return;
             }
 
-            const modalElement = document.getElementById('createCategory');
-            const modalInstance = bootstrap.Modal.getInstance(modalElement);
-
-            // Hide the modal
-            if (modalInstance) {
-                modalInstance.hide();
-            }
+            setOpenCreateModal(false);
+            toast.success(result.message);
 
             setName('');
             fetchCategories();
         }
+        catch (error) {
+            console.log(error);
+            toast.error('Failed to add category, please try again');
+        }
+        finally {
+            setLoading(false);
+        }
+    }
+
+    const handleShowingEditModal = (id: string) => {
+        const daCategory = categories?.find(category => category.id == id) || '';
+
+        if (daCategory) {
+            setName(daCategory.name);
+            setShowEditModal(true);
+            setCategoryId(daCategory.id);
+        }
+    }
+
+    const handleCategoryEdits = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        if (!name.trim()) {
+            toast.error('You must submit a name for the category');
+            return;
+        }
+        console.log(name);
+
+        setLoading(true);
+
+        try {
+            const result = await editCategory(categoryId, name);
+
+            if (!result.success) {
+                toast.error(result.errors);
+                return;
+            }
+
+            setShowEditModal(false);
+            toast.success(result.message);
+
+            setName('');
+            setCategoryId('');
+            fetchCategories();
+        }
+        catch (error) {
+            console.log(error);
+            toast.error('Failed to add category, please try again');
+        }
+        finally {
+            setLoading(false);
+        }
+    }
+
+    const prepareConfirmationModal = (id: string) => {
+        const category = categories?.find(category => category.id == id) || '';
+
+        if (category) {
+            setName(category.name);
+            setCategoryId(category.id);
+            setShowDeleteModal(true);
+        }
+    }
+
+    const confirmDelete = async () => {
+        if (!categoryId) return;
+
+        setLoading(true);
+
+        try {
+            const deleted = await deleteCategory(categoryId);
+
+            if (!deleted.success) {
+                toast.error(deleted.message);
+            }
+
+            setShowDeleteModal(false);
+            toast.success(deleted.message);
+
+            setName('');
+            setCategoryId('');
+            fetchCategories();
+        } 
         catch (error) {
             console.log(error);
             toast.error('Failed to add category, please try again');
@@ -91,7 +176,7 @@ const CategoriesPage = () => {
                                 <div className="d-flex align-items-center justify-content-between w-100">
                                     <h4 className="mb-2 mb-sm-0">Categories</h4>
 
-                                    <button data-bs-toggle="modal" data-bs-target="#createCategory" data-bs-dismiss="modal" className="btn btn-main btn-sm">Add New Category</button>
+                                    <button onClick={() => setOpenCreateModal(true)} className="btn btn-main btn-sm">Add New Category</button>
                                 </div>
                             </div>
                             
@@ -100,37 +185,63 @@ const CategoriesPage = () => {
                                 {tableLoading ? <PageLoader /> : (
                                     <>
                                         <div className="table-responsive border-0 rounded-3">
-                                            <table className="table align-middle p-4 mb-0">
-                                                <thead className="table-dark">
-                                                    <tr>
-                                                        <th scope="col" className="border-0 rounded-start">
-                                                            S/N
-                                                        </th>
-                                                        <th scope="col" className="border-0">
-                                                            Name
-                                                        </th>
-                                                        <th scope="col" className="border-0 rounded-end">
-                                                            Action
-                                                        </th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {
-                                                        categories?.map((category, index) => (
-                                                        <tr key={category.slug}>
-                                                            <td>
-                                                                <h6 className="mb-0 fw-semibold table-responsive-title">{ index + 1 }</h6>
-                                                            </td>
-                                                            <td>{ category.name }</td>
-                                                    
-                                                            <td>
-                                                                <a href="#" className="btn btn-sm btn-gray me-1 mb-0"><i className="bi bi-pencil-square"></i></a>
-                                                                <button className="btn btn-sm btn-light-red mb-0"><i className="bi bi-trash3"></i></button>
-                                                            </td>
+                                            {
+                                                !categories?.length ?
+                                                    <div className="text-center p-5">
+                                                        <img
+                                                            src={`${appUrl}/assets/img/empty.svg`}
+                                                            alt="Empty State"
+                                                            className="img-fluid mb-4"
+                                                            style={{ maxWidth: 260, opacity: "0.9" }}
+                                                        />
+                                                        <h4 className="fw-bold">No categories</h4>
+                                                        <p className="text-muted mb-4">
+                                                            It's either we're unable to fetch the categories or you haven't addded any yet.
+                                                            If you've added a category already and it's not listed here, kindly contact tech support.
+                                                        </p>
+                                                    </div>
+                                                :
+                                                <table className="table align-middle p-4 mb-0">
+                                                    <thead className="table-dark">
+                                                        <tr>
+                                                            <th scope="col" className="border-0 rounded-start">
+                                                                S/N
+                                                            </th>
+                                                            <th scope="col" className="border-0">
+                                                                Name
+                                                            </th>
+                                                            <th scope="col" className="border-0 rounded-end">
+                                                                Action
+                                                            </th>
                                                         </tr>
-                                                    ))}
-                                                </tbody>
-                                            </table>
+                                                    </thead>
+                                                    <tbody>
+                                                        {
+                                                            categories?.map((category, index) => (
+                                                            <tr key={category.id}>
+                                                                <td>
+                                                                    <h6 className="mb-0 fw-semibold table-responsive-title">{ index + 1 }</h6>
+                                                                </td>
+                                                                <td>{ category.name }</td>
+                                                        
+                                                                <td>
+                                                                    <button 
+                                                                        onClick={() => handleShowingEditModal(category.id)} 
+                                                                        className="btn btn-sm btn-gray me-1 mb-0"
+                                                                    >
+                                                                        <i className="bi bi-pencil-square"></i>
+                                                                    </button>
+                                                                    <button className="btn btn-sm btn-light-red mb-0"
+                                                                        onClick={() => prepareConfirmationModal(category.id)}
+                                                                    >
+                                                                        <i className="bi bi-trash3"></i>
+                                                                    </button>
+                                                                </td>
+                                                            </tr>
+                                                        ))}
+                                                    </tbody>
+                                                </table>
+                                            }
                                         </div>
                                     </>
                                 )}
@@ -140,59 +251,89 @@ const CategoriesPage = () => {
                 </div>
             </div>
 
-            <div
-                className="modal fade"
-                id="createCategory"
-                tabIndex={-1}
-                role="dialog"
-                aria-labelledby="sign-up"
-                aria-hidden="true"
+            <CustomModal
+                isOpen={openCreateModal}
+                title='Create Category'
+                onClose={() => setOpenCreateModal(false)}
             >
-                <div
-                    className="modal-dialog modal-dialog-centered login-pop-form"
-                    role="document"
-                >
-                    <div className="modal-content" id="signup">
-                        <div className="position-absolute end-0 top-0 mt-3 me-3 z-1">
-                            <span
-                            className="square--30 circle bg-light z-2"
-                            data-bs-dismiss="modal"
-                            aria-hidden="true"
-                            >
-                            <i className="bi bi-x" />
-                            </span>
-                        </div>
-                        <div className="modal-body p-4">
-                            <div className="login-caps mb-4">
-                                <div className="text-center">
-                                    <h2 className="fw-semibold m-0">Create New Category</h2>
-                                </div>
-                            </div>
-                            
-                            <div className="login-form">
-                                <form onSubmit={handleCategoryCreation}>
-                                    <div className="form-group mb-3">
-                                        <input
-                                            type="text"
-                                            name="name"
-                                            value={name}
-                                            onChange={(e) => setName(e.target.value)}
-                                            className="form-control"
-                                            required
-                                            disabled={loading}
-                                        />
-                                    </div>
-                                    <div className="form-group mb-3">
-                                        <button disabled={loading} type="submit" className="btn btn-main btn-sm w-100">
-                                            { loading ? <ButtonLoader /> : 'Submit' }
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
+                <form onSubmit={handleCategoryCreation}>
+                    <div className="form-group mb-3">
+                        <input
+                            type="text"
+                            name="name"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            className="form-control"
+                            required
+                            disabled={loading}
+                        />
                     </div>
+                    <div className="form-group mb-3">
+                        <button disabled={loading} type="submit" className="btn btn-main btn-md w-100">
+                            { loading ? <ButtonLoader /> : 'Submit' }
+                        </button>
+                    </div>
+                </form>
+            </CustomModal>
+
+            <CustomModal
+                isOpen={showEditModal}
+                title='Edit Category'
+                onClose={() => setShowEditModal(false)}
+            >
+                <form onSubmit={handleCategoryEdits}>
+                    <div className="form-group mb-3">
+                        <input
+                            type="text"
+                            name="name"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            className="form-control"
+                            required
+                            disabled={loading}
+                        />
+                    </div>
+                    <div className="form-group mb-3">
+                        <button disabled={loading} type="submit" className="btn btn-main btn-md w-100">
+                            { loading ? <ButtonLoader /> : 'Save Changes' }
+                        </button>
+                    </div>
+                </form>
+            </CustomModal>
+
+            <CustomModal
+                isOpen={showDeleteModal}
+                title={`⚠️ Delete category: ${name}`}
+                onClose={() => setShowDeleteModal(false)}
+            >
+                <p className="text-muted mb-3">
+                    Are you sure you want to permanently delete the category
+                    <strong className="text-dark"> “{name}”</strong>?
+                    <br />
+                    This action cannot be undone.
+                </p>
+
+                <div className="alert alert-danger py-2 small mb-4">
+                    All related data will be permanently removed.
                 </div>
-            </div>
+
+                <div className="d-flex justify-content-center gap-2">
+                    <button
+                        className="btn btn-outline-secondary px-4"
+                        onClick={() => setShowDeleteModal(false)}
+                    >
+                        Cancel
+                    </button>
+
+                    <button
+                        className="btn btn-danger px-4"
+                        onClick={confirmDelete}
+                        disabled={loading}
+                    >
+                        {loading ? <ButtonLoader /> : 'Delete Category'}
+                    </button>
+                </div>
+            </CustomModal>
         </>
     )
 }

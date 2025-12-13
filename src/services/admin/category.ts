@@ -26,8 +26,6 @@ export const createCategory = async (name: string) => {
             }
         });
 
-        console.log('Saved category: ', category);
-
         if (category == null) {
             return {
                 success: false,
@@ -43,6 +41,72 @@ export const createCategory = async (name: string) => {
         }
     }
     catch (error) {
+        console.log(error);
+        return {
+            success: false,
+            errors: 'Something went wrong. Please try again.'
+        }
+    }
+}
+
+export const editCategory = async (id: string, name: string) => {
+    try {
+        const category = await prisma.category.findFirst({
+            where: {
+                id: id,
+            },
+        });
+
+        if (!category) {
+            return {
+                success: false,
+                errors: 'Invalid request, the category cannot be found.'
+            }
+        }
+
+        // Check for uniqueness
+        const alreadyExisting = await prisma.category.findFirst({
+            where: {
+                name: name,
+                NOT: {
+                    id: id
+                }
+            }
+        });
+
+        if (alreadyExisting) {
+            return {
+                success: false,
+                errors: 'Category name already exists, please choose another.',
+            }
+        }
+
+        const editCategory = await prisma.category.update({
+            where: {
+                id: id,
+            },
+            data: {
+                name: name,
+                slug: sluggify(name),
+            }
+        });
+
+        if (editCategory == null) {
+            return {
+                success: false,
+                errors: 'Something went wrong. Please try',
+            }
+        }
+
+        return {
+            success: true,
+            errors: null,
+            message: 'Category has been updated successfully',
+            category: editCategory,
+        }
+    }
+    catch (error) {
+        console.log(error);
         return {
             success: false,
             errors: 'Something went wrong. Please try again.'
@@ -68,6 +132,47 @@ export const fetchAllCategories = async () => {
             success: false,
             message: 'Something went wrong',
             categories: []
+        }
+    }
+}
+
+export const deleteCategory = async (id: string) => {
+    try {
+        const category = await prisma.category.findFirst({
+            where: {
+                id: id,
+            }
+        });
+
+        if (!category) {
+            return {
+                success: false,
+                message: 'Category not found',
+            }
+        }
+
+        const deleted = await prisma.category.delete({
+            where: {
+                id: id,
+            }
+        })
+
+        if (!deleted) {
+            return {
+                success: false,
+                message: 'Category not deleted, please try again later.',
+            }
+        }
+
+        return {
+            success: true,
+            message: 'Category was deleted successfully',
+        }
+    } catch (error) {
+        console.log(error);
+        return {
+            success: false,
+            errors: 'Something went wrong. Please try again.'
         }
     }
 }
