@@ -127,7 +127,7 @@ const CreateCoursePage = () => {
                                 <label className="form-label">Course Resources</label>
                                 <div className="border rounded p-3 d-flex align-items-center">
                                 <i className="bi bi-folder2-open fs-4 text-primary me-3" />
-                                <input className="form-control" type="file" multiple="" />
+                                <input className="form-control" type="file" multiple={true} />
                                 </div>
                                 <small className="text-muted d-block mt-2">
                                 Optional: PDF, ZIP, or DOCX | Max 5 files
@@ -273,7 +273,6 @@ const CreateCoursePage = () => {
                                     className="form-check-input"
                                     name="expireperiod"
                                     type="radio"
-                                    defaultChecked=""
                                     />
                                     <label
                                     htmlFor="limitedtime"
