@@ -1,5 +1,7 @@
 'use client'
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { useEffect, useRef } from "react";
 
 interface ModalInterface {
@@ -59,11 +61,13 @@ const CustomModal = ({
                 <div className="modal-content" id="signup">
                     <div className="position-absolute end-0 top-0 mt-3 me-3 z-1 cursor-pointer"
                         onClick={onClose}
+                        style={{cursor: 'pointer'}}
                     >
                         <span
                             className="square--30 circle bg-light z-2 cursor-pointer"
                             data-bs-dismiss="modal"
                             aria-hidden="true"
+                            style={{cursor: 'pointer'}}
                         >
                             <i className="bi bi-x" />
                         </span>

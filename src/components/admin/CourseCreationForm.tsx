@@ -1,12 +1,10 @@
 'use client'
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { fetchAllCategories } from "@/src/services/admin/category";
 import { CategoryInterface, CourseCreationInterface } from "@/src/types";
+import { Course } from "@/prisma/generated/prisma/client";
 import { useEffect, useRef, useState } from "react";
 
-import Image from "next/image";
 import TextEditor from "./TextEditor";
 import ButtonLoader from "./ButtonLoader";
 import { toast } from "react-toastify";
@@ -14,39 +12,86 @@ import { toast } from "react-toastify";
 const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 const MAX_IMAGE_SIZE = 3 * 1024 * 1024; // 3MB
 
+type DBCourseInterface = Course;
+
 interface formProps {
     formTitle: string;
     formText: string;
     onFormSubmit: (data: CourseCreationInterface) => Promise<void>;
-    initialValues?: CourseCreationInterface | null;
+    initialValues?: DBCourseInterface | null;
+    mode: 'add' | 'edit';
 }
 
-const CourseCreationForm = ({formTitle, formText, onFormSubmit, initialValues}: formProps) => {
+const mapDbRecordsToForm = (course: DBCourseInterface): CourseCreationInterface => {
+    return {
+        title: course.title,
+        categoryId: course.categoryId,
+        description: course.description ?? '',
+        originalFee: course.originalFee,
+        discountedFee: course.discountedFee,
+
+        thumbnail: null,
+        banner: null,
+
+        previewVideo: course.previewVideo ?? '',
+        isFree: course.isFree,
+
+        seoTitle: course.seoTitle ?? '',
+        seoDescription: course.seoDescription ?? '',
+        seoKeywords: course.seoKeywords ?? '',
+
+        isActive: course.isActive ?? false,
+        whoIsCourseFor: course.whoIsCourseFor ?? '',
+    };
+}
+
+const CourseCreationForm = ({formTitle, formText, onFormSubmit, initialValues, mode}: formProps) => {
     const thumbnailRef = useRef<HTMLInputElement | null>(null)
     const bannerRef = useRef<HTMLInputElement | null>(null)
     const [loading, setLoading] = useState(false);
     const [categories, setCategories] = useState<CategoryInterface[] | null>(null);
-    const [formData, setFormData] = useState<CourseCreationInterface>(
-        initialValues ?? {
+    const [imagePreview, setImagePreview] = useState<string | null>(null)
+    const [bannerPreview, setBannerPreview] = useState<string | null>(null)
+    const [fileError, setFileError] = useState<string | null>(null)
+    const [bannerError, setBannerError] = useState<string | null>(null)
+    const [formData, setFormData] = useState<CourseCreationInterface>({
         title: '',
         categoryId: '',
         description: '',
         originalFee: 5000,
         discountedFee: 3000,
-        thumbnail: null as File | null,
-        banner:  null as File | null,
+        thumbnail: null,
+        banner:  null,
         previewVideo: '',
         isFree: false,
         seoTitle: '',
         seoDescription: '',
         seoKeywords: '',
         isActive: false,
-        whoIsCourseFor: ''
+        whoIsCourseFor: '',
     });
-    const [imagePreview, setImagePreview] = useState<string | null>(null)
-    const [bannerPreview, setBannerPreview] = useState<string | null>(null)
-    const [fileError, setFileError] = useState<string | null>(null)
-    const [bannerError, setBannerError] = useState<string | null>(null)
+
+    useEffect(() => {
+        if (initialValues) {
+            setFormData(mapDbRecordsToForm(initialValues));
+            setImagePreview(initialValues.thumbnail);
+            setBannerPreview(initialValues.banner);
+        }
+    }, [initialValues]);
+    
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const result = await fetchAllCategories();
+                setCategories(result.categories);
+            } 
+            catch (error) {
+                console.log('Error loading the categories: ', error);
+            }
+        }
+
+        fetchCategories();
+    }, []);
 
     const handleInputChange = <K extends keyof CourseCreationInterface>(
         field: K, 
@@ -126,20 +171,6 @@ const CourseCreationForm = ({formTitle, formText, onFormSubmit, initialValues}: 
             bannerRef.current.value = '';
         }
     }
-
-    useEffect(() => {
-        const fetchCategories = async () => {
-            try {
-                const result = await fetchAllCategories();
-                setCategories(result.categories);
-            } 
-            catch (error) {
-                console.log('Error loading the categories: ', error);
-            }
-        }
-
-        fetchCategories();
-    }, []);
 
     const handleSubmission = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -255,7 +286,6 @@ const CourseCreationForm = ({formTitle, formText, onFormSubmit, initialValues}: 
                             id="thumbnailInput"
                             className="form-control"
                             accept="image/*"
-                            required
                             onChange={handleThumbnailChange}
                         />
                         {fileError && (
@@ -265,13 +295,12 @@ const CourseCreationForm = ({formTitle, formText, onFormSubmit, initialValues}: 
                         )}
                     </div>
                     {imagePreview && (
-                        <Image
+                        <img
                             id="thumbnailPreview"
                             src={imagePreview}
                             className="img-thumbnail ms-3"
-                            width={100}
-                            height={100}
                             alt="Preview"
+                            style={{width: 100}}
                         />
                     )}
                 </div>
@@ -294,7 +323,6 @@ const CourseCreationForm = ({formTitle, formText, onFormSubmit, initialValues}: 
                             id="bannerInput"
                             className="form-control"
                             accept="image/*"
-                            required
                             onChange={handleBannerChange}
                         />
                         {bannerError && (
@@ -304,12 +332,11 @@ const CourseCreationForm = ({formTitle, formText, onFormSubmit, initialValues}: 
                         )}
                     </div>
                     {bannerPreview && (
-                        <Image
+                        <img
                             id="bannerPreview"
                             src={bannerPreview}
                             className="img-thumbnail ms-3"
-                            width={100}
-                            height={100}
+                            style={{width: 100}}
                             alt="Preview"
                         />
                     )}
@@ -413,7 +440,10 @@ const CourseCreationForm = ({formTitle, formText, onFormSubmit, initialValues}: 
             
             <div className="d-flex justify-content-between mt-4">
                 <button type="submit" className="btn btn-main px-4" disabled={loading}>
-                    { loading ? <ButtonLoader /> : 'Submit' }
+                    { loading ? 
+                        <ButtonLoader /> :  
+                        mode == 'add' ? 'Submit' : 'Save Changes'
+                    }
                 </button>
             </div>
         </form>

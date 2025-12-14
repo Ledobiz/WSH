@@ -17,11 +17,11 @@ const links = [
         label: "Courses",
         icon: "bi-basket2"
     },
-    {
+    /*{
         uri: createCourseUrl,
         label: "Create Course",
         icon: "bi-patch-plus"
-    },
+    },*/
     {
         uri: adminCourseCategoryUrl,
         label: "Course Categories",

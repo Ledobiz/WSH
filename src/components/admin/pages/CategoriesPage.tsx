@@ -8,6 +8,7 @@ import PageLoader from "../../website/PageLoader";
 import { createCategory, deleteCategory, editCategory, fetchAllCategories } from "@/src/services/admin/category";
 import CustomModal from "../CustomModal";
 import { CategoryInterface } from "@/src/types";
+import DeleteModal from "../DeleteModal";
 
 const CategoriesPage = () => {
     const [loading, setLoading] = useState(false);
@@ -132,8 +133,6 @@ const CategoriesPage = () => {
     const confirmDelete = async () => {
         if (!categoryId) return;
 
-        setLoading(true);
-
         try {
             const deleted = await deleteCategory(categoryId);
 
@@ -150,10 +149,7 @@ const CategoriesPage = () => {
         } 
         catch (error) {
             console.log(error);
-            toast.error('Failed to add category, please try again');
-        }
-        finally {
-            setLoading(false);
+            toast.error('Failed to delete category, please try again');
         }
     }
 
@@ -294,39 +290,13 @@ const CategoriesPage = () => {
                 </form>
             </CustomModal>
 
-            <CustomModal
+            <DeleteModal 
                 isOpen={showDeleteModal}
                 title={`⚠️ Delete category: ${name}`}
                 onClose={() => setShowDeleteModal(false)}
-            >
-                <p className="text-muted mb-3">
-                    Are you sure you want to permanently delete the category
-                    <strong className="text-dark"> “{name}”</strong>?
-                    <br />
-                    This action cannot be undone.
-                </p>
-
-                <div className="alert alert-danger py-2 small mb-4">
-                    All related data will be permanently removed.
-                </div>
-
-                <div className="d-flex justify-content-center gap-2">
-                    <button
-                        className="btn btn-outline-secondary px-4"
-                        onClick={() => setShowDeleteModal(false)}
-                    >
-                        Cancel
-                    </button>
-
-                    <button
-                        className="btn btn-danger px-4"
-                        onClick={confirmDelete}
-                        disabled={loading}
-                    >
-                        {loading ? <ButtonLoader /> : 'Delete Category'}
-                    </button>
-                </div>
-            </CustomModal>
+                onConfirm={confirmDelete}
+                item={name}
+            />
         </>
     )
 }

@@ -12,6 +12,9 @@ export const fetchAllCourses = async () => {
             orderBy: {
                 createdAt: 'desc',
             },
+            include: {
+                category: true,
+            },
         });
 
         return {
@@ -37,6 +40,9 @@ export const fetchActiveCourses = async () => {
             },
             orderBy: {
                 createdAt: 'desc',
+            },
+            include: {
+                category: true,
             },
         });
 
@@ -128,7 +134,7 @@ export const createCourse = async (unsafeData: z.infer<typeof CreateCourseValida
     }
 }
 
-export const editCourse = async (id: string, unsafeData: z.infer<typeof CreateCourseValidation>) => {
+export const updateCourse = async (id: string, unsafeData: z.infer<typeof CreateCourseValidation>) => {
     const { success, data, error } = CreateCourseValidation.safeParse(unsafeData);
 
     if (!success) {
@@ -262,11 +268,14 @@ export const deleteCourse = async (id: string) => {
             }
         }
 
+        const thumbnailPublicId = course.thumbnailPublicId;
+        const bannerPublicId = course.bannerPublicId;
+
         const deleted = await prisma.course.delete({
             where: {
                 id: id,
             }
-        })
+        });
 
         if (!deleted) {
             return {
@@ -274,6 +283,9 @@ export const deleteCourse = async (id: string) => {
                 message: 'Course not deleted, please try again later.',
             }
         }
+
+        if (thumbnailPublicId) await deleteFromCloudinary(thumbnailPublicId);
+        if (bannerPublicId) await deleteFromCloudinary(bannerPublicId);
 
         return {
             success: true,
