@@ -30,7 +30,7 @@
 	--backupcolor:#a57cb2;
 	--graycolor:#edf1fb;
 	--navcolor:#00305c;
-	--darkcolor: #13293D;
+	--darkcolor: #6a1b9a;
 	--lightcolor:#f1f4f9;
 	--headingcolor: #6a1b9a;
 	--bodycolor: #334155;
@@ -43,7 +43,7 @@
 	--formborder:#dee2e6;
 	--formbg:#edf1fb;
 	--form-color:#3b515a;
-	--inversecolor:#00305c;
+	--inversecolor:#6a1b9a;
 	--footerbg:#6a1b9a;
 	--footercolor:#536775;
 }
@@ -5470,8 +5470,9 @@ a.btn-br-more {
     font-size: 15px;
     border-radius: 4px;
     text-decoration: none;
-    background: #333c56;
+    background: #6a1b9a;
     color: #fff;
+    box-shadow: 2px 2px 4px #8937bd, -2px 0 4px #8937bd;
 }
 /*------------- Breadcrumbs ---------------*/
 .breadcrumb.light li a, .breadcrumb.light li.active{
@@ -7669,4 +7670,8 @@ ul.edu_list li {
 .Toastify, .Toastify__toast-container {
   margin: 0 !important;
   padding: 0 !important;
+}
+
+.text-custom {
+    color: var(--darkcolor) !important;
 }

@@ -1,12 +1,12 @@
 'use server'
 
 import * as z from "zod";
-import { signInSchema, signUpSchema } from "../utils/auth_schemas";
-import prisma from "../lib/prisma";
+import { signInSchema, signUpSchema } from "@/src/validations/auth_validation";
+import prisma from "@/src/lib/prisma";
 import { getUserByEmail } from "./user";
 import { createUserSession, hashPassword, removeUserFromSession, verifyPassword } from "../utils/session";
 import { cookies } from "next/headers";
-import { getFirstErrorFromFieldSubmission } from "../utils/functions";
+import { getFirstErrorFromFieldSubmission } from "@/src/utils/client_functions";
 
 export async function signIn(unsafeData: z.infer<typeof signInSchema>) {
     const { success, data, error } = signInSchema.safeParse(unsafeData)

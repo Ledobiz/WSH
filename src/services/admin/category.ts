@@ -1,8 +1,8 @@
 'use server'
 
 import * as z from "zod";
-import prisma from "../../lib/prisma";
-import { sluggify } from "@/src/utils/functions";
+import prisma from "@/src/lib/prisma";
+import { sluggify } from "@/src/utils/client_functions";
 
 export const createCategory = async (name: string) => {
     try {

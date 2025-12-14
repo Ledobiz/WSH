@@ -7,14 +7,7 @@ import ButtonLoader from "../ButtonLoader";
 import PageLoader from "../../website/PageLoader";
 import { createCategory, deleteCategory, editCategory, fetchAllCategories } from "@/src/services/admin/category";
 import CustomModal from "../CustomModal";
-
-interface CategoryInterface {
-    id: string;
-    name: string;
-    slug: string;
-    createdAt: Date;
-    updatedAt: Date;
-}
+import { CategoryInterface } from "@/src/types";
 
 const CategoriesPage = () => {
     const [loading, setLoading] = useState(false);

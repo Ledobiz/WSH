@@ -11,6 +11,13 @@ export const courseDetailUrl = '/learners/course/details'
 
 // Admin Routes
 export const adminDashboardUrl = '/admin/dashboard'
+export const adminCoursesUrl = '/admin/courses'
+export const createCourseUrl = '/admin/courses/create'
+export const editCourseUrl = '/admin/courses/edit'
+export const adminCourseCategoryUrl = '/admin/categories'
+export const earningsUrl = '/admin/earnings'
+export const adminStudentsUrl = '/admin/students'
+export const adminReviewssUrl = '/admin/reviews'
 
 // Authentication Routes
 export const loginUrl = '/sign-in'

@@ -1,5 +1,7 @@
 'use client'
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { signUp } from '@/src/services/auth'
 import { encrypt } from '@/src/utils/encryption'
 import { studentDashboardUrl } from '@/src/utils/url'

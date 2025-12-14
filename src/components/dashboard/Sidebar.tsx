@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Logout from "./Logout";
 import { useAuth } from "@/src/providers/AuthProvider";
-import { formatDate } from "@/src/utils/functions";
+import { formatDate } from "@/src/utils/client_functions";
 
 const links = [
     {

@@ -1,3 +1,5 @@
+import { Category } from "@/prisma/generated/prisma/browser";
+
 export type UserRole = 'student' | 'admin';
 
 export interface User {
@@ -19,4 +21,52 @@ export interface NewUser {
     image?: string | null,
     phone?: string | null;
     uid?: string | null;
+}
+
+export interface CategoryInterface {
+    id: string;
+    name: string;
+    slug: string;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+export interface CourseCreationInterface {
+    title: string;
+    categoryId: string;
+    description: string;
+    originalFee: number;
+    discountedFee: number;
+    thumbnail: File | null;
+    banner: File | null;
+    previewVideo?: string | null;
+    isFree: boolean;
+    seoTitle: string;
+    seoDescription: string;
+    seoKeywords: string;
+    isActive: boolean;
+    whoIsCourseFor?: string | null;
+}
+
+export interface CourseInterface {
+    id: string;
+    title: string;
+    slug: string;
+    categoryId: string;
+    description: string;
+    originalFee: number;
+    discountedFee: number;
+    thumbnail: string;
+    banner: string;
+    previewVideo?: string | null;
+    isFree: boolean;
+    seoTitle: string;
+    seoDescription: string;
+    seoKeywords: string;
+    isActive: boolean;
+    whoIsCourseFor?: string | null;
+    createdAt: Date;
+    updatedAt: Date;
+
+    category?: Category;
 }

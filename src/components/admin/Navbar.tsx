@@ -2,43 +2,43 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { studentDashboardUrl } from "@/src/utils/url";
+import { adminCourseCategoryUrl, adminCoursesUrl, adminDashboardUrl, adminReviewssUrl, adminStudentsUrl, createCourseUrl, earningsUrl } from "@/src/utils/url";
 import { useAuth } from "@/src/providers/AuthProvider";
 import Logout from "../dashboard/Logout";
 
 const links = [
     {
-        uri: "/admin/dashboard",
+        uri: adminDashboardUrl,
         label: "Dashboard",
         icon: "bi-ui-radios-grid"
     },
     {
-        uri: "/admin/courses",
+        uri: adminCoursesUrl,
         label: "Courses",
         icon: "bi-basket2"
     },
     {
-        uri: "/admin/courses/create",
+        uri: createCourseUrl,
         label: "Create Course",
         icon: "bi-patch-plus"
     },
     {
-        uri: "/admin/categories",
+        uri: adminCourseCategoryUrl,
         label: "Course Categories",
         icon: "bi-list-columns"
     },
     {
-        uri: "/admin/earnings",
+        uri: earningsUrl,
         label: "Earnings",
         icon: "bi-coin"
     },
     {
-        uri: "/admin/students",
+        uri: adminStudentsUrl,
         label: "Students",
         icon: "bi-people"
     },
     {
-        uri: "/admin/reviews",
+        uri: adminReviewssUrl,
         label: "Reviews",
         icon: "bi-star-half"
     },
@@ -55,7 +55,7 @@ const Navbar = () => {
                 <div className="container">
                     <nav id="navigation" className="navigation navigation-landscape">
                         <div className="nav-header">
-                            <Link className="nav-brand" href={studentDashboardUrl}>
+                            <Link className="nav-brand" href={adminDashboardUrl}>
                                 {/* <img src="assets/img/logo.svg" className="logo" alt="Logo" /> */}
                                 <h1>WSH</h1>
                             </Link>

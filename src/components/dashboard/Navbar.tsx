@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { studentDashboardUrl } from "@/src/utils/url";
 import { useAuth } from "@/src/providers/AuthProvider";
 import Logout from "./Logout";
-import { formatDate } from "@/src/utils/functions";
+import { formatDate } from "@/src/utils/client_functions";
 
 const links = [
     {

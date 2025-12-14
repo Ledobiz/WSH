@@ -37,23 +37,34 @@ enum UserRole {
 }
 
 model Course {
-  id            String         @id @default(uuid()) @db.VarChar(191)
-  title         String         @db.VarChar(191)
-  description   String?
-  slug          String         @unique @db.VarChar(191)
-  isPublished   Boolean?       @default(false)
-  category      Category       @relation(fields: [categoryId], references: [id])
-  categoryId    String         @db.VarChar(191)
-  price         Int
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  cartItems     CartItem[]
-  wishlists     Wishlist[]
-  courseModules CourseModule[]
-  students      Student[]
+  id                String         @id @default(uuid()) @db.VarChar(191)
+  title             String         @db.VarChar(191)
+  slug              String         @unique @db.VarChar(191)
+  description       String?
+  isActive          Boolean?       @default(true)
+  category          Category       @relation(fields: [categoryId], references: [id])
+  categoryId        String         @db.VarChar(191)
+  originalFee       Int
+  discountedFee     Int
+  thumbnail         String?
+  thumbnailPublicId String?
+  banner            String?
+  bannerPublicId    String?
+  previewVideo      String?
+  isFree            Boolean        @default(false)
+  seoTitle          String?        @db.VarChar(191)
+  seoDescription    String?
+  seoKeywords       String?
+  whoIsCourseFor    String?
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  cartItems         CartItem[]
+  wishlists         Wishlist[]
+  courseModules     CourseModule[]
+  students          Student[]
 
   @@index(slug)
-  @@index(isPublished)
+  @@index(isActive)
   @@index(createdAt)
 }
 

@@ -27,21 +27,34 @@ export type AggregateCourse = {
 }
 
 export type CourseAvgAggregateOutputType = {
-  price: number | null
+  originalFee: number | null
+  discountedFee: number | null
 }
 
 export type CourseSumAggregateOutputType = {
-  price: number | null
+  originalFee: number | null
+  discountedFee: number | null
 }
 
 export type CourseMinAggregateOutputType = {
   id: string | null
   title: string | null
-  description: string | null
   slug: string | null
-  isPublished: boolean | null
+  description: string | null
+  isActive: boolean | null
   categoryId: string | null
-  price: number | null
+  originalFee: number | null
+  discountedFee: number | null
+  thumbnail: string | null
+  thumbnailPublicId: string | null
+  banner: string | null
+  bannerPublicId: string | null
+  previewVideo: string | null
+  isFree: boolean | null
+  seoTitle: string | null
+  seoDescription: string | null
+  seoKeywords: string | null
+  whoIsCourseFor: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -49,11 +62,22 @@ export type CourseMinAggregateOutputType = {
 export type CourseMaxAggregateOutputType = {
   id: string | null
   title: string | null
-  description: string | null
   slug: string | null
-  isPublished: boolean | null
+  description: string | null
+  isActive: boolean | null
   categoryId: string | null
-  price: number | null
+  originalFee: number | null
+  discountedFee: number | null
+  thumbnail: string | null
+  thumbnailPublicId: string | null
+  banner: string | null
+  bannerPublicId: string | null
+  previewVideo: string | null
+  isFree: boolean | null
+  seoTitle: string | null
+  seoDescription: string | null
+  seoKeywords: string | null
+  whoIsCourseFor: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -61,11 +85,22 @@ export type CourseMaxAggregateOutputType = {
 export type CourseCountAggregateOutputType = {
   id: number
   title: number
-  description: number
   slug: number
-  isPublished: number
+  description: number
+  isActive: number
   categoryId: number
-  price: number
+  originalFee: number
+  discountedFee: number
+  thumbnail: number
+  thumbnailPublicId: number
+  banner: number
+  bannerPublicId: number
+  previewVideo: number
+  isFree: number
+  seoTitle: number
+  seoDescription: number
+  seoKeywords: number
+  whoIsCourseFor: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -73,21 +108,34 @@ export type CourseCountAggregateOutputType = {
 
 
 export type CourseAvgAggregateInputType = {
-  price?: true
+  originalFee?: true
+  discountedFee?: true
 }
 
 export type CourseSumAggregateInputType = {
-  price?: true
+  originalFee?: true
+  discountedFee?: true
 }
 
 export type CourseMinAggregateInputType = {
   id?: true
   title?: true
-  description?: true
   slug?: true
-  isPublished?: true
+  description?: true
+  isActive?: true
   categoryId?: true
-  price?: true
+  originalFee?: true
+  discountedFee?: true
+  thumbnail?: true
+  thumbnailPublicId?: true
+  banner?: true
+  bannerPublicId?: true
+  previewVideo?: true
+  isFree?: true
+  seoTitle?: true
+  seoDescription?: true
+  seoKeywords?: true
+  whoIsCourseFor?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -95,11 +143,22 @@ export type CourseMinAggregateInputType = {
 export type CourseMaxAggregateInputType = {
   id?: true
   title?: true
-  description?: true
   slug?: true
-  isPublished?: true
+  description?: true
+  isActive?: true
   categoryId?: true
-  price?: true
+  originalFee?: true
+  discountedFee?: true
+  thumbnail?: true
+  thumbnailPublicId?: true
+  banner?: true
+  bannerPublicId?: true
+  previewVideo?: true
+  isFree?: true
+  seoTitle?: true
+  seoDescription?: true
+  seoKeywords?: true
+  whoIsCourseFor?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -107,11 +166,22 @@ export type CourseMaxAggregateInputType = {
 export type CourseCountAggregateInputType = {
   id?: true
   title?: true
-  description?: true
   slug?: true
-  isPublished?: true
+  description?: true
+  isActive?: true
   categoryId?: true
-  price?: true
+  originalFee?: true
+  discountedFee?: true
+  thumbnail?: true
+  thumbnailPublicId?: true
+  banner?: true
+  bannerPublicId?: true
+  previewVideo?: true
+  isFree?: true
+  seoTitle?: true
+  seoDescription?: true
+  seoKeywords?: true
+  whoIsCourseFor?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -206,11 +276,22 @@ export type CourseGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalA
 export type CourseGroupByOutputType = {
   id: string
   title: string
-  description: string | null
   slug: string
-  isPublished: boolean | null
+  description: string | null
+  isActive: boolean | null
   categoryId: string
-  price: number
+  originalFee: number
+  discountedFee: number
+  thumbnail: string | null
+  thumbnailPublicId: string | null
+  banner: string | null
+  bannerPublicId: string | null
+  previewVideo: string | null
+  isFree: boolean
+  seoTitle: string | null
+  seoDescription: string | null
+  seoKeywords: string | null
+  whoIsCourseFor: string | null
   createdAt: Date
   updatedAt: Date
   _count: CourseCountAggregateOutputType | null
@@ -241,11 +322,22 @@ export type CourseWhereInput = {
   NOT?: Prisma.CourseWhereInput | Prisma.CourseWhereInput[]
   id?: Prisma.StringFilter<"Course"> | string
   title?: Prisma.StringFilter<"Course"> | string
-  description?: Prisma.StringNullableFilter<"Course"> | string | null
   slug?: Prisma.StringFilter<"Course"> | string
-  isPublished?: Prisma.BoolNullableFilter<"Course"> | boolean | null
+  description?: Prisma.StringNullableFilter<"Course"> | string | null
+  isActive?: Prisma.BoolNullableFilter<"Course"> | boolean | null
   categoryId?: Prisma.StringFilter<"Course"> | string
-  price?: Prisma.IntFilter<"Course"> | number
+  originalFee?: Prisma.IntFilter<"Course"> | number
+  discountedFee?: Prisma.IntFilter<"Course"> | number
+  thumbnail?: Prisma.StringNullableFilter<"Course"> | string | null
+  thumbnailPublicId?: Prisma.StringNullableFilter<"Course"> | string | null
+  banner?: Prisma.StringNullableFilter<"Course"> | string | null
+  bannerPublicId?: Prisma.StringNullableFilter<"Course"> | string | null
+  previewVideo?: Prisma.StringNullableFilter<"Course"> | string | null
+  isFree?: Prisma.BoolFilter<"Course"> | boolean
+  seoTitle?: Prisma.StringNullableFilter<"Course"> | string | null
+  seoDescription?: Prisma.StringNullableFilter<"Course"> | string | null
+  seoKeywords?: Prisma.StringNullableFilter<"Course"> | string | null
+  whoIsCourseFor?: Prisma.StringNullableFilter<"Course"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Course"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Course"> | Date | string
   category?: Prisma.XOR<Prisma.CategoryScalarRelationFilter, Prisma.CategoryWhereInput>
@@ -258,11 +350,22 @@ export type CourseWhereInput = {
 export type CourseOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   title?: Prisma.SortOrder
-  description?: Prisma.SortOrderInput | Prisma.SortOrder
   slug?: Prisma.SortOrder
-  isPublished?: Prisma.SortOrderInput | Prisma.SortOrder
+  description?: Prisma.SortOrderInput | Prisma.SortOrder
+  isActive?: Prisma.SortOrderInput | Prisma.SortOrder
   categoryId?: Prisma.SortOrder
-  price?: Prisma.SortOrder
+  originalFee?: Prisma.SortOrder
+  discountedFee?: Prisma.SortOrder
+  thumbnail?: Prisma.SortOrderInput | Prisma.SortOrder
+  thumbnailPublicId?: Prisma.SortOrderInput | Prisma.SortOrder
+  banner?: Prisma.SortOrderInput | Prisma.SortOrder
+  bannerPublicId?: Prisma.SortOrderInput | Prisma.SortOrder
+  previewVideo?: Prisma.SortOrderInput | Prisma.SortOrder
+  isFree?: Prisma.SortOrder
+  seoTitle?: Prisma.SortOrderInput | Prisma.SortOrder
+  seoDescription?: Prisma.SortOrderInput | Prisma.SortOrder
+  seoKeywords?: Prisma.SortOrderInput | Prisma.SortOrder
+  whoIsCourseFor?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   category?: Prisma.CategoryOrderByWithRelationInput
@@ -280,9 +383,20 @@ export type CourseWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.CourseWhereInput | Prisma.CourseWhereInput[]
   title?: Prisma.StringFilter<"Course"> | string
   description?: Prisma.StringNullableFilter<"Course"> | string | null
-  isPublished?: Prisma.BoolNullableFilter<"Course"> | boolean | null
+  isActive?: Prisma.BoolNullableFilter<"Course"> | boolean | null
   categoryId?: Prisma.StringFilter<"Course"> | string
-  price?: Prisma.IntFilter<"Course"> | number
+  originalFee?: Prisma.IntFilter<"Course"> | number
+  discountedFee?: Prisma.IntFilter<"Course"> | number
+  thumbnail?: Prisma.StringNullableFilter<"Course"> | string | null
+  thumbnailPublicId?: Prisma.StringNullableFilter<"Course"> | string | null
+  banner?: Prisma.StringNullableFilter<"Course"> | string | null
+  bannerPublicId?: Prisma.StringNullableFilter<"Course"> | string | null
+  previewVideo?: Prisma.StringNullableFilter<"Course"> | string | null
+  isFree?: Prisma.BoolFilter<"Course"> | boolean
+  seoTitle?: Prisma.StringNullableFilter<"Course"> | string | null
+  seoDescription?: Prisma.StringNullableFilter<"Course"> | string | null
+  seoKeywords?: Prisma.StringNullableFilter<"Course"> | string | null
+  whoIsCourseFor?: Prisma.StringNullableFilter<"Course"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Course"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Course"> | Date | string
   category?: Prisma.XOR<Prisma.CategoryScalarRelationFilter, Prisma.CategoryWhereInput>
@@ -295,11 +409,22 @@ export type CourseWhereUniqueInput = Prisma.AtLeast<{
 export type CourseOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   title?: Prisma.SortOrder
-  description?: Prisma.SortOrderInput | Prisma.SortOrder
   slug?: Prisma.SortOrder
-  isPublished?: Prisma.SortOrderInput | Prisma.SortOrder
+  description?: Prisma.SortOrderInput | Prisma.SortOrder
+  isActive?: Prisma.SortOrderInput | Prisma.SortOrder
   categoryId?: Prisma.SortOrder
-  price?: Prisma.SortOrder
+  originalFee?: Prisma.SortOrder
+  discountedFee?: Prisma.SortOrder
+  thumbnail?: Prisma.SortOrderInput | Prisma.SortOrder
+  thumbnailPublicId?: Prisma.SortOrderInput | Prisma.SortOrder
+  banner?: Prisma.SortOrderInput | Prisma.SortOrder
+  bannerPublicId?: Prisma.SortOrderInput | Prisma.SortOrder
+  previewVideo?: Prisma.SortOrderInput | Prisma.SortOrder
+  isFree?: Prisma.SortOrder
+  seoTitle?: Prisma.SortOrderInput | Prisma.SortOrder
+  seoDescription?: Prisma.SortOrderInput | Prisma.SortOrder
+  seoKeywords?: Prisma.SortOrderInput | Prisma.SortOrder
+  whoIsCourseFor?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.CourseCountOrderByAggregateInput
@@ -315,11 +440,22 @@ export type CourseScalarWhereWithAggregatesInput = {
   NOT?: Prisma.CourseScalarWhereWithAggregatesInput | Prisma.CourseScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Course"> | string
   title?: Prisma.StringWithAggregatesFilter<"Course"> | string
-  description?: Prisma.StringNullableWithAggregatesFilter<"Course"> | string | null
   slug?: Prisma.StringWithAggregatesFilter<"Course"> | string
-  isPublished?: Prisma.BoolNullableWithAggregatesFilter<"Course"> | boolean | null
+  description?: Prisma.StringNullableWithAggregatesFilter<"Course"> | string | null
+  isActive?: Prisma.BoolNullableWithAggregatesFilter<"Course"> | boolean | null
   categoryId?: Prisma.StringWithAggregatesFilter<"Course"> | string
-  price?: Prisma.IntWithAggregatesFilter<"Course"> | number
+  originalFee?: Prisma.IntWithAggregatesFilter<"Course"> | number
+  discountedFee?: Prisma.IntWithAggregatesFilter<"Course"> | number
+  thumbnail?: Prisma.StringNullableWithAggregatesFilter<"Course"> | string | null
+  thumbnailPublicId?: Prisma.StringNullableWithAggregatesFilter<"Course"> | string | null
+  banner?: Prisma.StringNullableWithAggregatesFilter<"Course"> | string | null
+  bannerPublicId?: Prisma.StringNullableWithAggregatesFilter<"Course"> | string | null
+  previewVideo?: Prisma.StringNullableWithAggregatesFilter<"Course"> | string | null
+  isFree?: Prisma.BoolWithAggregatesFilter<"Course"> | boolean
+  seoTitle?: Prisma.StringNullableWithAggregatesFilter<"Course"> | string | null
+  seoDescription?: Prisma.StringNullableWithAggregatesFilter<"Course"> | string | null
+  seoKeywords?: Prisma.StringNullableWithAggregatesFilter<"Course"> | string | null
+  whoIsCourseFor?: Prisma.StringNullableWithAggregatesFilter<"Course"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Course"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Course"> | Date | string
 }
@@ -327,10 +463,21 @@ export type CourseScalarWhereWithAggregatesInput = {
 export type CourseCreateInput = {
   id?: string
   title: string
-  description?: string | null
   slug: string
-  isPublished?: boolean | null
-  price: number
+  description?: string | null
+  isActive?: boolean | null
+  originalFee: number
+  discountedFee: number
+  thumbnail?: string | null
+  thumbnailPublicId?: string | null
+  banner?: string | null
+  bannerPublicId?: string | null
+  previewVideo?: string | null
+  isFree?: boolean
+  seoTitle?: string | null
+  seoDescription?: string | null
+  seoKeywords?: string | null
+  whoIsCourseFor?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   category: Prisma.CategoryCreateNestedOneWithoutCoursesInput
@@ -343,11 +490,22 @@ export type CourseCreateInput = {
 export type CourseUncheckedCreateInput = {
   id?: string
   title: string
-  description?: string | null
   slug: string
-  isPublished?: boolean | null
+  description?: string | null
+  isActive?: boolean | null
   categoryId: string
-  price: number
+  originalFee: number
+  discountedFee: number
+  thumbnail?: string | null
+  thumbnailPublicId?: string | null
+  banner?: string | null
+  bannerPublicId?: string | null
+  previewVideo?: string | null
+  isFree?: boolean
+  seoTitle?: string | null
+  seoDescription?: string | null
+  seoKeywords?: string | null
+  whoIsCourseFor?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutCourseInput
@@ -359,10 +517,21 @@ export type CourseUncheckedCreateInput = {
 export type CourseUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   slug?: Prisma.StringFieldUpdateOperationsInput | string
-  isPublished?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
-  price?: Prisma.IntFieldUpdateOperationsInput | number
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  originalFee?: Prisma.IntFieldUpdateOperationsInput | number
+  discountedFee?: Prisma.IntFieldUpdateOperationsInput | number
+  thumbnail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  thumbnailPublicId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banner?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bannerPublicId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  previewVideo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFree?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoKeywords?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  whoIsCourseFor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   category?: Prisma.CategoryUpdateOneRequiredWithoutCoursesNestedInput
@@ -375,11 +544,22 @@ export type CourseUpdateInput = {
 export type CourseUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   slug?: Prisma.StringFieldUpdateOperationsInput | string
-  isPublished?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
-  price?: Prisma.IntFieldUpdateOperationsInput | number
+  originalFee?: Prisma.IntFieldUpdateOperationsInput | number
+  discountedFee?: Prisma.IntFieldUpdateOperationsInput | number
+  thumbnail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  thumbnailPublicId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banner?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bannerPublicId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  previewVideo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFree?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoKeywords?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  whoIsCourseFor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutCourseNestedInput
@@ -391,11 +571,22 @@ export type CourseUncheckedUpdateInput = {
 export type CourseCreateManyInput = {
   id?: string
   title: string
-  description?: string | null
   slug: string
-  isPublished?: boolean | null
+  description?: string | null
+  isActive?: boolean | null
   categoryId: string
-  price: number
+  originalFee: number
+  discountedFee: number
+  thumbnail?: string | null
+  thumbnailPublicId?: string | null
+  banner?: string | null
+  bannerPublicId?: string | null
+  previewVideo?: string | null
+  isFree?: boolean
+  seoTitle?: string | null
+  seoDescription?: string | null
+  seoKeywords?: string | null
+  whoIsCourseFor?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -403,10 +594,21 @@ export type CourseCreateManyInput = {
 export type CourseUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   slug?: Prisma.StringFieldUpdateOperationsInput | string
-  isPublished?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
-  price?: Prisma.IntFieldUpdateOperationsInput | number
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  originalFee?: Prisma.IntFieldUpdateOperationsInput | number
+  discountedFee?: Prisma.IntFieldUpdateOperationsInput | number
+  thumbnail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  thumbnailPublicId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banner?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bannerPublicId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  previewVideo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFree?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoKeywords?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  whoIsCourseFor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -414,11 +616,22 @@ export type CourseUpdateManyMutationInput = {
 export type CourseUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   slug?: Prisma.StringFieldUpdateOperationsInput | string
-  isPublished?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
-  price?: Prisma.IntFieldUpdateOperationsInput | number
+  originalFee?: Prisma.IntFieldUpdateOperationsInput | number
+  discountedFee?: Prisma.IntFieldUpdateOperationsInput | number
+  thumbnail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  thumbnailPublicId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banner?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bannerPublicId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  previewVideo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFree?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoKeywords?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  whoIsCourseFor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -426,27 +639,50 @@ export type CourseUncheckedUpdateManyInput = {
 export type CourseCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   title?: Prisma.SortOrder
-  description?: Prisma.SortOrder
   slug?: Prisma.SortOrder
-  isPublished?: Prisma.SortOrder
+  description?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   categoryId?: Prisma.SortOrder
-  price?: Prisma.SortOrder
+  originalFee?: Prisma.SortOrder
+  discountedFee?: Prisma.SortOrder
+  thumbnail?: Prisma.SortOrder
+  thumbnailPublicId?: Prisma.SortOrder
+  banner?: Prisma.SortOrder
+  bannerPublicId?: Prisma.SortOrder
+  previewVideo?: Prisma.SortOrder
+  isFree?: Prisma.SortOrder
+  seoTitle?: Prisma.SortOrder
+  seoDescription?: Prisma.SortOrder
+  seoKeywords?: Prisma.SortOrder
+  whoIsCourseFor?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type CourseAvgOrderByAggregateInput = {
-  price?: Prisma.SortOrder
+  originalFee?: Prisma.SortOrder
+  discountedFee?: Prisma.SortOrder
 }
 
 export type CourseMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   title?: Prisma.SortOrder
-  description?: Prisma.SortOrder
   slug?: Prisma.SortOrder
-  isPublished?: Prisma.SortOrder
+  description?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   categoryId?: Prisma.SortOrder
-  price?: Prisma.SortOrder
+  originalFee?: Prisma.SortOrder
+  discountedFee?: Prisma.SortOrder
+  thumbnail?: Prisma.SortOrder
+  thumbnailPublicId?: Prisma.SortOrder
+  banner?: Prisma.SortOrder
+  bannerPublicId?: Prisma.SortOrder
+  previewVideo?: Prisma.SortOrder
+  isFree?: Prisma.SortOrder
+  seoTitle?: Prisma.SortOrder
+  seoDescription?: Prisma.SortOrder
+  seoKeywords?: Prisma.SortOrder
+  whoIsCourseFor?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -454,17 +690,29 @@ export type CourseMaxOrderByAggregateInput = {
 export type CourseMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   title?: Prisma.SortOrder
-  description?: Prisma.SortOrder
   slug?: Prisma.SortOrder
-  isPublished?: Prisma.SortOrder
+  description?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   categoryId?: Prisma.SortOrder
-  price?: Prisma.SortOrder
+  originalFee?: Prisma.SortOrder
+  discountedFee?: Prisma.SortOrder
+  thumbnail?: Prisma.SortOrder
+  thumbnailPublicId?: Prisma.SortOrder
+  banner?: Prisma.SortOrder
+  bannerPublicId?: Prisma.SortOrder
+  previewVideo?: Prisma.SortOrder
+  isFree?: Prisma.SortOrder
+  seoTitle?: Prisma.SortOrder
+  seoDescription?: Prisma.SortOrder
+  seoKeywords?: Prisma.SortOrder
+  whoIsCourseFor?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type CourseSumOrderByAggregateInput = {
-  price?: Prisma.SortOrder
+  originalFee?: Prisma.SortOrder
+  discountedFee?: Prisma.SortOrder
 }
 
 export type CourseScalarRelationFilter = {
@@ -595,10 +843,21 @@ export type CourseUpdateOneRequiredWithoutStudentsNestedInput = {
 export type CourseCreateWithoutCourseModulesInput = {
   id?: string
   title: string
-  description?: string | null
   slug: string
-  isPublished?: boolean | null
-  price: number
+  description?: string | null
+  isActive?: boolean | null
+  originalFee: number
+  discountedFee: number
+  thumbnail?: string | null
+  thumbnailPublicId?: string | null
+  banner?: string | null
+  bannerPublicId?: string | null
+  previewVideo?: string | null
+  isFree?: boolean
+  seoTitle?: string | null
+  seoDescription?: string | null
+  seoKeywords?: string | null
+  whoIsCourseFor?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   category: Prisma.CategoryCreateNestedOneWithoutCoursesInput
@@ -610,11 +869,22 @@ export type CourseCreateWithoutCourseModulesInput = {
 export type CourseUncheckedCreateWithoutCourseModulesInput = {
   id?: string
   title: string
-  description?: string | null
   slug: string
-  isPublished?: boolean | null
+  description?: string | null
+  isActive?: boolean | null
   categoryId: string
-  price: number
+  originalFee: number
+  discountedFee: number
+  thumbnail?: string | null
+  thumbnailPublicId?: string | null
+  banner?: string | null
+  bannerPublicId?: string | null
+  previewVideo?: string | null
+  isFree?: boolean
+  seoTitle?: string | null
+  seoDescription?: string | null
+  seoKeywords?: string | null
+  whoIsCourseFor?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutCourseInput
@@ -641,10 +911,21 @@ export type CourseUpdateToOneWithWhereWithoutCourseModulesInput = {
 export type CourseUpdateWithoutCourseModulesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   slug?: Prisma.StringFieldUpdateOperationsInput | string
-  isPublished?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
-  price?: Prisma.IntFieldUpdateOperationsInput | number
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  originalFee?: Prisma.IntFieldUpdateOperationsInput | number
+  discountedFee?: Prisma.IntFieldUpdateOperationsInput | number
+  thumbnail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  thumbnailPublicId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banner?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bannerPublicId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  previewVideo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFree?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoKeywords?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  whoIsCourseFor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   category?: Prisma.CategoryUpdateOneRequiredWithoutCoursesNestedInput
@@ -656,11 +937,22 @@ export type CourseUpdateWithoutCourseModulesInput = {
 export type CourseUncheckedUpdateWithoutCourseModulesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   slug?: Prisma.StringFieldUpdateOperationsInput | string
-  isPublished?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
-  price?: Prisma.IntFieldUpdateOperationsInput | number
+  originalFee?: Prisma.IntFieldUpdateOperationsInput | number
+  discountedFee?: Prisma.IntFieldUpdateOperationsInput | number
+  thumbnail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  thumbnailPublicId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banner?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bannerPublicId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  previewVideo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFree?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoKeywords?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  whoIsCourseFor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutCourseNestedInput
@@ -671,10 +963,21 @@ export type CourseUncheckedUpdateWithoutCourseModulesInput = {
 export type CourseCreateWithoutCategoryInput = {
   id?: string
   title: string
-  description?: string | null
   slug: string
-  isPublished?: boolean | null
-  price: number
+  description?: string | null
+  isActive?: boolean | null
+  originalFee: number
+  discountedFee: number
+  thumbnail?: string | null
+  thumbnailPublicId?: string | null
+  banner?: string | null
+  bannerPublicId?: string | null
+  previewVideo?: string | null
+  isFree?: boolean
+  seoTitle?: string | null
+  seoDescription?: string | null
+  seoKeywords?: string | null
+  whoIsCourseFor?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   cartItems?: Prisma.CartItemCreateNestedManyWithoutCourseInput
@@ -686,10 +989,21 @@ export type CourseCreateWithoutCategoryInput = {
 export type CourseUncheckedCreateWithoutCategoryInput = {
   id?: string
   title: string
-  description?: string | null
   slug: string
-  isPublished?: boolean | null
-  price: number
+  description?: string | null
+  isActive?: boolean | null
+  originalFee: number
+  discountedFee: number
+  thumbnail?: string | null
+  thumbnailPublicId?: string | null
+  banner?: string | null
+  bannerPublicId?: string | null
+  previewVideo?: string | null
+  isFree?: boolean
+  seoTitle?: string | null
+  seoDescription?: string | null
+  seoKeywords?: string | null
+  whoIsCourseFor?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutCourseInput
@@ -730,11 +1044,22 @@ export type CourseScalarWhereInput = {
   NOT?: Prisma.CourseScalarWhereInput | Prisma.CourseScalarWhereInput[]
   id?: Prisma.StringFilter<"Course"> | string
   title?: Prisma.StringFilter<"Course"> | string
-  description?: Prisma.StringNullableFilter<"Course"> | string | null
   slug?: Prisma.StringFilter<"Course"> | string
-  isPublished?: Prisma.BoolNullableFilter<"Course"> | boolean | null
+  description?: Prisma.StringNullableFilter<"Course"> | string | null
+  isActive?: Prisma.BoolNullableFilter<"Course"> | boolean | null
   categoryId?: Prisma.StringFilter<"Course"> | string
-  price?: Prisma.IntFilter<"Course"> | number
+  originalFee?: Prisma.IntFilter<"Course"> | number
+  discountedFee?: Prisma.IntFilter<"Course"> | number
+  thumbnail?: Prisma.StringNullableFilter<"Course"> | string | null
+  thumbnailPublicId?: Prisma.StringNullableFilter<"Course"> | string | null
+  banner?: Prisma.StringNullableFilter<"Course"> | string | null
+  bannerPublicId?: Prisma.StringNullableFilter<"Course"> | string | null
+  previewVideo?: Prisma.StringNullableFilter<"Course"> | string | null
+  isFree?: Prisma.BoolFilter<"Course"> | boolean
+  seoTitle?: Prisma.StringNullableFilter<"Course"> | string | null
+  seoDescription?: Prisma.StringNullableFilter<"Course"> | string | null
+  seoKeywords?: Prisma.StringNullableFilter<"Course"> | string | null
+  whoIsCourseFor?: Prisma.StringNullableFilter<"Course"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Course"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Course"> | Date | string
 }
@@ -742,10 +1067,21 @@ export type CourseScalarWhereInput = {
 export type CourseCreateWithoutCartItemsInput = {
   id?: string
   title: string
-  description?: string | null
   slug: string
-  isPublished?: boolean | null
-  price: number
+  description?: string | null
+  isActive?: boolean | null
+  originalFee: number
+  discountedFee: number
+  thumbnail?: string | null
+  thumbnailPublicId?: string | null
+  banner?: string | null
+  bannerPublicId?: string | null
+  previewVideo?: string | null
+  isFree?: boolean
+  seoTitle?: string | null
+  seoDescription?: string | null
+  seoKeywords?: string | null
+  whoIsCourseFor?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   category: Prisma.CategoryCreateNestedOneWithoutCoursesInput
@@ -757,11 +1093,22 @@ export type CourseCreateWithoutCartItemsInput = {
 export type CourseUncheckedCreateWithoutCartItemsInput = {
   id?: string
   title: string
-  description?: string | null
   slug: string
-  isPublished?: boolean | null
+  description?: string | null
+  isActive?: boolean | null
   categoryId: string
-  price: number
+  originalFee: number
+  discountedFee: number
+  thumbnail?: string | null
+  thumbnailPublicId?: string | null
+  banner?: string | null
+  bannerPublicId?: string | null
+  previewVideo?: string | null
+  isFree?: boolean
+  seoTitle?: string | null
+  seoDescription?: string | null
+  seoKeywords?: string | null
+  whoIsCourseFor?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   wishlists?: Prisma.WishlistUncheckedCreateNestedManyWithoutCourseInput
@@ -788,10 +1135,21 @@ export type CourseUpdateToOneWithWhereWithoutCartItemsInput = {
 export type CourseUpdateWithoutCartItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   slug?: Prisma.StringFieldUpdateOperationsInput | string
-  isPublished?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
-  price?: Prisma.IntFieldUpdateOperationsInput | number
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  originalFee?: Prisma.IntFieldUpdateOperationsInput | number
+  discountedFee?: Prisma.IntFieldUpdateOperationsInput | number
+  thumbnail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  thumbnailPublicId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banner?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bannerPublicId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  previewVideo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFree?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoKeywords?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  whoIsCourseFor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   category?: Prisma.CategoryUpdateOneRequiredWithoutCoursesNestedInput
@@ -803,11 +1161,22 @@ export type CourseUpdateWithoutCartItemsInput = {
 export type CourseUncheckedUpdateWithoutCartItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   slug?: Prisma.StringFieldUpdateOperationsInput | string
-  isPublished?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
-  price?: Prisma.IntFieldUpdateOperationsInput | number
+  originalFee?: Prisma.IntFieldUpdateOperationsInput | number
+  discountedFee?: Prisma.IntFieldUpdateOperationsInput | number
+  thumbnail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  thumbnailPublicId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banner?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bannerPublicId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  previewVideo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFree?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoKeywords?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  whoIsCourseFor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   wishlists?: Prisma.WishlistUncheckedUpdateManyWithoutCourseNestedInput
@@ -818,10 +1187,21 @@ export type CourseUncheckedUpdateWithoutCartItemsInput = {
 export type CourseCreateWithoutWishlistsInput = {
   id?: string
   title: string
-  description?: string | null
   slug: string
-  isPublished?: boolean | null
-  price: number
+  description?: string | null
+  isActive?: boolean | null
+  originalFee: number
+  discountedFee: number
+  thumbnail?: string | null
+  thumbnailPublicId?: string | null
+  banner?: string | null
+  bannerPublicId?: string | null
+  previewVideo?: string | null
+  isFree?: boolean
+  seoTitle?: string | null
+  seoDescription?: string | null
+  seoKeywords?: string | null
+  whoIsCourseFor?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   category: Prisma.CategoryCreateNestedOneWithoutCoursesInput
@@ -833,11 +1213,22 @@ export type CourseCreateWithoutWishlistsInput = {
 export type CourseUncheckedCreateWithoutWishlistsInput = {
   id?: string
   title: string
-  description?: string | null
   slug: string
-  isPublished?: boolean | null
+  description?: string | null
+  isActive?: boolean | null
   categoryId: string
-  price: number
+  originalFee: number
+  discountedFee: number
+  thumbnail?: string | null
+  thumbnailPublicId?: string | null
+  banner?: string | null
+  bannerPublicId?: string | null
+  previewVideo?: string | null
+  isFree?: boolean
+  seoTitle?: string | null
+  seoDescription?: string | null
+  seoKeywords?: string | null
+  whoIsCourseFor?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutCourseInput
@@ -864,10 +1255,21 @@ export type CourseUpdateToOneWithWhereWithoutWishlistsInput = {
 export type CourseUpdateWithoutWishlistsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   slug?: Prisma.StringFieldUpdateOperationsInput | string
-  isPublished?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
-  price?: Prisma.IntFieldUpdateOperationsInput | number
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  originalFee?: Prisma.IntFieldUpdateOperationsInput | number
+  discountedFee?: Prisma.IntFieldUpdateOperationsInput | number
+  thumbnail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  thumbnailPublicId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banner?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bannerPublicId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  previewVideo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFree?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoKeywords?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  whoIsCourseFor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   category?: Prisma.CategoryUpdateOneRequiredWithoutCoursesNestedInput
@@ -879,11 +1281,22 @@ export type CourseUpdateWithoutWishlistsInput = {
 export type CourseUncheckedUpdateWithoutWishlistsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   slug?: Prisma.StringFieldUpdateOperationsInput | string
-  isPublished?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
-  price?: Prisma.IntFieldUpdateOperationsInput | number
+  originalFee?: Prisma.IntFieldUpdateOperationsInput | number
+  discountedFee?: Prisma.IntFieldUpdateOperationsInput | number
+  thumbnail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  thumbnailPublicId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banner?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bannerPublicId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  previewVideo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFree?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoKeywords?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  whoIsCourseFor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutCourseNestedInput
@@ -894,10 +1307,21 @@ export type CourseUncheckedUpdateWithoutWishlistsInput = {
 export type CourseCreateWithoutStudentsInput = {
   id?: string
   title: string
-  description?: string | null
   slug: string
-  isPublished?: boolean | null
-  price: number
+  description?: string | null
+  isActive?: boolean | null
+  originalFee: number
+  discountedFee: number
+  thumbnail?: string | null
+  thumbnailPublicId?: string | null
+  banner?: string | null
+  bannerPublicId?: string | null
+  previewVideo?: string | null
+  isFree?: boolean
+  seoTitle?: string | null
+  seoDescription?: string | null
+  seoKeywords?: string | null
+  whoIsCourseFor?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   category: Prisma.CategoryCreateNestedOneWithoutCoursesInput
@@ -909,11 +1333,22 @@ export type CourseCreateWithoutStudentsInput = {
 export type CourseUncheckedCreateWithoutStudentsInput = {
   id?: string
   title: string
-  description?: string | null
   slug: string
-  isPublished?: boolean | null
+  description?: string | null
+  isActive?: boolean | null
   categoryId: string
-  price: number
+  originalFee: number
+  discountedFee: number
+  thumbnail?: string | null
+  thumbnailPublicId?: string | null
+  banner?: string | null
+  bannerPublicId?: string | null
+  previewVideo?: string | null
+  isFree?: boolean
+  seoTitle?: string | null
+  seoDescription?: string | null
+  seoKeywords?: string | null
+  whoIsCourseFor?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutCourseInput
@@ -940,10 +1375,21 @@ export type CourseUpdateToOneWithWhereWithoutStudentsInput = {
 export type CourseUpdateWithoutStudentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   slug?: Prisma.StringFieldUpdateOperationsInput | string
-  isPublished?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
-  price?: Prisma.IntFieldUpdateOperationsInput | number
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  originalFee?: Prisma.IntFieldUpdateOperationsInput | number
+  discountedFee?: Prisma.IntFieldUpdateOperationsInput | number
+  thumbnail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  thumbnailPublicId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banner?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bannerPublicId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  previewVideo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFree?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoKeywords?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  whoIsCourseFor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   category?: Prisma.CategoryUpdateOneRequiredWithoutCoursesNestedInput
@@ -955,11 +1401,22 @@ export type CourseUpdateWithoutStudentsInput = {
 export type CourseUncheckedUpdateWithoutStudentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   slug?: Prisma.StringFieldUpdateOperationsInput | string
-  isPublished?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
-  price?: Prisma.IntFieldUpdateOperationsInput | number
+  originalFee?: Prisma.IntFieldUpdateOperationsInput | number
+  discountedFee?: Prisma.IntFieldUpdateOperationsInput | number
+  thumbnail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  thumbnailPublicId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banner?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bannerPublicId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  previewVideo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFree?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoKeywords?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  whoIsCourseFor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutCourseNestedInput
@@ -970,10 +1427,21 @@ export type CourseUncheckedUpdateWithoutStudentsInput = {
 export type CourseCreateManyCategoryInput = {
   id?: string
   title: string
-  description?: string | null
   slug: string
-  isPublished?: boolean | null
-  price: number
+  description?: string | null
+  isActive?: boolean | null
+  originalFee: number
+  discountedFee: number
+  thumbnail?: string | null
+  thumbnailPublicId?: string | null
+  banner?: string | null
+  bannerPublicId?: string | null
+  previewVideo?: string | null
+  isFree?: boolean
+  seoTitle?: string | null
+  seoDescription?: string | null
+  seoKeywords?: string | null
+  whoIsCourseFor?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -981,10 +1449,21 @@ export type CourseCreateManyCategoryInput = {
 export type CourseUpdateWithoutCategoryInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   slug?: Prisma.StringFieldUpdateOperationsInput | string
-  isPublished?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
-  price?: Prisma.IntFieldUpdateOperationsInput | number
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  originalFee?: Prisma.IntFieldUpdateOperationsInput | number
+  discountedFee?: Prisma.IntFieldUpdateOperationsInput | number
+  thumbnail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  thumbnailPublicId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banner?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bannerPublicId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  previewVideo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFree?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoKeywords?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  whoIsCourseFor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cartItems?: Prisma.CartItemUpdateManyWithoutCourseNestedInput
@@ -996,10 +1475,21 @@ export type CourseUpdateWithoutCategoryInput = {
 export type CourseUncheckedUpdateWithoutCategoryInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   slug?: Prisma.StringFieldUpdateOperationsInput | string
-  isPublished?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
-  price?: Prisma.IntFieldUpdateOperationsInput | number
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  originalFee?: Prisma.IntFieldUpdateOperationsInput | number
+  discountedFee?: Prisma.IntFieldUpdateOperationsInput | number
+  thumbnail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  thumbnailPublicId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banner?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bannerPublicId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  previewVideo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFree?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoKeywords?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  whoIsCourseFor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutCourseNestedInput
@@ -1011,10 +1501,21 @@ export type CourseUncheckedUpdateWithoutCategoryInput = {
 export type CourseUncheckedUpdateManyWithoutCategoryInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   slug?: Prisma.StringFieldUpdateOperationsInput | string
-  isPublished?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
-  price?: Prisma.IntFieldUpdateOperationsInput | number
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  originalFee?: Prisma.IntFieldUpdateOperationsInput | number
+  discountedFee?: Prisma.IntFieldUpdateOperationsInput | number
+  thumbnail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  thumbnailPublicId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banner?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bannerPublicId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  previewVideo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFree?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoKeywords?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  whoIsCourseFor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1080,11 +1581,22 @@ export type CourseCountOutputTypeCountStudentsArgs<ExtArgs extends runtime.Types
 export type CourseSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   title?: boolean
-  description?: boolean
   slug?: boolean
-  isPublished?: boolean
+  description?: boolean
+  isActive?: boolean
   categoryId?: boolean
-  price?: boolean
+  originalFee?: boolean
+  discountedFee?: boolean
+  thumbnail?: boolean
+  thumbnailPublicId?: boolean
+  banner?: boolean
+  bannerPublicId?: boolean
+  previewVideo?: boolean
+  isFree?: boolean
+  seoTitle?: boolean
+  seoDescription?: boolean
+  seoKeywords?: boolean
+  whoIsCourseFor?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   category?: boolean | Prisma.CategoryDefaultArgs<ExtArgs>
@@ -1098,11 +1610,22 @@ export type CourseSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
 export type CourseSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   title?: boolean
-  description?: boolean
   slug?: boolean
-  isPublished?: boolean
+  description?: boolean
+  isActive?: boolean
   categoryId?: boolean
-  price?: boolean
+  originalFee?: boolean
+  discountedFee?: boolean
+  thumbnail?: boolean
+  thumbnailPublicId?: boolean
+  banner?: boolean
+  bannerPublicId?: boolean
+  previewVideo?: boolean
+  isFree?: boolean
+  seoTitle?: boolean
+  seoDescription?: boolean
+  seoKeywords?: boolean
+  whoIsCourseFor?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   category?: boolean | Prisma.CategoryDefaultArgs<ExtArgs>
@@ -1111,11 +1634,22 @@ export type CourseSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extens
 export type CourseSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   title?: boolean
-  description?: boolean
   slug?: boolean
-  isPublished?: boolean
+  description?: boolean
+  isActive?: boolean
   categoryId?: boolean
-  price?: boolean
+  originalFee?: boolean
+  discountedFee?: boolean
+  thumbnail?: boolean
+  thumbnailPublicId?: boolean
+  banner?: boolean
+  bannerPublicId?: boolean
+  previewVideo?: boolean
+  isFree?: boolean
+  seoTitle?: boolean
+  seoDescription?: boolean
+  seoKeywords?: boolean
+  whoIsCourseFor?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   category?: boolean | Prisma.CategoryDefaultArgs<ExtArgs>
@@ -1124,16 +1658,27 @@ export type CourseSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extens
 export type CourseSelectScalar = {
   id?: boolean
   title?: boolean
-  description?: boolean
   slug?: boolean
-  isPublished?: boolean
+  description?: boolean
+  isActive?: boolean
   categoryId?: boolean
-  price?: boolean
+  originalFee?: boolean
+  discountedFee?: boolean
+  thumbnail?: boolean
+  thumbnailPublicId?: boolean
+  banner?: boolean
+  bannerPublicId?: boolean
+  previewVideo?: boolean
+  isFree?: boolean
+  seoTitle?: boolean
+  seoDescription?: boolean
+  seoKeywords?: boolean
+  whoIsCourseFor?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type CourseOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "description" | "slug" | "isPublished" | "categoryId" | "price" | "createdAt" | "updatedAt", ExtArgs["result"]["course"]>
+export type CourseOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "slug" | "description" | "isActive" | "categoryId" | "originalFee" | "discountedFee" | "thumbnail" | "thumbnailPublicId" | "banner" | "bannerPublicId" | "previewVideo" | "isFree" | "seoTitle" | "seoDescription" | "seoKeywords" | "whoIsCourseFor" | "createdAt" | "updatedAt", ExtArgs["result"]["course"]>
 export type CourseInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   category?: boolean | Prisma.CategoryDefaultArgs<ExtArgs>
   cartItems?: boolean | Prisma.Course$cartItemsArgs<ExtArgs>
@@ -1161,11 +1706,22 @@ export type $CoursePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     title: string
-    description: string | null
     slug: string
-    isPublished: boolean | null
+    description: string | null
+    isActive: boolean | null
     categoryId: string
-    price: number
+    originalFee: number
+    discountedFee: number
+    thumbnail: string | null
+    thumbnailPublicId: string | null
+    banner: string | null
+    bannerPublicId: string | null
+    previewVideo: string | null
+    isFree: boolean
+    seoTitle: string | null
+    seoDescription: string | null
+    seoKeywords: string | null
+    whoIsCourseFor: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["course"]>
@@ -1598,11 +2154,22 @@ export interface Prisma__CourseClient<T, Null = never, ExtArgs extends runtime.T
 export interface CourseFieldRefs {
   readonly id: Prisma.FieldRef<"Course", 'String'>
   readonly title: Prisma.FieldRef<"Course", 'String'>
-  readonly description: Prisma.FieldRef<"Course", 'String'>
   readonly slug: Prisma.FieldRef<"Course", 'String'>
-  readonly isPublished: Prisma.FieldRef<"Course", 'Boolean'>
+  readonly description: Prisma.FieldRef<"Course", 'String'>
+  readonly isActive: Prisma.FieldRef<"Course", 'Boolean'>
   readonly categoryId: Prisma.FieldRef<"Course", 'String'>
-  readonly price: Prisma.FieldRef<"Course", 'Int'>
+  readonly originalFee: Prisma.FieldRef<"Course", 'Int'>
+  readonly discountedFee: Prisma.FieldRef<"Course", 'Int'>
+  readonly thumbnail: Prisma.FieldRef<"Course", 'String'>
+  readonly thumbnailPublicId: Prisma.FieldRef<"Course", 'String'>
+  readonly banner: Prisma.FieldRef<"Course", 'String'>
+  readonly bannerPublicId: Prisma.FieldRef<"Course", 'String'>
+  readonly previewVideo: Prisma.FieldRef<"Course", 'String'>
+  readonly isFree: Prisma.FieldRef<"Course", 'Boolean'>
+  readonly seoTitle: Prisma.FieldRef<"Course", 'String'>
+  readonly seoDescription: Prisma.FieldRef<"Course", 'String'>
+  readonly seoKeywords: Prisma.FieldRef<"Course", 'String'>
+  readonly whoIsCourseFor: Prisma.FieldRef<"Course", 'String'>
   readonly createdAt: Prisma.FieldRef<"Course", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Course", 'DateTime'>
 }

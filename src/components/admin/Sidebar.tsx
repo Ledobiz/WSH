@@ -4,40 +4,41 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Logout from "../dashboard/Logout";
 import { useAuth } from "@/src/providers/AuthProvider";
+import { adminCourseCategoryUrl, adminCoursesUrl, adminDashboardUrl, adminReviewssUrl, adminStudentsUrl, createCourseUrl, earningsUrl } from "@/src/utils/url";
 
 const links = [
     {
-        uri: "/admin/dashboard",
+        uri: adminDashboardUrl,
         label: "Dashboard",
         icon: "bi-ui-radios-grid"
     },
     {
-        uri: "/admin/courses",
+        uri: adminCoursesUrl,
         label: "Courses",
         icon: "bi-basket2"
     },
     {
-        uri: "/admin/courses/create",
+        uri: createCourseUrl,
         label: "Create Course",
         icon: "bi-patch-plus"
     },
     {
-        uri: "/admin/categories",
+        uri: adminCourseCategoryUrl,
         label: "Course Categories",
         icon: "bi-list-columns"
     },
     {
-        uri: "/admin/earnings",
+        uri: earningsUrl,
         label: "Earnings",
         icon: "bi-coin"
     },
     {
-        uri: "/admin/students",
+        uri: adminStudentsUrl,
         label: "Students",
         icon: "bi-people"
     },
     {
-        uri: "/admin/reviews",
+        uri: adminReviewssUrl,
         label: "Reviews",
         icon: "bi-star-half"
     },
