@@ -1,4 +1,4 @@
-import { PrismaClient } from '../../prisma/generated/prisma/client'
+import { PrismaClient } from '@prisma/client'
 import { PrismaNeon } from '@prisma/adapter-neon';
 import { neonConfig } from '@neondatabase/serverless';
 import ws from 'ws';
@@ -10,7 +10,7 @@ neonConfig.poolQueryViaFetch = true
 
 // Type definitions
 declare global {
-    var prisma: PrismaClient | undefined
+  var prisma: PrismaClient | undefined;
 }
 
 const connectionString = `${process.env.DATABASE_URL}`;

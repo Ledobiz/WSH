@@ -9,6 +9,7 @@ export const createCategory = async (name: string) => {
         const alreadyExists = await prisma.category.findFirst({
             where: {
                 name: name,
+                deletedAt: null,
             },
         });
 
@@ -54,6 +55,7 @@ export const editCategory = async (id: string, name: string) => {
         const category = await prisma.category.findFirst({
             where: {
                 id: id,
+                deletedAt: null,
             },
         });
 
@@ -68,6 +70,7 @@ export const editCategory = async (id: string, name: string) => {
         const alreadyExisting = await prisma.category.findFirst({
             where: {
                 name: name,
+                deletedAt: null,
                 NOT: {
                     id: id
                 }
@@ -117,6 +120,9 @@ export const editCategory = async (id: string, name: string) => {
 export const fetchAllCategories = async () => {
     try {
         const categories = await prisma.category.findMany({
+            where: {
+                deletedAt: null,
+            },
             orderBy: {
                 createdAt: 'desc',
             },
@@ -141,6 +147,7 @@ export const deleteCategory = async (id: string) => {
         const category = await prisma.category.findFirst({
             where: {
                 id: id,
+                deletedAt: null,
             }
         });
 
@@ -151,9 +158,10 @@ export const deleteCategory = async (id: string) => {
             }
         }
 
-        const deleted = await prisma.category.delete({
-            where: {
-                id: id,
+        const deleted = await prisma.category.update({
+            where: { id },
+            data: {
+                deletedAt: new Date(),
             }
         })
 

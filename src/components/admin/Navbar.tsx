@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { adminCourseCategoryUrl, adminCoursesUrl, adminDashboardUrl, adminReviewssUrl, adminStudentsUrl, createCourseUrl, earningsUrl } from "@/src/utils/url";
+import { adminCourseCategoryUrl, adminCoursesUrl, adminDashboardUrl, adminReviewssUrl, adminStudentsUrl, earningsUrl } from "@/src/utils/url";
 import { useAuth } from "@/src/providers/AuthProvider";
 import Logout from "../dashboard/Logout";
 

@@ -70,3 +70,16 @@ export interface CourseInterface {
 
     category?: Category;
 }
+
+export interface CreateModuleInterface {
+    courseModuleId: string,
+    name: string,
+    description: string | null,
+    isActive: boolean,
+    type: string,
+    vimeoVideoUrl: string | null,
+    isPrerequisite: boolean,
+    isFree: boolean,
+    sorting: number,
+    duration: number | null,
+}

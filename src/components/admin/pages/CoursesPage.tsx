@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 import { Course } from "@/prisma/generated/prisma/client";
 import PageLoader from "../../website/PageLoader";
 import Link from "next/link";
-import { coursesUrl } from "@/src/utils/url";
+import { courseModules, coursesUrl } from "@/src/utils/url";
 import { formatAmount } from "@/src/utils/client_functions";
 import CustomModal from "../CustomModal";
 import CourseCreationForm from "../CourseCreationForm";
@@ -273,6 +273,9 @@ const CoursesPage = () => {
                                                                     <button onClick={() => handleEditModal(course.id)} className="btn btn-sm btn-gray me-1 mb-0">
                                                                         <i className="bi bi-pencil-square" />
                                                                     </button>
+                                                                    <Link href={`${courseModules}/${course.id}`} className="btn btn-sm btn-success me-1 mb-0">
+                                                                        <i className="bi bi-table" />
+                                                                    </Link>
                                                                     <button onClick={() => handleDeleteModal(course.id)} className="btn btn-sm btn-light-red mb-0">
                                                                         <i className="bi bi-trash3" />
                                                                     </button>

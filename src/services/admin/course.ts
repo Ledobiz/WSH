@@ -9,6 +9,9 @@ import { CreateCourseValidation } from "@/src/validations/CourseValidation";
 export const fetchAllCourses = async () => {
     try {
         const courses = await prisma.course.findMany({
+            where: {
+                deletedAt: null,
+            },
             orderBy: {
                 createdAt: 'desc',
             },
@@ -37,6 +40,7 @@ export const fetchActiveCourses = async () => {
         const courses = await prisma.course.findMany({
             where: {
                 isActive: true,
+                deletedAt: null,
             },
             orderBy: {
                 createdAt: 'desc',
@@ -151,6 +155,7 @@ export const updateCourse = async (id: string, unsafeData: z.infer<typeof Create
         const course = await prisma.course.findFirst({
             where: {
                 id: id,
+                deletedAt: null,
             },
         });
 
@@ -165,6 +170,7 @@ export const updateCourse = async (id: string, unsafeData: z.infer<typeof Create
         const alreadyExisting = await prisma.course.findFirst({
             where: {
                 slug: sluggify(data.title),
+                deletedAt: null,
                 NOT: {
                     id: id
                 }
@@ -258,6 +264,7 @@ export const deleteCourse = async (id: string) => {
         const course = await prisma.course.findFirst({
             where: {
                 id: id,
+                deletedAt: null,
             }
         });
 
@@ -268,14 +275,27 @@ export const deleteCourse = async (id: string) => {
             }
         }
 
-        const thumbnailPublicId = course.thumbnailPublicId;
-        const bannerPublicId = course.bannerPublicId;
+        /*const thumbnailPublicId = course.thumbnailPublicId;
+        const bannerPublicId = course.bannerPublicId;*/
 
-        const deleted = await prisma.course.delete({
-            where: {
-                id: id,
-            }
-        });
+        const deleted = await prisma.$transaction([
+            prisma.course.update({
+                where: { id },
+                data: { deletedAt: new Date() },
+            }),
+            prisma.courseModule.updateMany({
+                where: { courseId: id },
+                data: { deletedAt: new Date() },
+            }),
+            prisma.moduleComponent.updateMany({
+                where: {
+                    courseModule: {
+                        courseId: id,
+                    },
+                },
+                data: { deletedAt: new Date() },
+            }),
+        ]);
 
         if (!deleted) {
             return {
@@ -284,8 +304,8 @@ export const deleteCourse = async (id: string) => {
             }
         }
 
-        if (thumbnailPublicId) await deleteFromCloudinary(thumbnailPublicId);
-        if (bannerPublicId) await deleteFromCloudinary(bannerPublicId);
+        /*if (thumbnailPublicId) await deleteFromCloudinary(thumbnailPublicId);
+        if (bannerPublicId) await deleteFromCloudinary(bannerPublicId);*/
 
         return {
             success: true,

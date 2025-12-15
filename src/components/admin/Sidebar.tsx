@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Logout from "../dashboard/Logout";
 import { useAuth } from "@/src/providers/AuthProvider";
-import { adminCourseCategoryUrl, adminCoursesUrl, adminDashboardUrl, adminReviewssUrl, adminStudentsUrl, createCourseUrl, earningsUrl } from "@/src/utils/url";
+import { adminCourseCategoryUrl, adminCoursesUrl, adminDashboardUrl, adminReviewssUrl, adminStudentsUrl, earningsUrl } from "@/src/utils/url";
 
 const links = [
     {

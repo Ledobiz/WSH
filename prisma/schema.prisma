@@ -1,6 +1,6 @@
 generator client {
-  provider = "prisma-client"
-  output   = "generated/prisma"
+  provider = "prisma-client-js"
+  // output   = "generated/prisma"
 }
 
 datasource db {
@@ -8,17 +8,18 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid()) @db.VarChar(191)
-  name      String?  @db.VarChar(191)
-  email     String   @unique @db.VarChar(191)
-  password  String?  @db.VarChar(191)
+  id        String    @id @default(uuid()) @db.VarChar(191)
+  name      String?   @db.VarChar(191)
+  email     String    @unique @db.VarChar(191)
+  password  String?   @db.VarChar(191)
   image     String?
-  phone     String?  @db.VarChar(191)
-  uid       String?  @db.VarChar(191)
-  role      UserRole @default(student)
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  phone     String?   @db.VarChar(191)
+  uid       String?   @db.VarChar(191)
+  role      UserRole  @default(student)
+  isActive  Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
 
   // relationships
   carts        Cart[]
@@ -29,6 +30,7 @@ model User {
   @@index(email)
   @@index(uid)
   @@index(createdAt)
+  @@index(deletedAt)
 }
 
 enum UserRole {
@@ -58,6 +60,7 @@ model Course {
   whoIsCourseFor    String?
   createdAt         DateTime       @default(now())
   updatedAt         DateTime       @updatedAt
+  deletedAt         DateTime?
   cartItems         CartItem[]
   wishlists         Wishlist[]
   courseModules     CourseModule[]
@@ -66,29 +69,33 @@ model Course {
   @@index(slug)
   @@index(isActive)
   @@index(createdAt)
+  @@index(deletedAt)
 }
 
 model CourseModule {
   id               String            @id @default(uuid()) @db.VarChar(191)
   courseId         String            @db.VarChar(191)
-  course           Course            @relation(fields: [courseId], references: [id])
+  course           Course            @relation(fields: [courseId], references: [id], onDelete: Cascade)
   name             String            @db.VarChar(191)
   description      String?
   isActive         Boolean           @default(true)
   sorting          Int?
+  totalDuration    Int?
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
+  deletedAt        DateTime?
   moduleComponents ModuleComponent[]
 
   @@index(isActive)
   @@index(sorting)
   @@index(createdAt)
+  @@index(deletedAt)
 }
 
 model ModuleComponent {
   id             String        @id @default(uuid()) @db.VarChar(191)
   courseModuleId String        @db.VarChar(191)
-  courseModule   CourseModule  @relation(fields: [courseModuleId], references: [id])
+  courseModule   CourseModule  @relation(fields: [courseModuleId], references: [id], onDelete: Cascade)
   name           String        @db.VarChar(191)
   description    String?
   isActive       Boolean       @default(true)
@@ -102,10 +109,12 @@ model ModuleComponent {
   duration       Int?
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
+  deletedAt      DateTime?
 
   @@index(isActive)
   @@index(sorting)
   @@index(createdAt)
+  @@index(deletedAt)
 }
 
 enum ComponentType {
@@ -114,14 +123,16 @@ enum ComponentType {
 }
 
 model Category {
-  id        String   @id @default(uuid()) @db.VarChar(191)
-  name      String   @db.VarChar(191)
-  slug      String   @unique @db.VarChar(191)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id        String    @id @default(uuid()) @db.VarChar(191)
+  name      String    @db.VarChar(191)
+  slug      String    @unique @db.VarChar(191)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
   courses   Course[]
 
   @@index(createdAt)
+  @@index(deletedAt)
 }
 
 model Cart {
@@ -170,11 +181,13 @@ model Coupon {
   cartItems      CartItem[]
   createdAt      DateTime   @default(now())
   updatedAt      DateTime   @updatedAt
+  deletedAt      DateTime?
 
   @@index(code)
   @@index(endDate)
   @@index(isActive)
   @@index(createdAt)
+  @@index(deletedAt)
 }
 
 model Wishlist {
@@ -209,10 +222,12 @@ model Transaction {
   paymentSource    PaymentSource @default(website)
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @updatedAt
+  deletedAt        DateTime?
 
   @@index(reference)
   @@index(status)
   @@index(createdAt)
+  @@index(deletedAt)
 }
 
 enum PaymentStatus {
@@ -228,15 +243,17 @@ enum PaymentSource {
 }
 
 model Student {
-  id                    String   @id @default(uuid()) @db.VarChar(191)
-  userId                String   @db.VarChar(191)
-  user                  User     @relation(fields: [userId], references: [id])
-  courseId              String   @db.VarChar(191)
-  course                Course   @relation(fields: [courseId], references: [id])
-  courseContentAssigned Boolean  @default(false)
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
+  id                    String    @id @default(uuid()) @db.VarChar(191)
+  userId                String    @db.VarChar(191)
+  user                  User      @relation(fields: [userId], references: [id])
+  courseId              String    @db.VarChar(191)
+  course                Course    @relation(fields: [courseId], references: [id])
+  courseContentAssigned Boolean   @default(false)
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  deletedAt             DateTime?
 
   @@index(courseContentAssigned)
   @@index(createdAt)
+  @@index(deletedAt)
 }
