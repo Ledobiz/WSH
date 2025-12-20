@@ -13,6 +13,7 @@ export interface User {
     isActive: boolean;
     createdAt: string | Date | null | undefined;
     updatedAt: string | Date | null | undefined;
+    expiresAt: string | Date | null | undefined;
 }
 
 export interface NewUser {

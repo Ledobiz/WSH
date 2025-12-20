@@ -40,7 +40,11 @@ const LoginForm = () => {
             const user = await signIn(formData);
 
             if (user.success) {
-                const encryptedUser = await encrypt(user.user);
+                const storageData = {
+                    ...user.user, expiresAt: user.expiresAt
+                }
+
+                const encryptedUser = await encrypt(storageData);
                 const storageKey = process.env.NEXT_PUBLIC_LOCAL_STORAGE_AUTH_KEY!;
                 localStorage.setItem(storageKey, encryptedUser);
                 

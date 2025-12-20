@@ -5,25 +5,12 @@ import LoginForm from "./LoginForm"
 import Navbar from "./Navbar"
 import Footer from "./Footer"
 import { useAuth } from "@/src/providers/AuthProvider"
-import { useRouter } from "next/navigation"
-import { useEffect } from "react"
-import { adminDashboardUrl, registerUrl, studentDashboardUrl } from "@/src/utils/url"
+import { registerUrl } from "@/src/utils/url"
 import PageLoader from "./PageLoader"
 
 const LoginPage = () => {
-    const { user, loading } = useAuth();
-    const router = useRouter();
+    const { loading } = useAuth();
     const appUrl = process.env.NEXT_PUBLIC_APP_URL;
-
-    useEffect(() => {
-        if (!loading && user) {
-            if (user.role == 'admin') {
-                router.push(adminDashboardUrl);
-            } else {
-                router.push(studentDashboardUrl);
-            }
-        }
-    }, [user, loading, router]);
 
     if (loading) {
         return <PageLoader />;

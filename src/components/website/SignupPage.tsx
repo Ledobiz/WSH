@@ -4,27 +4,15 @@ import { useEffect } from "react";
 import Footer from "./Footer"
 import Navbar from "./Navbar"
 import PageLoader from "./PageLoader";
-import { useRouter } from "next/navigation";
 import { useAuth } from "@/src/providers/AuthProvider";
-import { adminDashboardUrl, loginUrl, studentDashboardUrl } from "@/src/utils/url";
+import { loginUrl } from "@/src/utils/url";
 import SignupForm from "./SignupForm";
 import Link from "next/link";
 
 const SignupPage = () => {    
-    const { user, loading } = useAuth();
-    const router = useRouter();
+    const { loading } = useAuth();
     const appUrl = process.env.NEXT_PUBLIC_APP_URL;
     const appName = process.env.NEXT_PUBLIC_APP_NAME;
-
-    useEffect(() => {
-        if (!loading && user) {
-            if (user.role == 'admin') {
-                router.push(adminDashboardUrl);
-            } else {
-                router.push(studentDashboardUrl);
-            }
-        }
-    }, [user, loading, router]);
 
     if (loading) {
         return <PageLoader />;

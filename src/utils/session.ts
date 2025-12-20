@@ -1,6 +1,5 @@
 import * as z from 'zod'
 import crypto from "crypto";
-import bcrypt from "bcrypt";
 import { redisClient } from '../lib/redis';
 
 // Seven days in seconds
@@ -121,17 +120,6 @@ export async function updateUserSessionData(user: UserSession, cookies: Pick<Coo
     await redisClient.set(`session:${sessionId}`, sessionSchema.parse(user), {
         ex: SESSION_EXPIRATION_SECONDS,
     });
-}
-
-export async function hashPassword(password: string): Promise<string> {
-    const saltRounds = 12; // Good default
-    const hash = await bcrypt.hash(password, saltRounds);
-    return hash;
-}
-
-export async function verifyPassword(password: string, hashedPassword: string): Promise<boolean> {
-    const match = await bcrypt.compare(password, hashedPassword);
-    return match;
 }
 
 export function setCookie(sessionId: string, cookies: Pick<Cookies, "set">) {

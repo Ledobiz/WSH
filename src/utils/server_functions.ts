@@ -1,6 +1,7 @@
 'use server';
 
 import cloudinary from "@/src/lib/cloudinary";
+import bcrypt from "bcrypt";
 
 export const fileToBuffer = async (file: File) => {
     const arrayBuffer = await file.arrayBuffer();
@@ -34,3 +35,14 @@ export const uploadToCloudinary = async (
 export const deleteFromCloudinary = async (publicId: string) => {
     await cloudinary.uploader.destroy(publicId);
 };
+
+export async function hashPassword(password: string): Promise<string> {
+    const saltRounds = 12; // Good default
+    const hash = await bcrypt.hash(password, saltRounds);
+    return hash;
+}
+
+export async function verifyPassword(password: string, hashedPassword: string): Promise<boolean> {
+    const match = await bcrypt.compare(password, hashedPassword);
+    return match;
+}

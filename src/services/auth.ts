@@ -4,9 +4,9 @@ import * as z from "zod";
 import { signInSchema, signUpSchema } from "@/src/validations/auth_validation";
 import prisma from "@/src/lib/prisma";
 import { getUserByEmail } from "./user";
-import { createUserSession, hashPassword, removeUserFromSession, verifyPassword } from "../utils/session";
-import { cookies } from "next/headers";
+import { hashPassword, verifyPassword } from "@/src/utils/server_functions";
 import { getFirstErrorFromFieldSubmission } from "@/src/utils/client_functions";
+import { createUserSession, removeUserFromSession, SESSION_TTL } from "@/src/utils/jwt";
 
 export async function signIn(unsafeData: z.infer<typeof signInSchema>) {
     const { success, data, error } = signInSchema.safeParse(unsafeData)
@@ -61,13 +61,14 @@ export async function signIn(unsafeData: z.infer<typeof signInSchema>) {
         role: user.role,
         isActive: user.isActive,
         createdAt: user.createdAt,
-    }, await cookies())
+    });
 
     return {
         success: true,
         errors: null,
         message: 'Login was successful',
         user,
+        expiresAt: SESSION_TTL
     }
 }
 
@@ -130,13 +131,14 @@ export async function signUp(unsafeData: z.infer<typeof signUpSchema>) {
             role: user.role,
             isActive: user.isActive,
             createdAt: user.createdAt,
-        }, await cookies())
+        })
 
         return {
             success: true,
             errors: null,
             message: 'Registration success',
             user,
+            expiresAt: SESSION_TTL
         }
     } catch (error) {
         console.log(error);
@@ -150,5 +152,5 @@ export async function signUp(unsafeData: z.infer<typeof signUpSchema>) {
 }
 
 export async function logOut() {
-    await removeUserFromSession(await cookies());
+    await removeUserFromSession();
 }
