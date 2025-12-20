@@ -18,6 +18,7 @@ export const adminCourseCategoryUrl = '/admin/categories'
 export const earningsUrl = '/admin/earnings'
 export const adminStudentsUrl = '/admin/students'
 export const adminReviewssUrl = '/admin/reviews'
+export const moduleComponentUrl = '/admin/module-components'
 
 // Authentication Routes
 export const loginUrl = '/sign-in'

@@ -131,9 +131,6 @@ const CoursesPage = () => {
             console.log(error);
             toast.error('Failed to delete the course, please try again');
         }
-        finally {
-            setLoading(false);
-        }
     }
 
     return (
@@ -272,7 +269,11 @@ const CoursesPage = () => {
                                                                     <button onClick={() => handleEditModal(course.id)} className="btn btn-sm btn-gray me-1 mb-0">
                                                                         <i className="bi bi-pencil-square" />
                                                                     </button>
-                                                                    <Link href={`${courseModules}/${course.id}`} className="btn btn-sm btn-success me-1 mb-0">
+                                                                    <Link 
+                                                                        href={`${courseModules}/${course.id}`} 
+                                                                        className="btn btn-sm btn-success me-1 mb-0"
+                                                                        title="Manage Modules"
+                                                                    >
                                                                         <i className="bi bi-table" />
                                                                     </Link>
                                                                     <button onClick={() => handleDeleteModal(course.id)} className="btn btn-sm btn-light-red mb-0">

@@ -1,17 +1,22 @@
 'use client'
 
-import NavBreadcrumb from "@/src/components/admin/NavBreadcrumb"
 import PageLoader from "@/src/components/website/PageLoader"
 import { addModule, deleteModule, fetchAllModules, updateModule } from "@/src/services/admin/course_module"
-import { CourseModule } from "@prisma/client"
+import { Prisma } from "@prisma/client"
 import { useCallback, useEffect, useState } from "react"
 import { toast } from "react-toastify"
 import CustomModal from "../CustomModal"
 import DeleteModal from "../DeleteModal"
 import CourseModuleCreationForm from "../CourseModuleCreationForm"
 import { CreateModuleInterface } from "@/src/types"
+import Link from "next/link"
+import { adminCoursesUrl, adminDashboardUrl, moduleComponentUrl } from "@/src/utils/url"
 
-type DBModulesInterface = CourseModule;
+type DBModulesInterface = Prisma.CourseModuleGetPayload<{
+    include: {
+        moduleComponents: true;
+    };
+}>;
 
 const CourseModulePage = ({courseId}: {courseId: string}) => {
     const appUrl = process.env.NEXT_PUBLIC_APP_URL;
@@ -29,7 +34,7 @@ const CourseModulePage = ({courseId}: {courseId: string}) => {
 
         try {
             const result = await fetchAllModules(courseId);
-            setModules(result.modules);
+            setModules(result.modules as DBModulesInterface[]);
         } 
         catch (error) {
             console.log('Error loading the courses: ', error);
@@ -127,16 +132,31 @@ const CourseModulePage = ({courseId}: {courseId: string}) => {
             console.log(error);
             toast.error('Failed to delete the course, please try again');
         }
-        finally {
-            setLoading(false);
-        }
     }
 
 
     return (
         <>
             <div className="col-lg-9 col-md-12 col-sm-12">
-                <NavBreadcrumb page="Course Modules" />
+                <div className="row">
+                    <div className="col-lg-12 col-md-12 col-sm-12 pb-4">
+                        <nav aria-label="breadcrumb" className="d-flex justify-content-between align-center">
+                            <ol className="breadcrumb">
+                                <li className="breadcrumb-item">
+                                    <Link href={adminDashboardUrl}>Dashboard</Link>
+                                </li>
+                                <li className="breadcrumb-item">
+                                    <Link href={adminCoursesUrl}>Courses</Link>
+                                </li>
+                                <li className="breadcrumb-item active" aria-current="page">
+                                    Course Modules
+                                </li>
+                            </ol>
+
+                            <Link href={adminCoursesUrl}><i className="bi bi-arrow-left" /> Back</Link>
+                        </nav>
+                    </div>
+                </div>
                 
                 <div className="row">
                     <div className="col-lg-12 col-md-12 col-sm-12">
@@ -182,6 +202,9 @@ const CourseModulePage = ({courseId}: {courseId: string}) => {
                                                             <th scope="col" className="border-0">
                                                                 Duration
                                                             </th>
+                                                            <th scope="col" className="border-0 text-center">
+                                                                Components
+                                                            </th>
                                                             <th scope="col" className="border-0 rounded-end">
                                                                 Action
                                                             </th>
@@ -196,7 +219,7 @@ const CourseModulePage = ({courseId}: {courseId: string}) => {
                                                                 </td>
                                                                 <td>{ module.name }</td>
                                                                 <td>{ module.totalDuration } minutes</td>
-                                                                <td>{ module.moduleComponents?.length }</td>
+                                                                <td className="text-center">{ module.moduleComponents?.length }</td>
                                                         
                                                                 <td>
                                                                     <button onClick={() => handleEditModal(module.id)}
@@ -204,6 +227,13 @@ const CourseModulePage = ({courseId}: {courseId: string}) => {
                                                                     >
                                                                         <i className="bi bi-pencil-square"></i>
                                                                     </button>
+                                                                    <Link 
+                                                                        href={`${moduleComponentUrl}/${module.id}`} 
+                                                                        className="btn btn-sm btn-success me-1 mb-0"
+                                                                        title="Manage Components"
+                                                                    >
+                                                                        <i className="bi bi-table" />
+                                                                    </Link>
                                                                     <button onClick={() => handleDeleteModal(module.id)} className="btn btn-sm btn-light-red mb-0">
                                                                         <i className="bi bi-trash3"></i>
                                                                     </button>
