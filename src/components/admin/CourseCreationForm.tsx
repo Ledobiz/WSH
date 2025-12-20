@@ -2,8 +2,8 @@
 
 import { fetchAllCategories } from "@/src/services/admin/category";
 import { CategoryInterface, CourseCreationInterface } from "@/src/types";
-import { Course } from "@/prisma/generated/prisma/client";
 import { useEffect, useRef, useState } from "react";
+import { Course } from "@prisma/client";
 
 import TextEditor from "./TextEditor";
 import ButtonLoader from "./ButtonLoader";

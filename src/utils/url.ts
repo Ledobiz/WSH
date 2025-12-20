@@ -12,7 +12,7 @@ export const courseDetailUrl = '/learners/course/details'
 // Admin Routes
 export const adminDashboardUrl = '/admin/dashboard'
 export const adminCoursesUrl = '/admin/courses'
-export const courseModules = '/admin/courses-modules'
+export const courseModules = '/admin/course-modules'
 export const editCourseUrl = '/admin/courses/edit'
 export const adminCourseCategoryUrl = '/admin/categories'
 export const earningsUrl = '/admin/earnings'

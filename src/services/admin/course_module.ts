@@ -12,12 +12,19 @@ export const fetchAllModules = async (courseId: string) => {
                 courseId,
                 deletedAt: null,
             },
-            orderBy: {
-                sorting: 'desc',
-                createdAt: 'desc',
-            },
+            orderBy: [
+                { sorting: 'desc' },
+                { createdAt: 'asc' },
+            ],
             include: {
-                moduleComponents: true,
+                moduleComponents: {
+                    where: {
+                        deletedAt: null,
+                    },
+                    orderBy: {
+                        createdAt: 'asc',
+                    },
+                },
             }
         });
 
@@ -44,12 +51,19 @@ export const fetchActiveModules = async (courseId: string) => {
                 isActive: true,
                 deletedAt: null,
             },
-            orderBy: {
-                sorting: 'desc',
-                createdAt: 'desc',
-            },
+            orderBy: [
+                { sorting: 'desc' },
+                { createdAt: 'asc' },
+            ],
             include: {
-                moduleComponents: true,
+                moduleComponents: {
+                    where: {
+                        deletedAt: null,
+                    },
+                    orderBy: {
+                        createdAt: 'asc',
+                    },
+                },
             }
         });
 
@@ -68,7 +82,7 @@ export const fetchActiveModules = async (courseId: string) => {
     }
 }
 
-export const addModule = async (unsafeData: z.infer<typeof CreateModuleValidation>) => {
+export const addModule = async (courseId: string, unsafeData: z.infer<typeof CreateModuleValidation>) => {
     const { success, data, error } = CreateModuleValidation.safeParse(unsafeData);
 
     if (!success) {
@@ -81,10 +95,11 @@ export const addModule = async (unsafeData: z.infer<typeof CreateModuleValidatio
     try {
         const courseModule = await prisma.courseModule.create({
             data: {
-                courseId: data.courseId,
+                courseId,
                 name: data.name,
-                description: data.description,
-                isActive: data.isActive,
+                description: data.description ?? null,
+                totalDuration: data.totalDuration,
+                isActive: true,
                 sorting: 500,
             }
         });
@@ -112,8 +127,64 @@ export const addModule = async (unsafeData: z.infer<typeof CreateModuleValidatio
     }
 }
 
-export const updateModule = async () => {
+export const updateModule = async (id: string, unsafeData: z.infer<typeof CreateModuleValidation>) => {
+    const { success, data, error } = CreateModuleValidation.safeParse(unsafeData);
 
+    if (!success) {
+        return {
+            success: false,
+            message: getFirstErrorFromFieldSubmission(error.flatten().fieldErrors),
+        }
+    }
+
+    try {
+        const course = await prisma.courseModule.findFirst({
+            where: {
+                id: id,
+                deletedAt: null,
+            },
+        });
+
+        if (!course) {
+            return {
+                success: false,
+                message: 'Invalid request, the module cannot be found.'
+            }
+        }
+
+        const editModule = await prisma.courseModule.update({
+            where: {
+                id: id,
+            },
+            data: {
+                name: data.name,
+                description: data.description ?? null,
+                totalDuration: data.totalDuration ?? course.totalDuration,
+                updatedAt: new Date(),
+            }
+        });
+
+        if (editModule == null) {
+            return {
+                success: false,
+                message: 'Something went wrong. Please try again.'
+            }
+        }
+
+        return {
+            success: true,
+            message: 'Module has been updated successfully',
+            courseModule: editModule,
+        }
+    }
+    catch (error) {
+        console.log(error);
+
+        return {
+            success: false,
+            message: 'Something went wrong. Please try again.'
+        }
+    }
 }
 
 export const deleteModule = async (id: string) => {
@@ -148,13 +219,13 @@ export const deleteModule = async (id: string) => {
         if (!deleted) {
             return {
                 success: false,
-                message: 'Category not deleted, please try again later.',
+                message: 'Module not deleted, please try again later.',
             }
         }
 
         return {
             success: true,
-            message: 'Category was deleted successfully',
+            message: 'The module and its components have been deleted successfully',
         }
     } catch (error) {
         console.log(error);

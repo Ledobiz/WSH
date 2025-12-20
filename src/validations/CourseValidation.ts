@@ -18,11 +18,8 @@ export const CreateCourseValidation = z.object({
 });
 
 export const CreateModuleValidation = z.object({
-    courseId: z.string(),
     name: z.string(),
     description: z.string().nullable().optional(),
-    isActive: z.boolean(),
-    sorting: z.number(),
     totalDuration: z.number().nullable().optional(),
 });
 

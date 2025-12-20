@@ -1,6 +1,5 @@
 'use client';
 
-import { useRef } from "react";
 import { Editor } from '@tinymce/tinymce-react';
 
 interface TextEditorProps {
@@ -10,8 +9,6 @@ interface TextEditorProps {
 }
 
 const TextEditor = ({value, onChange, height = 500}: TextEditorProps) => {
-    const editorRef = useRef(null);
-
     return (
         <Editor
             apiKey={process.env.NEXT_PUBLIC_TINYMCE_KEY}
@@ -27,10 +24,10 @@ const TextEditor = ({value, onChange, height = 500}: TextEditorProps) => {
                     'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount',
                     'codesample', 'emoticons'
                 ],
-                toolbar: 'undo redo | blocks fontfamily fontsize | ' +
-                    'bold italic forecolor underline strikethrough | link image media table | alignleft aligncenter ' +
-                    'align lineheight | bullist numlist outdent indent | emoticons charmap | ' +
-                    'removeformat | code preview',
+                toolbar: 'bold italic forecolor underline strikethrough | link image media table | alignleft aligncenter ' +
+                    'bullist numlist outdent indent | emoticons charmap | ' +
+                    'align lineheight | code preview | blocks fontfamily fontsize | ' +
+                    'undo redo removeformat',
                 content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
             }}
         />

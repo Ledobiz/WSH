@@ -1,4 +1,4 @@
-import { Category } from "@/prisma/generated/prisma/browser";
+import { Category } from "@prisma/client";
 
 export type UserRole = 'student' | 'admin';
 
@@ -73,14 +73,7 @@ export interface CourseInterface {
 }
 
 export interface CreateModuleInterface {
-    courseModuleId: string,
     name: string,
     description: string | null,
-    isActive: boolean,
-    type: string,
-    vimeoVideoUrl: string | null,
-    isPrerequisite: boolean,
-    isFree: boolean,
-    sorting: number,
-    duration: number | null,
+    totalDuration: number | null,
 }

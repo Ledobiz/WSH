@@ -226,7 +226,7 @@ export const updateCourse = async (id: string, unsafeData: z.infer<typeof Create
         if (editCourse == null) {
             return {
                 success: false,
-                message: 'Something went wrong. Please try',
+                message: 'Something went wrong. Please try again.',
             }
         }
 

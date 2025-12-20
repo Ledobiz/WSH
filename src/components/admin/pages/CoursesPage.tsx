@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react"
 import NavBreadcrumb from "../NavBreadcrumb"
 import { createCourse, deleteCourse, fetchAllCourses, updateCourse } from "@/src/services/admin/course";
 import { toast } from "react-toastify";
-import { Course } from "@/prisma/generated/prisma/client";
+import { Course } from "@prisma/client";
 import PageLoader from "../../website/PageLoader";
 import Link from "next/link";
 import { courseModules, coursesUrl } from "@/src/utils/url";
@@ -18,7 +18,6 @@ type DBCourseInterface = Course;
 
 const CoursesPage = () => {
     const appUrl = process.env.NEXT_PUBLIC_APP_URL;
-    const [loading, setLoading] = useState(false);
     const [tableIsLoading, setTableIsLoading] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [showCourseCreationModal, setShowCourseCreationModal] = useState(false);
