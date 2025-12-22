@@ -21,7 +21,7 @@ export async function proxy(request: NextRequest) {
             const user = await getUserFromSession();
 
             if (user == null) {
-                return NextResponse.redirect(new URL(loginUrl, request.url))
+                return NextResponse.next();
             }
             else {
                 if (user.role == 'admin') {
