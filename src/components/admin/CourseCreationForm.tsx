@@ -260,7 +260,7 @@ const CourseCreationForm = ({formTitle, formText, onFormSubmit, initialValues, m
             </div>
 
             <div className="form-group mb-3">
-                <label className="form-label">DIscounted Fee (&#8358;) <span className="text-danger">*</span></label>
+                <label className="form-label">Discounted Fee (&#8358;) <span className="text-danger">*</span></label>
                 <input
                     type="number"
                     name="discountedPrice"
@@ -419,8 +419,6 @@ const CourseCreationForm = ({formTitle, formText, onFormSubmit, initialValues, m
                     </label>
                 </div>
             </div>
-
-            
             
             <div className="form-group mb-3">
                 <label className="form-label">Course Description <span className="text-danger">*</span></label>

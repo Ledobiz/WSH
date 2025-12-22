@@ -1,61 +1,68 @@
 'use client'
 
 import PageLoader from "@/src/components/website/PageLoader"
-import { addModule, deleteModule, fetchAllModules, updateModule } from "@/src/services/admin/course_module"
-import { Prisma } from "@prisma/client"
+import { ModuleComponent } from "@prisma/client"
 import { useCallback, useEffect, useState } from "react"
 import { toast } from "react-toastify"
 import CustomModal from "../CustomModal"
 import DeleteModal from "../DeleteModal"
 import CourseModuleCreationForm from "../CourseModuleCreationForm"
-import { CreateModuleInterface } from "@/src/types"
+import { CreateModuleComponentInterface } from "@/src/types"
 import Link from "next/link"
-import { adminCoursesUrl, adminDashboardUrl, moduleComponentUrl } from "@/src/utils/url"
+import { adminCoursesUrl, adminDashboardUrl, componentPreviewUrl, courseModules } from "@/src/utils/url"
+import { addComponent, deleteComponent, fetchAllComponents, updateComponent } from "@/src/services/admin/module_component"
+import { CreateComponentValidation } from "@/src/validations/CourseValidation"
+import * as z from "zod"
+import ComponentCreationForm from "../ComponentCreationForm"
 
-type DBModulesInterface = Prisma.CourseModuleGetPayload<{
-    include: {
-        moduleComponents: true;
-    };
-}>;
+type DBComponentsInterface = ModuleComponent;
 
-const CourseModulePage = ({courseId}: {courseId: string}) => {
+const ModuleComponentsPage = ({moduleId}: {moduleId: string}) => {
     const appUrl = process.env.NEXT_PUBLIC_APP_URL;
 
     const [tableIsLoading, setTableIsLoading] = useState(false);
-    const [modules, setModules] = useState<DBModulesInterface[] | null>(null);
+    const [components, setComponents] = useState<DBComponentsInterface[] | null>(null);
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
-    const [moduleToEdit, setModuleToEdit] = useState<DBModulesInterface | null>(null);
-    const [moduleId, setModuleId] = useState('');
+    const [componentToEdit, setComponentToEdit] = useState<DBComponentsInterface | null>(null);
+    const [componentId, setComponentId] = useState('');
 
-    const fetchModules = useCallback(async () => {
+    const fetchComponents = useCallback(async () => {
         setTableIsLoading(true);
 
         try {
-            const result = await fetchAllModules(courseId);
-            setModules(result.modules as DBModulesInterface[]);
+            const result = await fetchAllComponents(moduleId);
+            setComponents(result.components as DBComponentsInterface[]);
         } 
         catch (error) {
-            console.log('Error loading the courses: ', error);
-            toast.error('Failed to load all modules of this course');
+            console.log('Error loading the component: ', error);
+            toast.error('Failed to load all components of this module');
         }
         finally {
             setTableIsLoading(false);
         }
-    }, [courseId]);
+    }, [moduleId]);
 
     useEffect(() => {
-        fetchModules();
-    }, [fetchModules]);
+        fetchComponents();
+    }, [fetchComponents]);
 
-    const handleModuleCreation = async (data: CreateModuleInterface) => {
-        if (!data.name.trim()) {
-            toast.error('Please submit the name of the module');
+    const handleCreationModal = () => {
+        setShowCreateModal(true);
+        setComponentId('');
+        setComponentToEdit(null);
+    }
+
+    const handleComponentCreation = async (data: CreateModuleComponentInterface) => {
+        if (!data.name.trim() || !data.description.trim() || !data.duration || 
+            !data.isPrerequisite || !data.type.trim()
+        ) {
+            toast.error('Please submit the name of the component');
             return;
         }
 
-        const result = await addModule(courseId, data);
+        const result = await addComponent(moduleId, data as unknown as z.infer<typeof CreateComponentValidation>);
 
         if (!result.success) {
             toast.error(result.message);
@@ -64,31 +71,33 @@ const CourseModulePage = ({courseId}: {courseId: string}) => {
 
         setShowCreateModal(false);
         toast.success(result.message);
-        fetchModules();
+        fetchComponents();
     }
 
     const handleEditModal = (id: string)  => {
-        const courseModule = modules?.find(c => c.id == id) || '';
+        const courseModule = components?.find(c => c.id == id) || '';
 
         if (courseModule) {
-            setModuleId(id);
-            setModuleToEdit(courseModule);
+            setComponentId(id);
+            setComponentToEdit(courseModule);
             setShowEditModal(true);
         }
     }
 
-    const handleModuleEditSubmission = async (data: CreateModuleInterface) => {
-        if (!data.name.trim()) {
+    const handleComponentEditSubmission = async (data: CreateModuleComponentInterface) => {
+        if (!data.name.trim() || !data.description.trim() || !data.duration || 
+            !data.isPrerequisite || !data.type.trim()
+        ) {
             toast.error('Please fill all required fields');
             return;
         }
 
-        if (!moduleId) {
-            toast.error('Please select a module to edit');
+        if (!componentId) {
+            toast.error('Please select a component to edit');
             return;
         }
 
-        const result = await updateModule(moduleId, data);
+        const result = await updateComponent(componentId, data as unknown as z.infer<typeof CreateComponentValidation>);
 
         if (!result.success) {
             toast.error(result.message);
@@ -96,25 +105,27 @@ const CourseModulePage = ({courseId}: {courseId: string}) => {
         }
 
         setShowEditModal(false);
+        setComponentId('');
+        setComponentToEdit(null);
         toast.success(result.message);
-        fetchModules();
+        fetchComponents();
     }
 
     const handleDeleteModal = (id: string) => {
-        const courseModule = modules?.find(c => c.id == id) || '';
+        const component = components?.find(c => c.id == id) || '';
 
-        if (courseModule) {
-            setModuleId(id);
-            setModuleToEdit(courseModule);
+        if (component) {
+            setComponentId(id);
+            setComponentToEdit(component);
             setShowDeleteModal(true);
         }
     }
 
-    const deleteDaModule = async () => {
-        if (!moduleId) return;
+    const deleteDaComponent = async () => {
+        if (!componentId) return;
 
         try {
-            const deleted = await deleteModule(moduleId);
+            const deleted = await deleteComponent(componentId);
 
             if (!deleted.success) {
                 toast.error(deleted.message);
@@ -123,9 +134,9 @@ const CourseModulePage = ({courseId}: {courseId: string}) => {
             setShowDeleteModal(false);
             toast.success(deleted.message);
 
-            setModuleToEdit(null);
-            setModuleId('');
-            fetchModules();
+            setComponentToEdit(null);
+            setComponentId('');
+            fetchComponents();
         } 
         catch (error) {
             console.log(error);
@@ -139,7 +150,7 @@ const CourseModulePage = ({courseId}: {courseId: string}) => {
             <div className="col-lg-9 col-md-12 col-sm-12">
                 <div className="row">
                     <div className="col-lg-12 col-md-12 col-sm-12 pb-4">
-                        <nav aria-label="breadcrumb" className="d-flex justify-content-between align-center">
+                        <nav aria-label="breadcrumb" className="d-flex justify-content-between align-items-center">
                             <ol className="breadcrumb">
                                 <li className="breadcrumb-item">
                                     <Link href={adminDashboardUrl}>Dashboard</Link>
@@ -147,12 +158,17 @@ const CourseModulePage = ({courseId}: {courseId: string}) => {
                                 <li className="breadcrumb-item">
                                     <Link href={adminCoursesUrl}>Courses</Link>
                                 </li>
+                                <li className="breadcrumb-item">
+                                    <Link href={`${courseModules}/${moduleId}`}>Course Module</Link>
+                                </li>
                                 <li className="breadcrumb-item active" aria-current="page">
-                                    Course Modules
+                                    Module Component
                                 </li>
                             </ol>
 
-                            <Link href={adminCoursesUrl}><i className="bi bi-arrow-left" /> Back</Link>
+                            <Link href={`${courseModules}/${moduleId}`}>
+                                <i className="bi bi-arrow-left" /> Back
+                            </Link>
                         </nav>
                     </div>
                 </div>
@@ -162,9 +178,9 @@ const CourseModulePage = ({courseId}: {courseId: string}) => {
                         <div className="card border bg-transparent rounded-3">
                             <div className="card-header border-bottom">
                                 <div className="d-flex align-items-center justify-content-between w-100">
-                                    <h4 className="mb-2 mb-sm-0">Course Modules</h4>
+                                    <h4 className="mb-2 mb-sm-0">Module Component</h4>
 
-                                    <button onClick={() => setShowCreateModal(true)} className="btn btn-main btn-sm">Add New Module</button>
+                                    <button onClick={handleCreationModal} className="btn btn-main btn-sm">Add New Component</button>
                                 </div>
                             </div>
                             
@@ -174,7 +190,7 @@ const CourseModulePage = ({courseId}: {courseId: string}) => {
                                     <>
                                         <div className="table-responsive border-0 rounded-3">
                                             {
-                                                !modules?.length ?
+                                                !components?.length ?
                                                     <div className="text-center p-5">
                                                         <img
                                                             src={`${appUrl}/assets/img/empty.svg`}
@@ -182,10 +198,10 @@ const CourseModulePage = ({courseId}: {courseId: string}) => {
                                                             className="img-fluid mb-4"
                                                             style={{ maxWidth: 260, opacity: "0.9" }}
                                                         />
-                                                        <h4 className="fw-bold">No Modules Found</h4>
+                                                        <h4 className="fw-bold">No Components Found</h4>
                                                         <p className="text-muted mb-4">
-                                                            It's either we're unable to fetch the modules or you haven't addded any yet.
-                                                            If you've added a module already and it's not listed here, kindly contact tech support.
+                                                            It's either we're unable to fetch the components or you haven't addded any yet.
+                                                            If you've added a component already and it's not listed here, kindly contact tech support.
                                                         </p>
                                                     </div>
                                                 :
@@ -202,7 +218,7 @@ const CourseModulePage = ({courseId}: {courseId: string}) => {
                                                                 Duration
                                                             </th>
                                                             <th scope="col" className="border-0 text-center">
-                                                                Components
+                                                                Type
                                                             </th>
                                                             <th scope="col" className="border-0 rounded-end">
                                                                 Action
@@ -211,29 +227,31 @@ const CourseModulePage = ({courseId}: {courseId: string}) => {
                                                     </thead>
                                                     <tbody>
                                                         {
-                                                            modules?.map((module, index) => (
-                                                            <tr key={module.id}>
+                                                            components?.map((component, index) => (
+                                                            <tr key={component.id}>
                                                                 <td>
                                                                     <h6 className="mb-0 fw-semibold table-responsive-title">{ index + 1 }</h6>
                                                                 </td>
-                                                                <td>{ module.name }</td>
-                                                                <td>{ module.totalDuration } minutes</td>
-                                                                <td className="text-center">{ module.moduleComponents?.length }</td>
+                                                                <td>{ component.name }</td>
+                                                                <td>{ component.duration } minutes</td>
+                                                                <td className="text-center">
+                                                                    {String(component.type) === 'pdf' ? 'PDF Document' : String(component.type) === 'word' ? 'Word Document' : String(component.type)}
+                                                                </td>
                                                         
                                                                 <td>
-                                                                    <button onClick={() => handleEditModal(module.id)}
+                                                                    <button onClick={() => handleEditModal(component.id)}
                                                                         className="btn btn-sm btn-gray me-1 mb-0"
                                                                     >
                                                                         <i className="bi bi-pencil-square"></i>
                                                                     </button>
                                                                     <Link 
-                                                                        href={`${moduleComponentUrl}/${module.id}`} 
+                                                                        href={`${componentPreviewUrl}/${component.id}`} 
                                                                         className="btn btn-sm btn-success me-1 mb-0"
-                                                                        title="Manage Components"
+                                                                        title="Preview Component"
                                                                     >
-                                                                        <i className="bi bi-table" />
+                                                                        <i className="bi bi-eye" />
                                                                     </Link>
-                                                                    <button onClick={() => handleDeleteModal(module.id)} className="btn btn-sm btn-light-red mb-0">
+                                                                    <button onClick={() => handleDeleteModal(component.id)} className="btn btn-sm btn-light-red mb-0">
                                                                         <i className="bi bi-trash3"></i>
                                                                     </button>
                                                                 </td>
@@ -257,37 +275,37 @@ const CourseModulePage = ({courseId}: {courseId: string}) => {
                 onClose={() => setShowCreateModal(false)}
                 size="modal-xl"
             >
-                <CourseModuleCreationForm 
+                <ComponentCreationForm 
                     mode="add"
-                    formTitle="Create Module"
+                    formTitle="Create Component"
                     formText=""
-                    onFormSubmit={handleModuleCreation}
+                    onFormSubmit={handleComponentCreation}
                 />
             </CustomModal>
 
             <CustomModal
                 isOpen={showEditModal}
-                title={`Edit Module: ${moduleToEdit?.name}`}
+                title={`Edit Component: ${componentToEdit?.name}`}
                 onClose={() => setShowEditModal(false)}
                 size="modal-xl"
             >
-                <CourseModuleCreationForm 
+                <ComponentCreationForm 
                     mode="edit"
-                    formTitle="Edit Module"
+                    formTitle="Edit Component"
                     formText=""
-                    onFormSubmit={handleModuleEditSubmission}
-                    initialValues={moduleToEdit}
+                    onFormSubmit={handleComponentEditSubmission}
+                    initialValues={componentToEdit}
                 />
             </CustomModal>
 
             <DeleteModal 
                 isOpen={showDeleteModal}
-                title={`⚠️ Delete Module: ${moduleToEdit?.name}`}
+                title={`⚠️ Delete Component: ${componentToEdit?.name}`}
                 onClose={() => setShowDeleteModal(false)}
-                onConfirm={deleteDaModule}
-                item={moduleToEdit?.name || ''}
+                onConfirm={deleteDaComponent}
+                item={componentToEdit?.name || ''}
             />
         </>
     )
 }
-export default CourseModulePage
+export default ModuleComponentsPage

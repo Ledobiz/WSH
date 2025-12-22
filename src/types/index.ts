@@ -73,7 +73,20 @@ export interface CourseInterface {
 }
 
 export interface CreateModuleInterface {
-    name: string,
-    description: string | null,
-    totalDuration: number | null,
+    name: string;
+    description: string | null;
+    totalDuration: number | null;
+}
+
+export interface CreateModuleComponentInterface {
+    name: string;
+    description: string;
+    type: string;
+    vimeoVideoUrl: string;
+    fileName: File | null;
+    filePreviewUrl: string | null;
+    isPrerequisite: boolean;
+    isFree: boolean;
+    duration: number;
+    isActive: boolean | null;
 }

@@ -24,14 +24,13 @@ export const CreateModuleValidation = z.object({
 });
 
 export const CreateComponentValidation = z.object({
-    courseModuleId: z.string(),
     name: z.string(),
     description: z.string().nullable().optional(),
     isActive: z.boolean(),
     type: z.string(),
     vimeoVideoUrl: z.string().nullable().optional(),
+    fileName: z.file().nullable().optional(),
     isPrerequisite: z.boolean(),
     isFree: z.boolean(),
-    sorting: z.number(),
     duration: z.number().nullable().optional(),
 });

@@ -96,6 +96,8 @@ const CoursesPage = () => {
         }
 
         setShowEditModal(false);
+        setCourseToEdit(null);
+        setCourseId('');
         toast.success(result.message);
         fetchCourses();
     }
