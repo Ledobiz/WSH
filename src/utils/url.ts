@@ -19,7 +19,7 @@ export const earningsUrl = '/admin/earnings'
 export const adminStudentsUrl = '/admin/students'
 export const adminReviewssUrl = '/admin/reviews'
 export const moduleComponentUrl = '/admin/module-components'
-export const componentPreviewUrl = '/admin/courses/preview'
+export const componentPreviewUrl = '/admin/courses/component/preview'
 
 // Authentication Routes
 export const loginUrl = '/sign-in'

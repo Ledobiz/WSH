@@ -63,7 +63,7 @@ const MyCourses = () => {
                         <div className="row g-4">
                             <div className="col-lg-8">
                                 <div className="card shadow-sm border rounded-4 overflow-hidden">
-                                    <VideoPlayer />
+                                    <VideoPlayer url='https://www.youtube.com/watch?v=LXb3EKWsInQ'/>
                                     
                                     <div className="card-body p-4">
                                         <div className="d-flex justify-content-between align-items-start mb-3">

@@ -75,9 +75,9 @@ const ComponentCreationForm = ({formTitle, formText, onFormSubmit, initialValues
             return;
         }
 
-        // Validate file type based on selected component type
-        if (formData.type === 'file' && !ALLOWED_FILE_TYPES.slice(1).includes(file.type)) {
-            setFileError(`Only PDF or Word document files are allowed.`);
+        // Validate file type for document components
+        if (formData.type === 'file' && !ALLOWED_FILE_TYPES.includes(file.type)) {
+            setFileError('Only PDF or Word document files are allowed.');
             clearFile();
             return;
         }
@@ -178,7 +178,7 @@ const ComponentCreationForm = ({formTitle, formText, onFormSubmit, initialValues
                         </label>
                         <div className="border rounded d-flex align-items-center justify-content-between p-3">
                             <div className="d-flex align-items-center flex-grow-1">
-                                <i className="bi file-earmark-word fs-4 text-custom me-3" />
+                                <i className="bi bi-file-earmark-word fs-4 text-custom me-3" />
                                 <div className="flex-grow-1">
                                     <input
                                         type="file"

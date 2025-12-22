@@ -8,13 +8,19 @@ export const fileToBuffer = async (file: File) => {
     return Buffer.from(arrayBuffer);
 };
 
+type CloudinaryResourceType = "image" | "raw" | "auto";
+
 export const uploadToCloudinary = async (
     buffer: Buffer,
-    folder: string
-): Promise<{ url: string, publicId: string }> => {
+    folder: string,
+    resourceType: CloudinaryResourceType = "image",
+): Promise<{ url: string; publicId: string }> => {
     return new Promise((resolve, reject) => {
         const stream = cloudinary.uploader.upload_stream(
-            { folder },
+            {
+                folder,
+                resource_type: resourceType,
+            },
             (error, result) => {
                 if (error || !result) {
                     reject(error);
@@ -25,7 +31,7 @@ export const uploadToCloudinary = async (
                     url: result.secure_url,
                     publicId: result.public_id,
                 });
-            }
+            },
         );
 
         stream.end(buffer);

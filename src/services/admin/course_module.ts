@@ -5,6 +5,25 @@ import prisma from "@/src/lib/prisma";
 import { CreateModuleValidation } from "@/src/validations/CourseValidation";
 import { getFirstErrorFromFieldSubmission } from "@/src/utils/client_functions";
 
+export const fetchModuleById = async (id: string) => {
+    try {
+        const courseModule = await prisma.courseModule.findUnique({
+            where: { id }
+        });
+
+        return {
+            success: true,
+            courseModule,
+        }
+    } catch (error) {
+        console.log(error);
+        return {
+            success: false,
+            courseModule: null,
+        }
+    }
+}
+
 export const fetchAllModules = async (courseId: string) => {
     try {
         const modules = await prisma.courseModule.findMany({
@@ -101,6 +120,7 @@ export const addModule = async (courseId: string, unsafeData: z.infer<typeof Cre
                 totalDuration: data.totalDuration,
                 isActive: true,
                 sorting: 500,
+                updatedAt: new Date(),
             }
         });
 

@@ -2,11 +2,11 @@
 
 import ReactPlayer from 'react-player'
 
-const VideoPlayer = () => {
+const VideoPlayer = ({url}: {url: string}) => {
     return (
         <div className="video-box d-flex align-items-center justify-content-center">
             <ReactPlayer 
-                src='https://www.youtube.com/watch?v=LXb3EKWsInQ' 
+                src={url} 
                 height='100%'
                 width='100%'
             />

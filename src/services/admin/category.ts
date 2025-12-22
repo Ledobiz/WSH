@@ -24,6 +24,7 @@ export const createCategory = async (name: string) => {
             data: {
                 name: name,
                 slug: sluggify(name),
+                updatedAt: new Date(),
             }
         });
 
@@ -91,6 +92,7 @@ export const editCategory = async (id: string, name: string) => {
             data: {
                 name: name,
                 slug: sluggify(name),
+                updatedAt: new Date(),
             }
         });
 

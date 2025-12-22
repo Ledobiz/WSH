@@ -66,6 +66,34 @@ export const fetchActiveComponents = async (moduleId: string) => {
     }
 }
 
+export const fetchComponentById = async (id: string) => {
+    try {
+        const component = await prisma.moduleComponent.findUnique({
+            where: { id },
+            include: {
+                courseModule: {
+                    include: {
+                        course: true
+                    }
+                },
+            }
+        });
+
+        return {
+            success: true,
+            message: 'Success',
+            component,
+        }
+    } catch (error) {
+        console.log(error);
+        return {
+            success: false,
+            message: 'Something went wrong. Failed to fetch component, please try again',
+            component: null,
+        }
+    }
+}
+
 export const addComponent = async (moduleId: string, unsafeData: z.infer<typeof CreateComponentValidation>) => {
     const { success, data, error } = CreateComponentValidation.safeParse(unsafeData);
 
@@ -83,7 +111,8 @@ export const addComponent = async (moduleId: string, unsafeData: z.infer<typeof 
         if ((data.type == 'file') && data.fileName) {
             const fileUpload = await uploadToCloudinary(
                 await fileToBuffer(data.fileName),
-                'courses/components'
+                'courses/components',
+                'raw'
             );
 
             uploadedFile = fileUpload.url;
@@ -97,12 +126,13 @@ export const addComponent = async (moduleId: string, unsafeData: z.infer<typeof 
                 description: data.description,
                 isActive: true,
                 type: data.type as unknown as ComponentType,
-                vimeoVideoUrl: data.vimeoVideoUrl ?? null,
+                vimeoVideoUrl: data.type == 'video' ? data.vimeoVideoUrl : null,
                 fileName: uploadedFile,
                 ...(fileNamePublicId && { fileNamePublicId }),
                 isFree: data.isFree,
                 duration: data.duration,
                 isPrerequisite: data.isPrerequisite ?? true,
+                updatedAt: new Date(),
             }
         });
 
@@ -152,7 +182,8 @@ export const updateComponent = async (id: string, unsafeData: z.infer<typeof Cre
         if (data.fileName) {
             fileUploaded = await uploadToCloudinary(
                 await fileToBuffer(data.fileName),
-                'courses/components'
+                'courses/components',
+                'raw'
             );
         }
 

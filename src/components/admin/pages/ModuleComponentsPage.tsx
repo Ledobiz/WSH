@@ -1,12 +1,11 @@
 'use client'
 
 import PageLoader from "@/src/components/website/PageLoader"
-import { ModuleComponent } from "@prisma/client"
+import { CourseModule, ModuleComponent } from "@prisma/client"
 import { useCallback, useEffect, useState } from "react"
 import { toast } from "react-toastify"
 import CustomModal from "../CustomModal"
 import DeleteModal from "../DeleteModal"
-import CourseModuleCreationForm from "../CourseModuleCreationForm"
 import { CreateModuleComponentInterface } from "@/src/types"
 import Link from "next/link"
 import { adminCoursesUrl, adminDashboardUrl, componentPreviewUrl, courseModules } from "@/src/utils/url"
@@ -14,8 +13,10 @@ import { addComponent, deleteComponent, fetchAllComponents, updateComponent } fr
 import { CreateComponentValidation } from "@/src/validations/CourseValidation"
 import * as z from "zod"
 import ComponentCreationForm from "../ComponentCreationForm"
+import { fetchModuleById } from "@/src/services/admin/course_module"
 
 type DBComponentsInterface = ModuleComponent;
+type DBModuleInterface = CourseModule;
 
 const ModuleComponentsPage = ({moduleId}: {moduleId: string}) => {
     const appUrl = process.env.NEXT_PUBLIC_APP_URL;
@@ -27,6 +28,7 @@ const ModuleComponentsPage = ({moduleId}: {moduleId: string}) => {
     const [showEditModal, setShowEditModal] = useState(false);
     const [componentToEdit, setComponentToEdit] = useState<DBComponentsInterface | null>(null);
     const [componentId, setComponentId] = useState('');
+    const [courseModule, setCourseModule] = useState<DBModuleInterface | null>(null);
 
     const fetchComponents = useCallback(async () => {
         setTableIsLoading(true);
@@ -34,6 +36,9 @@ const ModuleComponentsPage = ({moduleId}: {moduleId: string}) => {
         try {
             const result = await fetchAllComponents(moduleId);
             setComponents(result.components as DBComponentsInterface[]);
+
+            const dbCourseModule = await fetchModuleById(moduleId);
+            setCourseModule(dbCourseModule.courseModule);
         } 
         catch (error) {
             console.log('Error loading the component: ', error);
@@ -150,7 +155,7 @@ const ModuleComponentsPage = ({moduleId}: {moduleId: string}) => {
             <div className="col-lg-9 col-md-12 col-sm-12">
                 <div className="row">
                     <div className="col-lg-12 col-md-12 col-sm-12 pb-4">
-                        <nav aria-label="breadcrumb" className="d-flex justify-content-between align-items-center">
+                        <nav aria-label="breadcrumb" className="d-flex justify-content-between align-items-middle">
                             <ol className="breadcrumb">
                                 <li className="breadcrumb-item">
                                     <Link href={adminDashboardUrl}>Dashboard</Link>
@@ -159,7 +164,7 @@ const ModuleComponentsPage = ({moduleId}: {moduleId: string}) => {
                                     <Link href={adminCoursesUrl}>Courses</Link>
                                 </li>
                                 <li className="breadcrumb-item">
-                                    <Link href={`${courseModules}/${moduleId}`}>Course Module</Link>
+                                    <Link href={`${courseModules}/${courseModule?.courseId}`}>Course Module</Link>
                                 </li>
                                 <li className="breadcrumb-item active" aria-current="page">
                                     Module Component
@@ -244,13 +249,25 @@ const ModuleComponentsPage = ({moduleId}: {moduleId: string}) => {
                                                                     >
                                                                         <i className="bi bi-pencil-square"></i>
                                                                     </button>
-                                                                    <Link 
-                                                                        href={`${componentPreviewUrl}/${component.id}`} 
-                                                                        className="btn btn-sm btn-success me-1 mb-0"
-                                                                        title="Preview Component"
-                                                                    >
-                                                                        <i className="bi bi-eye" />
-                                                                    </Link>
+                                                                    {component.type === 'video' ? (
+                                                                        <Link 
+                                                                            href={`${componentPreviewUrl}/${component.id}`} 
+                                                                            className="btn btn-sm btn-success me-1 mb-0"
+                                                                            title="Preview Component"
+                                                                        >
+                                                                            <i className="bi bi-eye" />
+                                                                        </Link>
+                                                                    ) : (
+                                                                        <Link 
+                                                                            href={component.fileName ?? ''} 
+                                                                            className="btn btn-sm btn-success me-1 mb-0"
+                                                                            title="Preview Component"
+                                                                            target="_blank"
+                                                                        >
+                                                                            <i className="bi bi-eye" />
+                                                                        </Link>
+                                                                    )}
+                                                                    
                                                                     <button onClick={() => handleDeleteModal(component.id)} className="btn btn-sm btn-light-red mb-0">
                                                                         <i className="bi bi-trash3"></i>
                                                                     </button>
