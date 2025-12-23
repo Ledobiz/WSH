@@ -5,9 +5,22 @@ import prisma from "@/src/lib/prisma";
 import { deleteFromCloudinary, fileToBuffer, uploadToCloudinary } from "@/src/utils/server_functions";
 import { getFirstErrorFromFieldSubmission, sluggify } from "@/src/utils/client_functions";
 import { CreateCourseValidation } from "@/src/validations/CourseValidation";
+import { paginate } from "@/src/utils/pagination";
+import { Course } from "@prisma/client";
 
-export const fetchAllCourses = async () => {
-    try {
+export const fetchAllCourses = async (page: number = 1, pageSize: number = 20) => {
+    return await paginate<Course>(
+        prisma.course,
+        {
+            where: { deletedAt: null },
+            orderBy: { createdAt: 'desc' },
+            include: { category: true },
+        },
+        page,
+        pageSize
+    );
+
+    /*try {
         const courses = await prisma.course.findMany({
             where: {
                 deletedAt: null,
@@ -32,7 +45,7 @@ export const fetchAllCourses = async () => {
             message: 'Something went wrong',
             courses: []
         }
-    }
+    }*/
 }
 
 export const fetchActiveCourses = async () => {

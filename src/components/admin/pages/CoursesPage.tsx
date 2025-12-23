@@ -13,6 +13,7 @@ import CustomModal from "../CustomModal";
 import CourseCreationForm from "../CourseCreationForm";
 import { CourseCreationInterface } from "@/src/types";
 import DeleteModal from "../DeleteModal";
+import Pagination from "../Pagination";
 
 type DBCourseInterface = Course;
 
@@ -25,13 +26,22 @@ const CoursesPage = () => {
     const [courseId, setCourseId] = useState('');
     const [courses, setCourses] = useState<DBCourseInterface[] | null>(null);
     const [courseToEdit, setCourseToEdit] = useState<DBCourseInterface | null>(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(0);
+    const [totalEntries, setTotalEntries] = useState(0);
+    const pageSize = 20; // Items per page
 
     const fetchCourses = useCallback(async () => {
         setTableIsLoading(true);
 
         try {
-            const result = await fetchAllCourses();
-            setCourses(result.courses);
+            const result = await fetchAllCourses(currentPage, pageSize);
+            
+            if (result.success) {
+                setCourses(result.data);
+                setTotalPages(result.pagination.totalPages);
+                setTotalEntries(result.pagination.totalCount);
+            }
         }
         catch (error) {
             console.log('Error loading the courses: ', error);
@@ -44,7 +54,7 @@ const CoursesPage = () => {
 
     useEffect(() => {
         fetchCourses();
-    }, [fetchCourses]);
+    }, [fetchCourses, currentPage]);
 
     const handleCourseCreation = async (data: CourseCreationInterface) => {
         if (
@@ -289,51 +299,13 @@ const CoursesPage = () => {
                                             }
                                         </div>
                                         
-                                        
-                                        <div className="d-sm-flex justify-content-sm-between align-items-sm-center mt-3">
-                                            {/* Content */}
-                                            <p className="mb-0 text-center text-sm-start text-muted">
-                                            Showing 1 to 8 of 20 entries
-                                            </p>
-                                            {/* Pagination */}
-                                            <nav
-                                            className="d-flex justify-content-center mb-0"
-                                            aria-label="navigation"
-                                            >
-                                                <ul className="pagination pagination-sm pagination-primary-soft d-inline-block d-md-flex rounded mb-0">
-                                                    <li className="page-item mb-0">
-                                                    <a className="page-link" href="#" tabIndex={-1}>
-                                                        <i className="fas fa-angle-left" />
-                                                    </a>
-                                                    </li>
-                                                    <li className="page-item mb-0">
-                                                    <a className="page-link" href="#">
-                                                        1
-                                                    </a>
-                                                    </li>
-                                                    <li className="page-item mb-0 active">
-                                                    <a className="page-link" href="#">
-                                                        2
-                                                    </a>
-                                                    </li>
-                                                    <li className="page-item mb-0">
-                                                    <a className="page-link" href="#">
-                                                        3
-                                                    </a>
-                                                    </li>
-                                                    <li className="page-item mb-0">
-                                                    <a className="page-link" href="#">
-                                                        4
-                                                    </a>
-                                                    </li>
-                                                    <li className="page-item mb-0">
-                                                    <a className="page-link" href="#">
-                                                        <i className="fas fa-angle-right" />
-                                                    </a>
-                                                    </li>
-                                                </ul>
-                                            </nav>
-                                        </div>
+                                        <Pagination
+                                            currentPage={currentPage}
+                                            totalPages={totalPages}
+                                            totalEntries={totalEntries}
+                                            pageSize={pageSize}
+                                            onPageChange={(page) => setCurrentPage(page)}
+                                        />
                                     </>
                                 )}
                             </div>
