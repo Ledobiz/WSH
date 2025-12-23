@@ -113,7 +113,7 @@ const ComponentPreviewPage = ({componentId}: {componentId: string}) => {
                                                     </div>
                                                 :
                                                 <div className="card shadow-sm border rounded-4 overflow-hidden">
-                                                    <VideoPlayer url={component.vimeoVideoUrl ?? ''} />
+                                                    <VideoPlayer videoId={component.id} />
                                                 </div>
                                             }
                                         </div>

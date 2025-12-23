@@ -146,7 +146,7 @@ const CoursesPage = () => {
                             <div className="card-header border-bottom">
                                 <div className="d-flex align-items-center justify-content-between w-100">
                                     <h4 className="mb-2 mb-sm-0">All Courses</h4>
-                                    <button onClick={() => setShowCourseCreationModal(true)} className="btn btn-main btn-sm">Add New Category</button>
+                                    <button onClick={() => setShowCourseCreationModal(true)} className="btn btn-main btn-sm">Add New Course</button>
                                 </div>
                             </div>
                             
