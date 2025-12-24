@@ -14,11 +14,36 @@ import CourseCreationForm from "../CourseCreationForm";
 import { CourseCreationInterface } from "@/src/types";
 import DeleteModal from "../DeleteModal";
 import Pagination from "../Pagination";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 type DBCourseInterface = Course;
 
 const CoursesPage = () => {
     const appUrl = process.env.NEXT_PUBLIC_APP_URL;
+    const searchParams = useSearchParams();
+    const pathName = usePathname();
+    const { replace } = useRouter();
+
+    // 1. Get initial values from URL or defaults
+    const currentPage = Number(searchParams.get('page')) || 1;
+    const searchTerm = searchParams.get('q') || '';
+
+    // 2. Function to update the URL
+    const handleUrlChange = (name: string, value: string | number) => {
+        const params = new URLSearchParams(searchParams);
+        
+        if (value) {
+            params.set(name, value.toString().trim());
+        } else {
+            params.delete(name);
+        }
+
+        // Reset to page 1 if searching
+        if (name === 'q') params.set('page', '1');
+
+        replace(`${pathName}?${params.toString()}`);
+    };
+
     const [tableIsLoading, setTableIsLoading] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [showCourseCreationModal, setShowCourseCreationModal] = useState(false);
@@ -26,7 +51,6 @@ const CoursesPage = () => {
     const [courseId, setCourseId] = useState('');
     const [courses, setCourses] = useState<DBCourseInterface[] | null>(null);
     const [courseToEdit, setCourseToEdit] = useState<DBCourseInterface | null>(null);
-    const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
     const [totalEntries, setTotalEntries] = useState(0);
     const pageSize = 20; // Items per page
@@ -35,7 +59,7 @@ const CoursesPage = () => {
         setTableIsLoading(true);
 
         try {
-            const result = await fetchAllCourses(currentPage, pageSize);
+            const result = await fetchAllCourses(currentPage, pageSize, searchTerm);
             
             if (result.success) {
                 setCourses(result.data);
@@ -50,11 +74,15 @@ const CoursesPage = () => {
         finally {
             setTableIsLoading(false);
         }
-    }, []);
+    }, [currentPage, searchTerm]);
 
     useEffect(() => {
-        fetchCourses();
-    }, [fetchCourses, currentPage]);
+        const delayDebounceFn = setTimeout(() => {
+            fetchCourses();
+        }, 500); // Wait 500ms after last keystroke
+
+        return () => clearTimeout(delayDebounceFn);
+    }, [fetchCourses, currentPage, searchTerm]);
 
     const handleCourseCreation = async (data: CourseCreationInterface) => {
         if (
@@ -166,34 +194,21 @@ const CoursesPage = () => {
                                     <>
                                         <div className="row g-3 align-items-center justify-content-between mb-4">
                                             <div className="col-md-7">
-                                                <form className="rounded position-relative">
+                                                <form onSubmit={(e) => e.preventDefault()} className="rounded position-relative">
                                                     <input
-                                                    className="form-control pe-5 bg-transparent"
-                                                    type="search"
-                                                    placeholder="Search"
-                                                    aria-label="Search"
+                                                        className="form-control pe-5 bg-transparent"
+                                                        type="search"
+                                                        placeholder="Search courses..."
+                                                        aria-label="Search"
+                                                        defaultValue={searchTerm} // Use defaultValue so it doesn't flicker while typing
+                                                        onChange={(e) => handleUrlChange('q', e.target.value)}
                                                     />
                                                     <button
-                                                    className="bg-transparent p-2 position-absolute top-50 end-0 translate-middle-y border-0 text-primary-hover text-reset"
-                                                    type="submit"
+                                                        className="bg-transparent p-2 position-absolute top-50 end-0 translate-middle-y border-0 text-primary-hover text-reset"
+                                                        type="submit"
                                                     >
-                                                    <i className="bi bi-search text-muted opacity-75 fs-6 " />
+                                                        <i className="bi bi-search text-muted opacity-75 fs-6 " />
                                                     </button>
-                                                </form>
-                                            </div>
-                                            
-                                            <div className="col-md-3">
-                                                <form>
-                                                    <div className="position-relative">
-                                                        <select id="sorting" className="form-control">
-                                                            <option value="">&nbsp;</option>
-                                                            <option value={1}>Free</option>
-                                                            <option value={2}>Most Popular</option>
-                                                            <option value={3}>Most Viewed</option>
-                                                            <option value={4}>Newest</option>
-                                                            <option value={5}>Trending</option>
-                                                        </select>
-                                                    </div>
                                                 </form>
                                             </div>
                                         </div>
@@ -304,7 +319,7 @@ const CoursesPage = () => {
                                             totalPages={totalPages}
                                             totalEntries={totalEntries}
                                             pageSize={pageSize}
-                                            onPageChange={(page) => setCurrentPage(page)}
+                                            onPageChange={(page) => handleUrlChange('q', page)}
                                         />
                                     </>
                                 )}

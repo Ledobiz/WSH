@@ -14,24 +14,53 @@ export interface PaginatedResult<T> {
 
 export async function paginate<T>(
     model: any,
-    args: any = {},
-    page: number = 1,
-    pageSize: number = 20
+    options: {
+        page?: number;
+        pageSize?: number;
+        where?: any;
+        orderBy?: any;
+        include?: any;
+        search?: string;
+        searchFields?: string[]; // e.g., ['title', 'description']
+    }
 ): Promise<PaginatedResult<T>> {
+    const {
+        page = 1,
+        pageSize = 20,
+        where = {},
+        orderBy = { createdAt: 'desc' },
+        include = {},
+        search,
+        searchFields = []
+    } = options;
+
     const skip = (page - 1) * pageSize;
-    const take = pageSize;
+
+    // Build the search logic dynamically
+    const searchConditions = search && searchFields.length > 0
+        ? {
+            OR: searchFields.map((field) => ({
+                [field]: { contains: search, mode: 'insensitive' },
+            })),
+        }
+        : {};
+
+    // Combine static filters with search conditions
+    const finalWhere = { ...where, ...searchConditions };
+
+    console.log('Final where', finalWhere);
 
     try {
         // Run the count and the data fetch in parallel
         const [data, totalCount] = await Promise.all([
             model.findMany({
-                ...args,
+                where: finalWhere,
+                orderBy,
+                include,
                 skip,
-                take,
+                take: pageSize,
             }),
-            model.count({
-                where: args.where || {},
-            }),
+            model.count({ where: finalWhere }),
         ]);
 
         return {

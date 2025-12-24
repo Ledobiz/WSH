@@ -8,44 +8,15 @@ import { CreateCourseValidation } from "@/src/validations/CourseValidation";
 import { paginate } from "@/src/utils/pagination";
 import { Course } from "@prisma/client";
 
-export const fetchAllCourses = async (page: number = 1, pageSize: number = 20) => {
-    return await paginate<Course>(
-        prisma.course,
-        {
-            where: { deletedAt: null },
-            orderBy: { createdAt: 'desc' },
-            include: { category: true },
-        },
+export const fetchAllCourses = async (page: number = 1, pageSize: number = 20, searchTerm?: string) => {
+    return await paginate<Course>(prisma.course, {
         page,
-        pageSize
-    );
-
-    /*try {
-        const courses = await prisma.course.findMany({
-            where: {
-                deletedAt: null,
-            },
-            orderBy: {
-                createdAt: 'desc',
-            },
-            include: {
-                category: true,
-            },
-        });
-
-        return {
-            success: true,
-            message: 'Success',
-            courses,
-        }
-    } catch (error) {
-        console.log(error);
-        return {
-            success: false,
-            message: 'Something went wrong',
-            courses: []
-        }
-    }*/
+        pageSize,
+        search: searchTerm,
+        searchFields: ['name'],
+        where: { deletedAt: null },
+        include: { category: true },
+    });
 }
 
 export const fetchActiveCourses = async () => {
