@@ -13,9 +13,23 @@ export const fetchAllCourses = async (page: number = 1, pageSize: number = 20, s
         page,
         pageSize,
         search: searchTerm,
-        searchFields: ['name'],
+        searchFields: ['title'],
         where: { deletedAt: null },
-        include: { category: true },
+        include: {
+            category: true,
+            courseModules: {
+                where: {
+                    deletedAt: null,
+                },
+                include: {
+                    moduleComponents: {
+                        where: {
+                            deletedAt: null,
+                        }
+                    }
+                }
+            }
+        },
     });
 }
 
@@ -31,6 +45,18 @@ export const fetchActiveCourses = async () => {
             },
             include: {
                 category: true,
+                courseModules: {
+                    where: {
+                        deletedAt: null,
+                    },
+                    include: {
+                        moduleComponents: {
+                            where: {
+                                deletedAt: null,
+                            }
+                        }
+                    }
+                }
             },
         });
 

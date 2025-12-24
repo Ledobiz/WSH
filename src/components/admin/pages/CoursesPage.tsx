@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react"
 import NavBreadcrumb from "../NavBreadcrumb"
 import { createCourse, deleteCourse, fetchAllCourses, updateCourse } from "@/src/services/admin/course";
 import { toast } from "react-toastify";
-import { Course } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import PageLoader from "../../website/PageLoader";
 import Link from "next/link";
 import { courseModules, coursesUrl } from "@/src/utils/url";
@@ -16,7 +16,16 @@ import DeleteModal from "../DeleteModal";
 import Pagination from "../Pagination";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
-type DBCourseInterface = Course;
+type DBCourseInterface = Prisma.CourseGetPayload<{
+    include: {
+        category: true;
+        courseModules: {
+            include: {
+                moduleComponents: true;
+            };
+        };
+    };
+}>;
 
 const CoursesPage = () => {
     const appUrl = process.env.NEXT_PUBLIC_APP_URL;
@@ -53,7 +62,16 @@ const CoursesPage = () => {
     const [courseToEdit, setCourseToEdit] = useState<DBCourseInterface | null>(null);
     const [totalPages, setTotalPages] = useState(0);
     const [totalEntries, setTotalEntries] = useState(0);
+    const [searchInput, setSearchInput] = useState(searchTerm); // Local state for input
     const pageSize = 20; // Items per page
+
+    // Helper function to calculate total lectures (module components) for a course
+    const getTotalLectures = (course: DBCourseInterface): number => {
+        if (!course.courseModules) return 0;
+        return course.courseModules.reduce((total, module) => {
+            return total + (module.moduleComponents?.length || 0);
+        }, 0);
+    };
 
     const fetchCourses = useCallback(async () => {
         setTableIsLoading(true);
@@ -62,7 +80,7 @@ const CoursesPage = () => {
             const result = await fetchAllCourses(currentPage, pageSize, searchTerm);
             
             if (result.success) {
-                setCourses(result.data);
+                setCourses(result.data as DBCourseInterface[]);
                 setTotalPages(result.pagination.totalPages);
                 setTotalEntries(result.pagination.totalCount);
             }
@@ -76,13 +94,27 @@ const CoursesPage = () => {
         }
     }, [currentPage, searchTerm]);
 
+    // Sync searchInput with URL when it changes externally (e.g., browser back/forward)
+    useEffect(() => {
+        setSearchInput(searchTerm);
+    }, [searchTerm]);
+
+    // Debounce search input to URL update
     useEffect(() => {
         const delayDebounceFn = setTimeout(() => {
-            fetchCourses();
-        }, 500); // Wait 500ms after last keystroke
+            // Only update URL if the search input differs from current searchTerm
+            if (searchInput !== searchTerm) {
+                handleUrlChange('q', searchInput);
+            }
+        }, 500); // Wait 500ms after user stops typing
 
         return () => clearTimeout(delayDebounceFn);
-    }, [fetchCourses, currentPage, searchTerm]);
+    }, [searchInput]); // Only depend on searchInput
+
+    // Fetch courses when URL params change (after debounce)
+    useEffect(() => {
+        fetchCourses();
+    }, [fetchCourses]);
 
     const handleCourseCreation = async (data: CourseCreationInterface) => {
         if (
@@ -193,15 +225,15 @@ const CoursesPage = () => {
                                 {tableIsLoading ? <PageLoader /> : (
                                     <>
                                         <div className="row g-3 align-items-center justify-content-between mb-4">
-                                            <div className="col-md-7">
+                                            <div className="col-md-5">
                                                 <form onSubmit={(e) => e.preventDefault()} className="rounded position-relative">
                                                     <input
                                                         className="form-control pe-5 bg-transparent"
                                                         type="search"
                                                         placeholder="Search courses..."
                                                         aria-label="Search"
-                                                        defaultValue={searchTerm} // Use defaultValue so it doesn't flicker while typing
-                                                        onChange={(e) => handleUrlChange('q', e.target.value)}
+                                                        value={searchInput}
+                                                        onChange={(e) => setSearchInput(e.target.value)}
                                                     />
                                                     <button
                                                         className="bg-transparent p-2 position-absolute top-50 end-0 translate-middle-y border-0 text-primary-hover text-reset"
@@ -274,7 +306,7 @@ const CoursesPage = () => {
                                                                             <div className="d-flex gap-2">
                                                                                 <p className="mb-0 text-muted-2 me-1">
                                                                                     <i className="bi bi-camera-video me-1" />
-                                                                                    18 lectures
+                                                                                    {getTotalLectures(course)} {getTotalLectures(course) === 1 ? 'lecture' : 'lectures'}
                                                                                 </p>
                                                                             </div>
                                                                         </div>
@@ -319,7 +351,7 @@ const CoursesPage = () => {
                                             totalPages={totalPages}
                                             totalEntries={totalEntries}
                                             pageSize={pageSize}
-                                            onPageChange={(page) => handleUrlChange('q', page)}
+                                            onPageChange={(page) => handleUrlChange('page', page)}
                                         />
                                     </>
                                 )}

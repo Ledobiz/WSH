@@ -48,8 +48,6 @@ export async function paginate<T>(
     // Combine static filters with search conditions
     const finalWhere = { ...where, ...searchConditions };
 
-    console.log('Final where', finalWhere);
-
     try {
         // Run the count and the data fetch in parallel
         const [data, totalCount] = await Promise.all([
