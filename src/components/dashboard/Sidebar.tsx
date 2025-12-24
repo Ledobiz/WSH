@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import Logout from "./Logout";
 import { useAuth } from "@/src/providers/AuthProvider";
 import { formatDate } from "@/src/utils/client_functions";
+import { useProgressCounts } from "@/src/providers/StudentSidebarProvider";
 
 const links = [
     {
@@ -41,6 +42,7 @@ const links = [
 
 const Sidebar = () => {
     const { user } = useAuth();
+    const { lecturesDone, coursesDone } = useProgressCounts();
     const pathName = usePathname();
     const appUrl = process.env.NEXT_PUBLIC_APP_URL;
 
@@ -92,11 +94,11 @@ const Sidebar = () => {
                             </div>
                             <div className="d-flex justify-content-between mb-4">
                                 <div className="d-flex flex-column justify-content-center align-items-center gap-1">
-                                    <h6 className="text-dark lh-1 fw-semibold m-0">12</h6>
+                                    <h6 className="text-dark lh-1 fw-semibold m-0">{ coursesDone }</h6>
                                     <span className="text-muted-2 m-0">Done Courses</span>
                                 </div>
                                 <div className="d-flex flex-column justify-content-center align-items-center gap-2">
-                                    <h6 className="text-dark lh-1 fw-semibold m-0">156</h6>
+                                    <h6 className="text-dark lh-1 fw-semibold m-0">{ lecturesDone }</h6>
                                     <span className="text-muted-2 m-0">Done Lessons</span>
                                 </div>
                             </div>
