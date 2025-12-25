@@ -36,7 +36,7 @@ const CourseCard = ({slug, title, lectures, level, originalPrice, discountedPric
                     <div className="course-hours position-absolute top-0 start-0 ms-3 mt-3">
                         <span className="badge bg-dark rounded-pill">
                             <i className="bi bi-clock-history me-1" />
-                            10h 50m
+                            {((originalPrice - discountedPrice) / originalPrice) * 100}% off
                         </span>
                     </div>
                 </div>

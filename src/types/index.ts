@@ -1,4 +1,4 @@
-import { Category } from "@prisma/client";
+import { Category, Prisma } from "@prisma/client";
 
 export type UserRole = 'student' | 'admin';
 
@@ -90,3 +90,14 @@ export interface CreateModuleComponentInterface {
     duration: number;
     isActive: boolean | null;
 }
+
+export type DBCourseInterface = Prisma.CourseGetPayload<{
+    include: {
+        students: true,
+        courseModules: {
+            include: {
+                moduleComponents: true;
+            };
+        };
+    };
+}>;

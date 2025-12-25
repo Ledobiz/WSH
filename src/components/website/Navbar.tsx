@@ -1,6 +1,7 @@
 'use client';
 
-import { loginUrl, registerUrl } from "@/src/utils/url";
+import { useAuth } from "@/src/providers/AuthProvider";
+import { loginUrl, registerUrl, studentDashboardUrl } from "@/src/utils/url";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -31,6 +32,7 @@ const links = [
 const Navbar = () => {
     const appUrl = process.env.NEXT_PUBLIC_APP_URL!;
     const pathName = usePathname();
+    const { user } = useAuth();
 
     return (  
         <>
@@ -59,18 +61,29 @@ const Navbar = () => {
                                 }
                             </ul>
                             <ul className="nav-menu nav-menu-social align-to-right">
-                                <li className="become-tutor">
-                                    <Link href={registerUrl}>
-                                        <i className="bi bi-person-circle" />
-                                        Register
-                                    </Link>
-                                </li>
-                                <li className="join-btn">
-                                    <Link href={loginUrl}>
-                                        <i className="bi bi-box-arrow-in-right" />
-                                        Sign In
-                                    </Link>
-                                </li>
+                                {user && user.role === 'student' ? (
+                                    <li className="join-btn">
+                                        <Link href={studentDashboardUrl}>
+                                            <i className="bi bi-box-arrow-in-right" />
+                                            My Portal
+                                        </Link>
+                                    </li>
+                                ) : (
+                                    <>
+                                        <li className="become-tutor">
+                                            <Link href={registerUrl}>
+                                                <i className="bi bi-person-circle" />
+                                                Register
+                                            </Link>
+                                        </li>
+                                        <li className="join-btn">
+                                            <Link href={loginUrl}>
+                                                <i className="bi bi-box-arrow-in-right" />
+                                                Sign In
+                                            </Link>
+                                        </li>
+                                    </>
+                                )}
                             </ul>
                         </div>
                     </nav>

@@ -1,19 +1,19 @@
 interface BannerInterface {
     title: string,
     description: string,
-    duration: string,
     lectures: number,
     totalEnrolled: number,
-    level: string
+    level: string,
+    banner?: string | null,
 }
 
-const CourseDetailsBanner = ({title, description, duration, lectures, totalEnrolled, level}: BannerInterface) => {
+const CourseDetailsBanner = ({title, description, lectures, totalEnrolled, level, banner}: BannerInterface) => {
     const appUrl = process.env.NEXT_PUBLIC_APP_URL;
 
     return (
         <div
             className="image-cover ed_detail_head lg theme-ov"
-            style={{ background: '#f4f4f4 url('+appUrl+'/assets/img/detail-bg.jpg)' }}
+            style={{ background: '#f4f4f4 url('+banner+')' }}
             data-overlay={7}
         >
             <div className="container">
@@ -26,10 +26,6 @@ const CourseDetailsBanner = ({title, description, duration, lectures, totalEnrol
                             <div className="ed_header_caption">
                                 <h2 className="ed_title">{title}</h2>
                                 <ul>
-                                    <li>
-                                        <i className="bi bi-calendar-check" />
-                                        {duration}
-                                    </li>
                                     <li>
                                         <i className="bi bi-camera-video" />
                                         {lectures} Lectures

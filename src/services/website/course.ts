@@ -3,6 +3,7 @@
 import prisma from "@/src/lib/prisma";
 import { paginate } from "@/src/utils/pagination";
 import { Course } from "@prisma/client";
+import { success } from "zod";
 
 export const categoryCourses = async () => {
     try {
@@ -70,4 +71,43 @@ export const allCoursesForWebsite = async (page: number = 1, pageSize: number = 
             }
         }
     });
+}
+
+export const singleCourseWebsite = async (slug: string) => {
+    try {
+        const course = await prisma.course.findFirst({
+            where: {
+                slug,
+                deletedAt: null,
+            },
+            include: {
+                students: true,
+                courseModules: {
+                    where: {
+                        deletedAt: null,
+                    },
+                    include: {
+                        moduleComponents: {
+                            where: {
+                                deletedAt: null,
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        return {
+            success: true,
+            message: 'Success',
+            course
+        }
+    } catch (error) {
+        console.log(error);
+        return {
+            success: false,
+            message: 'Unable to locate the course',
+            course: null,
+        }
+    }
 }

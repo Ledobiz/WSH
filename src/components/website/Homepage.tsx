@@ -1,28 +1,19 @@
 'use client'
 
 import { categoryCourses } from "@/src/services/website/course";
-import { formatAmount } from "@/src/utils/client_functions";
+import { formatAmount, getTotalLectures } from "@/src/utils/client_functions";
 import { coursesUrl, registerUrl } from "@/src/utils/url";
 import Link from "next/link";
 import { useEffect, useState } from "react"
 import { Prisma } from "@prisma/client";
 import ButtonLoader from "../admin/ButtonLoader";
 
-type DBCourseInterface = Prisma.CourseGetPayload<{
-    include: {
-        courseModules: {
-            include: {
-                moduleComponents: true;
-            };
-        };
-    };
-}>;
-
 type CategoryInterface = Prisma.CategoryGetPayload<{
     include: {
         courses: {
             include: {
                 courseModules: {
+                    where: { deletedAt: null },
                     include: {
                         moduleComponents: true;
                     }
@@ -31,13 +22,6 @@ type CategoryInterface = Prisma.CategoryGetPayload<{
         }
     }
 }>;
-
-const getTotalLectures = (course: DBCourseInterface): number => {
-    if (!course.courseModules) return 0;
-    return course.courseModules.reduce((total, module) => {
-        return total + (module.moduleComponents?.length || 0);
-    }, 0);
-};
 
 const Homepage = () => {
     const appUrl = process.env.NEXT_PUBLIC_APP_URL!;
@@ -202,8 +186,8 @@ const Homepage = () => {
                                                                     </Link>
                                                                     <div className="course-hours position-absolute top-0 start-0 ms-3 mt-3">
                                                                         <span className="badge bg-dark rounded-pill">
-                                                                            <i className="bi bi-clock-history me-1" />
-                                                                            10h 50m
+                                                                            <i className="bi bi-tags me-1"></i>
+                                                                            {((course.originalFee - course.discountedFee) / course.originalFee) * 100}% off
                                                                         </span>
                                                                     </div>
                                                                 </div>

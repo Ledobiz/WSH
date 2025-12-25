@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 export const formatAmount = (price: number) => {
     const value = Number(price);
 
@@ -42,3 +44,14 @@ export function formatDate(
         year: options.year ?? "numeric",
     });
 }
+
+export const getTotalLectures = (course: {
+    courseModules: {
+        moduleComponents: any[]
+    }[]
+}): number => {
+    if (!course.courseModules) return 0;
+    return course.courseModules.reduce((total, module) => {
+        return total + (module.moduleComponents?.length || 0);
+    }, 0);
+};
