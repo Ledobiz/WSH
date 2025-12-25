@@ -52,8 +52,12 @@ const Navbar = () => {
                     <nav id="navigation" className="navigation navigation-landscape">
                         <div className="nav-header">
                             <Link className="nav-brand" href={studentDashboardUrl}>
-                                {/* <img src="assets/img/logo.svg" className="logo" alt="Logo" /> */}
-                                <h1>WSH</h1>
+                                <img
+                                    src={`${appUrl}/assets/img/wsh-logo-light.jpeg`}
+                                    className="img-fluid"
+                                    alt="WSH-logo"
+                                    style={{width: '60px', height: '100%'}}
+                                />
                             </Link>
                             {/* <a className="nav-toggle" data-bs-toggle="offcanvas" href="#offcanvasExample" role="button"
                                 aria-controls="offcanvasExample" 

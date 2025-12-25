@@ -51,13 +51,13 @@ const LoginPage = () => {
                     <div className="row align-items-center justify-content-center">
                         <div className="col-xxl-6 col-xl-7 col-lg-9 col-md-12">
                             <div className="card border py-xl-5 p-4 login-card overlio overlios">
-                                <div className="web-logo d-flex align-items-center justify-content-center mb-3">
+                                <div className="web-logo d-flex align-items-center justify-content-center mb-2">
                                     <div className="logo">
                                         <img
-                                            src={`${appUrl}/assets/img/logo-icon.png`}
+                                            src={`${appUrl}/assets/img/wsh-logo-light.jpeg`}
                                             className="img-fluid"
-                                            width={60}
-                                            alt="Logo"
+                                            alt="WSH-logo"
+                                            style={{width: '80px', height: '100%'}}
                                         />
                                     </div>
                                 </div>

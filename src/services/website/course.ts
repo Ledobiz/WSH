@@ -1,6 +1,8 @@
 'use server'
 
 import prisma from "@/src/lib/prisma";
+import { paginate } from "@/src/utils/pagination";
+import { Course } from "@prisma/client";
 
 export const categoryCourses = async () => {
     try {
@@ -45,44 +47,27 @@ export const categoryCourses = async () => {
     }
 }
 
-export const ongoingCourses = async (userId: string) => {
-    try {
-        const courses = await prisma.student.findMany({
-            where: {
-                userId,
-                deletedAt: null
-            },
-            orderBy: {
-                createdAt: 'desc',
-            },
-            include: {
-                course: true,
-                studentModules: {
-                    where: {
-                        deletedAt: null,
-                    },
-                    include: {
-                        studentModuleComponents: {
-                            where: {
-                                deletedAt: null
-                            }
+export const allCoursesForWebsite = async (page: number = 1, pageSize: number = 20) => {
+    return await paginate<Course>(prisma.course, {
+        page,
+        pageSize,
+        where: {
+            isActive: true,
+            deletedAt: null,
+        },
+        include: {
+            courseModules: {
+                where: {
+                    deletedAt: null,
+                },
+                include: {
+                    moduleComponents: {
+                        where: {
+                            deletedAt: null,
                         }
                     }
                 }
             }
-        });
-
-        return {
-            success: true,
-            message: 'Success',
-            courses,
         }
-    } catch (error) {
-        console.log(error);
-        return {
-            success: false,
-            message: 'Something went wrong',
-            courses: []
-        }
-    }
+    });
 }

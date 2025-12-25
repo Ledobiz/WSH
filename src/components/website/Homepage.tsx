@@ -195,7 +195,7 @@ const Homepage = () => {
                                                                     </div>
                                                                     <Link href={`${coursesUrl}/${course.slug}`}>
                                                                         <img
-                                                                            src={course.thumbnail}
+                                                                            src={course.thumbnail ?? ''}
                                                                             className="img-fluid"
                                                                             alt=""
                                                                         />

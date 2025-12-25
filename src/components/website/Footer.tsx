@@ -13,9 +13,10 @@ const Footer = () => {
                             <div className="col-lg-3 col-md-3">
                                 <div className="footer-widget">
                                     <img
-                                        src={`${appUrl}/assets/img/logo-light.svg`}
+                                        src={`${appUrl}/assets/img/wsh-logo-light.jpeg`}
                                         className="img-footer"
-                                        alt=""
+                                        alt="WSH-logo"
+                                        style={{width: '80px', height: '100%'}}
                                     />
                                     <div className="footer-add">
                                         <address className="mb-4 lh-base">
@@ -24,13 +25,13 @@ const Footer = () => {
                                             Ogun State, Nigeria.
                                         </address>
                                         <div className="d-flex align-items-center call-now gap-2 mb-3">
-                                            <div className="square--30 circle bg-light-main text-main">
+                                            <div className="square--30 circle">
                                                 <i className="bi bi-telephone" />
                                             </div>
                                             <div className="fs-6 fw-semibold">+2348180525079</div>
                                         </div>
                                         <div className="d-flex align-items-center call-now gap-2">
-                                            <div className="square--30 circle bg-light-main text-main">
+                                            <div className="square--30 circle">
                                                 <i className="bi bi-envelope" />
                                             </div>
                                             <div className="fs-6 fw-semibold">support@wsh.com</div>
@@ -53,6 +54,12 @@ const Footer = () => {
                                         </li>
                                         <li>
                                             <a href="#">Contact</a>
+                                        </li>
+                                        <li>
+                                            <a href="#">Terms & Conditions</a>
+                                        </li>
+                                        <li>
+                                            <a href="#">Privacy Policy</a>
                                         </li>
                                     </ul>
                                 </div>

@@ -1,6 +1,7 @@
 'use client';
 
 import { loginUrl, registerUrl } from "@/src/utils/url";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -28,6 +29,7 @@ const links = [
 ];
 
 const Navbar = () => {
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL!;
     const pathName = usePathname();
 
     return (  
@@ -37,8 +39,12 @@ const Navbar = () => {
                     <nav id="navigation" className="navigation navigation-landscape">
                         <div className="nav-header">
                             <a className="nav-brand" href="#">
-                                {/* <img src="assets/img/logo.svg" className="logo" alt="Logo" /> */}
-                                <h1>WSH</h1>
+                                <img 
+                                    src={`${appUrl}/assets/img/wsh-logo-light.jpeg`}
+                                    className="logo"
+                                    alt="Women Skills Hub logo"
+                                    style={{width: '60px', height: '100%'}}
+                                />
                             </a>
                             <div className="nav-toggle" />
                         </div>
