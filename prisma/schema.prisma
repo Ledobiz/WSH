@@ -85,6 +85,7 @@ model CourseModule {
   updatedAt        DateTime          @updatedAt
   deletedAt        DateTime?
   moduleComponents ModuleComponent[]
+  studentModules   StudentModule[]
 
   @@index(isActive)
   @@index(sorting)
@@ -93,24 +94,25 @@ model CourseModule {
 }
 
 model ModuleComponent {
-  id               String        @id @default(uuid()) @db.VarChar(191)
-  courseModuleId   String        @db.VarChar(191)
-  courseModule     CourseModule  @relation(fields: [courseModuleId], references: [id], onDelete: Cascade)
-  name             String        @db.VarChar(191)
-  description      String?
-  isActive         Boolean       @default(true)
-  type             ComponentType @default(video)
-  vimeoVideoUrl    String?
-  embedVideoUrl    String?
-  fileName         String?
-  fileNamePublicId String?
-  isPrerequisite   Boolean       @default(false)
-  isFree           Boolean       @default(false)
-  sorting          Int?
-  duration         Int?
-  createdAt        DateTime      @default(now())
-  updatedAt        DateTime      @updatedAt
-  deletedAt        DateTime?
+  id                      String                   @id @default(uuid()) @db.VarChar(191)
+  courseModuleId          String                   @db.VarChar(191)
+  courseModule            CourseModule             @relation(fields: [courseModuleId], references: [id], onDelete: Cascade)
+  name                    String                   @db.VarChar(191)
+  description             String?
+  isActive                Boolean                  @default(true)
+  type                    ComponentType            @default(video)
+  vimeoVideoUrl           String?
+  embedVideoUrl           String?
+  fileName                String?
+  fileNamePublicId        String?
+  isPrerequisite          Boolean                  @default(false)
+  isFree                  Boolean                  @default(false)
+  sorting                 Int?
+  duration                Int?
+  createdAt               DateTime                 @default(now())
+  updatedAt               DateTime                 @updatedAt
+  deletedAt               DateTime?
+  studentModuleComponents StudentModuleComponent[]
 
   @@index(isActive)
   @@index(sorting)
@@ -244,17 +246,100 @@ enum PaymentSource {
 }
 
 model Student {
-  id                    String    @id @default(uuid()) @db.VarChar(191)
-  userId                String    @db.VarChar(191)
-  user                  User      @relation(fields: [userId], references: [id])
-  courseId              String    @db.VarChar(191)
-  course                Course    @relation(fields: [courseId], references: [id])
-  courseContentAssigned Boolean   @default(false)
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @updatedAt
-  deletedAt             DateTime?
+  id                      String                   @id @default(uuid()) @db.VarChar(191)
+  userId                  String                   @db.VarChar(191)
+  user                    User                     @relation(fields: [userId], references: [id])
+  courseId                String                   @db.VarChar(191)
+  course                  Course                   @relation(fields: [courseId], references: [id])
+  courseContentAssigned   Boolean                  @default(false)
+  lecturesCompleted       Boolean                  @default(false)
+  lastLectureId           String                   @db.VarChar(191)
+  createdAt               DateTime                 @default(now())
+  updatedAt               DateTime                 @updatedAt
+  deletedAt               DateTime?
+  studentModules          StudentModule[]
+  studentModuleComponents StudentModuleComponent[]
 
   @@index(courseContentAssigned)
+  @@index(lecturesCompleted)
   @@index(createdAt)
   @@index(deletedAt)
+}
+
+model StudentModule {
+  id                      String                   @id @default(uuid()) @db.VarChar(191)
+  studentId               String                   @db.VarChar(191)
+  student                 Student                  @relation(fields: [studentId], references: [id])
+  courseModuleId          String                   @db.VarChar(191)
+  courseModule            CourseModule             @relation(fields: [courseModuleId], references: [id])
+  name                    String                   @db.VarChar(191)
+  description             String?
+  isActive                Boolean                  @default(true)
+  sorting                 Int?
+  totalDuration           Int?
+  createdAt               DateTime                 @default(now())
+  updatedAt               DateTime                 @updatedAt
+  deletedAt               DateTime?
+  studentModuleComponents StudentModuleComponent[]
+  studentLectureRecords   StudentLectureRecord[]
+
+  @@index(isActive)
+  @@index(sorting)
+  @@index(createdAt)
+  @@index(deletedAt)
+}
+
+model StudentModuleComponent {
+  id                    String                 @id @default(uuid()) @db.VarChar(191)
+  studentId             String                 @db.VarChar(191)
+  student               Student                @relation(fields: [studentId], references: [id])
+  studentModuleId       String                 @db.VarChar(191)
+  studentModule         StudentModule          @relation(fields: [studentModuleId], references: [id])
+  moduleComponentId     String                 @db.VarChar(191)
+  moduleComponent       ModuleComponent        @relation(fields: [moduleComponentId], references: [id])
+  name                  String                 @db.VarChar(191)
+  description           String?
+  isActive              Boolean                @default(true)
+  type                  ComponentType          @default(video)
+  vimeoVideoUrl         String?
+  embedVideoUrl         String?
+  fileName              String?
+  fileNamePublicId      String?
+  isPrerequisite        Boolean                @default(false)
+  isFree                Boolean                @default(false)
+  sorting               Int?
+  duration              Int?
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+  deletedAt             DateTime?
+  studentLectureRecords StudentLectureRecord[]
+
+  @@index(isActive)
+  @@index(sorting)
+  @@index(createdAt)
+  @@index(deletedAt)
+}
+
+model StudentLectureRecord {
+  id                       String                 @id @default(uuid()) @db.VarChar(191)
+  studentModuleId          String                 @db.VarChar(191)
+  studentModule            StudentModule          @relation(fields: [studentModuleId], references: [id])
+  studentModuleComponentId String                 @db.VarChar(191)
+  studentModuleComponent   StudentModuleComponent @relation(fields: [studentModuleComponentId], references: [id])
+  status                   LectureStatus          @default(pending)
+  didYouUnderstand         Boolean                @default(false)
+  suggestion               String?
+  createdAt                DateTime               @default(now())
+  updatedAt                DateTime               @updatedAt
+  deletedAt                DateTime?
+
+  @@index(status)
+  @@index(createdAt)
+  @@index(deletedAt)
+}
+
+enum LectureStatus {
+  pending
+  ongoing
+  completed
 }
