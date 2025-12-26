@@ -3,7 +3,6 @@
 import prisma from "@/src/lib/prisma";
 import { paginate } from "@/src/utils/pagination";
 import { Course } from "@prisma/client";
-import { success } from "zod";
 
 export const categoryCourses = async () => {
     try {

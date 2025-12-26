@@ -40,14 +40,14 @@ const Navbar = () => {
                 <div className="container">
                     <nav id="navigation" className="navigation navigation-landscape">
                         <div className="nav-header">
-                            <a className="nav-brand" href="#">
+                            <Link className="nav-brand" href="/">
                                 <img 
                                     src={`${appUrl}/assets/img/wsh-logo-light.jpeg`}
                                     className="logo"
                                     alt="Women Skills Hub logo"
                                     style={{width: '60px', height: '100%'}}
                                 />
-                            </a>
+                            </Link>
                             <div className="nav-toggle" />
                         </div>
                         <div className="nav-menus-wrapper">

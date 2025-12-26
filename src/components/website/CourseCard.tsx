@@ -1,5 +1,8 @@
 'use client'
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+import { useCart } from "@/src/providers/CartProvider"
 import { formatAmount } from "@/src/utils/client_functions"
 import { coursesUrl } from "@/src/utils/url"
 import Link from "next/link"
@@ -11,18 +14,33 @@ interface CardPropertyInterface {
     level: string,
     originalPrice: number,
     discountedPrice: number,
-    image: string
+    image: string,
+    course: any
 }
 
-const CourseCard = ({slug, title, lectures, level, originalPrice, discountedPrice, image}: CardPropertyInterface) => {
+const CourseCard = ({slug, course, title, lectures, level, originalPrice, discountedPrice, image}: CardPropertyInterface) => {
+    const { addToCart, removeFromCart, loadingId, cartCourses } = useCart();
+
     return (
         <div className="col-xxl-3 col-xl-4 col-lg-4 col-md-6">
             <div className="education_block_grid border">
                 <div className="education-thumb position-relative">
                     <div className="save-course position-absolute top-0 end-0 me-3 mt-3">
-                        <a href="#" className="bookmark-button">
-                            <i className="bi bi-suit-heart" />
-                        </a>
+                        {loadingId === course.id ? (
+                            <div className="spinner-border" style={{color: '#fff'}} role="status">
+                                <span className="sr-only">Loading...</span>
+                            </div>
+                        ) : (
+                            cartCourses.find((c) => c.id === course.id) ? (
+                                <span onClick={() => removeFromCart(course.id)} className="bookmark-button">
+                                    <i className="bi bi-suit-heart-fill text-danger" />
+                                </span>
+                            ) : (
+                                <span onClick={() => addToCart(course)} className="bookmark-button">
+                                    <i className="bi bi-suit-heart" />
+                                </span>
+                            )
+                        )}
                     </div>
                     
                     <Link href={`${coursesUrl}/${slug}`}>

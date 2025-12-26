@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react"
 import { Prisma } from "@prisma/client";
 import ButtonLoader from "../admin/ButtonLoader";
+import CourseCard from "./CourseCard";
 
 type CategoryInterface = Prisma.CategoryGetPayload<{
     include: {
@@ -169,63 +170,17 @@ const Homepage = () => {
                                             >
                                                 <div className="row justify-content-center g-3">
                                                     {category?.courses?.map((course) => (
-                                                        <div key={course.id} className="col-xl-3 col-lg-4 col-md-6">
-                                                            <div className="education_block_grid border">
-                                                                <div className="education-thumb position-relative">
-                                                                    <div className="save-course position-absolute top-0 end-0 me-3 mt-3">
-                                                                        <a href="#" className="bookmark-button">
-                                                                            <i className="bi bi-suit-heart" />
-                                                                        </a>
-                                                                    </div>
-                                                                    <Link href={`${coursesUrl}/${course.slug}`}>
-                                                                        <img
-                                                                            src={course.thumbnail ?? ''}
-                                                                            className="img-fluid"
-                                                                            alt=""
-                                                                        />
-                                                                    </Link>
-                                                                    <div className="course-hours position-absolute top-0 start-0 ms-3 mt-3">
-                                                                        <span className="badge bg-dark rounded-pill">
-                                                                            <i className="bi bi-tags me-1"></i>
-                                                                            {((course.originalFee - course.discountedFee) / course.originalFee) * 100}% off
-                                                                        </span>
-                                                                    </div>
-                                                                </div>
-                                                                <div className="education-body p-3">
-                                                                    <div className="education-title">
-                                                                        <h4 className="fs-6 fw-medium">
-                                                                            <Link href={`${coursesUrl}/${course.slug}`}>
-                                                                                {course.title}
-                                                                            </Link>
-                                                                        </h4>
-                                                                    </div>
-                                                                    <div className="cources-info">
-                                                                        <ul>
-                                                                            <li>
-                                                                                <i className="bi bi-cash-stack" />
-                                                                                <s>{ formatAmount(course.originalFee) }</s>
-                                                                            </li>
-                                                                            <li>
-                                                                                <i className="bi bi-cash-stack" />
-                                                                                { formatAmount(course.discountedFee) }
-                                                                            </li>
-                                                                            <li>
-                                                                                <i className="bi bi-camera-reels" />
-                                                                                {getTotalLectures(course)} {getTotalLectures(course) > 1 ? 'Lectures' : 'Lecture'}
-                                                                            </li>
-                                                                        </ul>
-                                                                    </div>
-                                                                </div>
-                                                                <div className="education-footer border-0 p-3 pt-2">
-                                                                    <Link href={`${coursesUrl}/${course.slug}`}
-                                                                        className="btn btn-md btn-outline-gray border-2 rounded-pill w-100"
-                                                                    >
-                                                                        Enrol Now
-                                                                        <i className="bi bi-arrow-right ms-2" />
-                                                                    </Link>
-                                                                </div>
-                                                            </div>
-                                                        </div>
+                                                        <CourseCard
+                                                            key={course.id}
+                                                            course={course} 
+                                                            slug={course.slug}
+                                                            title={course.title}
+                                                            lectures={getTotalLectures(course)}
+                                                            level="Advanced"
+                                                            originalPrice={course.originalFee}
+                                                            discountedPrice={course.discountedFee}
+                                                            image={course.thumbnail ?? ''}
+                                                        />
                                                     ))}
                                                 </div>
                                             </div>

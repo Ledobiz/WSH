@@ -84,6 +84,7 @@ const CoursesPage = () => {
                                 courses?.map((course) => (
                                     <CourseCard 
                                         key={course.id} 
+                                        course={course}
                                         slug={course.slug}
                                         title={course.title}
                                         lectures={getTotalLectures(course)}
