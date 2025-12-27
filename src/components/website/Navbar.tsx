@@ -2,7 +2,6 @@
 
 import { useAuth } from "@/src/providers/AuthProvider";
 import { loginUrl, registerUrl, studentDashboardUrl } from "@/src/utils/url";
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -18,11 +17,11 @@ const links = [
     /*{
         uri: "/trainings",
         label: "Trainings"
-    },*/
+    },
     {
         uri: "/wishlist",
         label: "Wishlist"
-    },
+    },*/
     {
         uri: "/cart",
         label: "Cart"
