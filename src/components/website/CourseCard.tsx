@@ -32,11 +32,11 @@ const CourseCard = ({slug, course, title, lectures, level, originalPrice, discou
                             </div>
                         ) : (
                             cartCourses.find((c) => c.id === course.id) ? (
-                                <span onClick={() => removeFromCart(course.id)} className="bookmark-button">
+                                <span onClick={() => removeFromCart(course.id)} className="bookmark-button" style={{background: '#fff', cursor: 'pointer'}}>
                                     <i className="bi bi-suit-heart-fill text-danger" />
                                 </span>
                             ) : (
-                                <span onClick={() => addToCart(course)} className="bookmark-button">
+                                <span onClick={() => addToCart(course)} className="bookmark-button" style={{cursor: 'pointer'}}>
                                     <i className="bi bi-suit-heart" />
                                 </span>
                             )
@@ -54,7 +54,7 @@ const CourseCard = ({slug, course, title, lectures, level, originalPrice, discou
                     <div className="course-hours position-absolute top-0 start-0 ms-3 mt-3">
                         <span className="badge bg-dark rounded-pill">
                             <i className="bi bi-clock-history me-1" />
-                            {((originalPrice - discountedPrice) / originalPrice) * 100}% off
+                            {originalPrice > 0 ? Math.round(((originalPrice - discountedPrice) / originalPrice) * 100) : 0}% off
                         </span>
                     </div>
                 </div>

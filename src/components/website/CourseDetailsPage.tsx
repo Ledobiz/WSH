@@ -5,10 +5,13 @@ import CourseDetailsBanner from "./CourseDetailsBanner";
 import { DBCourseInterface } from "@/src/types";
 import { useState } from "react";
 import CustomModal from "@/src/components/admin/CustomModal";
+import { useCart } from "@/src/providers/CartProvider";
+import { cartUrl } from "@/src/utils/url";
 
 const CourseDetailsPage = ({course}: {course: DBCourseInterface}) => {
     const [showPreviewModal, setShowPreviewModal] = useState(false);
     const [previewVideo, setPreviewVideo] = useState('');
+    const { addToCart, cartCourses, loadingId, removeFromCart } = useCart();
 
     const handlePreviewModal = async (videoId: string) => {
         const res = await fetch('/api/video/preview', {
@@ -339,13 +342,24 @@ const CourseDetailsPage = ({course}: {course: DBCourseInterface}) => {
                                         </ul>
                                     </div>
                                     <div className="ed_view_link d-flex align-items-center justify-content-center flex-column gap-3 m-0 p-0">
-                                        <a href="#" className="btn btn-gray rounded-pill w-100">
-                                            <i className="bi bi-basket2 me-2" />
-                                            Add To Cart
-                                        </a>
-                                        <a href="#" className="btn btn-main w-100 rounded-pill">
-                                            Enrol Now
-                                        </a>
+                                        {cartCourses.find((c) => c.id === course.id) ? (
+                                            <>
+                                                <button onClick={() => removeFromCart(course.id)} className="btn btn-danger rounded-pill w-100">
+                                                    <i className="bi bi-trash me-2" />
+                                                    Remove From Cart
+                                                </button>
+                                                <a href={cartUrl} className="btn btn-gray w-100 rounded-pill">
+                                                    <i className="bi bi-basket2 me-2" />
+                                                    Go To Cart
+                                                </a>
+                                            </>
+                                        ) : (
+                                            <button onClick={() => addToCart(course)} className="btn btn-gray rounded-pill w-100">
+                                                <i className="bi bi-basket2 me-2" />
+                                                Add To Cart
+                                            </button>
+                                        )}
+                                        
                                     </div>
                                 </div>
                             </div>

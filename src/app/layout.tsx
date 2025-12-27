@@ -3,6 +3,7 @@ import "./globals.css";
 import { AuthProvider } from "@/src/providers/AuthProvider";
 import { ToastContainer } from 'react-toastify';
 import { SidebarProvider } from "@/src/providers/StudentSidebarProvider";
+import { CartProvider } from "../providers/CartProvider";
 
 export default function RootLayout({
   children,
@@ -22,9 +23,11 @@ export default function RootLayout({
       </head>
       <body>
         <AuthProvider>
-          <SidebarProvider>
-            {children}
-          </SidebarProvider>
+          <CartProvider>
+            <SidebarProvider>
+              {children}
+            </SidebarProvider>
+          </CartProvider>
         </AuthProvider>
         <ToastContainer style={{padding: 0}} className="p-0 m-0" />
 

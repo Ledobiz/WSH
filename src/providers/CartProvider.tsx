@@ -127,7 +127,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
                 await persistCart(updatedCart);
             }
 
-            toast.success(`${course.title} added to cart successfully!`);
+            toast.success(`${course.title} was added to cart successfully!`);
         } catch (err) {
             console.error("Add to cart failed", err);
             toast.error("Something went wrong");
@@ -151,8 +151,6 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
             } else {                
                 await persistCart(updatedCart);
             }
-            
-            toast.success("Removed from cart");
         } 
         catch (err) {
             console.error("Removal failed", err);
