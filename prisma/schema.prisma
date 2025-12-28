@@ -218,8 +218,8 @@ model Transaction {
   phone            String?       @db.VarChar(191)
   currency         String        @db.VarChar(3)
   amount           Int
-  first4Digits     String?       @db.VarChar(4)
-  last4Digits      String?       @db.VarChar(4)
+  first4Digits     String?       @db.VarChar(8)
+  last4Digits      String?       @db.VarChar(8)
   cardBrand        String?       @db.VarChar(191)
   status           PaymentStatus @default(pending)
   confirmationSent DateTime?

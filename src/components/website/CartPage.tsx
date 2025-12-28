@@ -8,7 +8,7 @@ import { formatAmount } from "@/src/utils/client_functions";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/src/providers/AuthProvider";
-import { cartUrl, loginUrl } from "@/src/utils/url";
+import { cartUrl, loginUrl, thankYouUrl } from "@/src/utils/url";
 import { toast } from "react-toastify";
 import ButtonLoader from "../admin/ButtonLoader";
 import { verifyTransaction } from "@/src/services/website/cart";
@@ -40,7 +40,7 @@ const CartPage = () => {
 
         setPaymentInProcess(true);
 
-        const txRef = `wsh_${new Date().getTime()}_${Math.floor(Math.random() * 1000000)}`;
+        const txRef = `wsh_${new Date().getTime()}${Math.floor(Math.random() * 1000000)}`;
 
         if (typeof window !== 'undefined' && (window as any).FlutterwaveCheckout) {
             const modal = (window as any).FlutterwaveCheckout({
@@ -61,13 +61,22 @@ const CartPage = () => {
                 customizations: {
                     title: 'Women Skills Hub Online Course Payment',
                     description: 'Life changing courses for financial independence',
-                    logo: `${appUrl}/assets/img/wsh-logo-light.jpeg`,
+                    logo: 'https://res.cloudinary.com/asifatkazeem/image/upload/v1766900704/mkk11iymqwpcrkvcmq7o.jpg',
                 },
                 callback: async function (payment: any) {
-                    // Send AJAX verification request to backend
-                    await verifyTransaction(payment.id, user.id);
+                    const response = await verifyTransaction(payment.transaction_id, user.id);
+
                     modal.close();
                     setPaymentInProcess(false);
+
+                    if (response.success) {
+                        localStorage.setItem('payments-done', 'yes');
+                        toast.success('Payment successful! You have been enrolled in the course(s).');
+                        router.push(thankYouUrl);
+                    }
+                    else {
+                        toast.error(response.message || 'Payment verification failed. Please contact support.');
+                    }
                 },
                 onclose: function (incomplete: boolean) {
                     if (incomplete === true) {

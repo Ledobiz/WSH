@@ -1,4 +1,5 @@
 import { inngest } from "./client";
+import { populateCourseContentForStudent, sendCourseConfirmationEmail } from "../services/student/course";
 
 export const courseContentProvider = inngest.createFunction(
     {
@@ -11,17 +12,29 @@ export const courseContentProvider = inngest.createFunction(
 
         await step.run('Provide Course Content', async () => { // Process the request and provide course content
             for (const courseId of courseIds) {
-                // Here you would typically fetch course content from a database
-                // and send it to the user. This is a placeholder implementation.
-                console.log(`Providing content for course ${courseId} to user ${userId}`);
-
+                await populateCourseContentForStudent(userId, courseId);
             }
+
+            return { message: 'Course content provided successfully.' };
         });
 
         await step.run('Send Confirmation Email To User', async () => {
-            // Here you would typically send an email to the user confirming
-            // that the course content has been provided. This is a placeholder implementation.
-            console.log(`Sent confirmation email to user ${userId} for courses: ${courseIds.join(', ')}`);
+            try {
+                console.log('Sending course confirmation emails to user:', userId, courseIds);
+                for (const courseId of courseIds) {
+                    await sendCourseConfirmationEmail(userId, courseId);
+                }
+                return { message: 'Course confirmation emails sent successfully.' };
+            }
+            catch (error) {
+                console.error("Error sending confirmation emails:", error);
+                return { message: 'Failed to send some or all course confirmation emails.', error };
+            }
         });
+
+        return {
+            message: 'Course content provided successfully to student with userId ' + userId,
+            courseIdsProvided: courseIds
+        }
     }
 );

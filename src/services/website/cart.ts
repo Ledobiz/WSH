@@ -190,23 +190,9 @@ export const verifyTransaction = async (paymentId: string, userId: string) => {
 
         const data = await response.json();
 
+        console.log('Transaction verification response:', data);
+
         if (data.status === 'success' && data.data.status === 'successful') {
-            // Mark the cart as paid
-            const cart = await prisma.cart.findFirst({
-                where: { userId, isPaid: false },
-                include: { cartItems: true }
-            });
-
-            if (cart) {
-                await prisma.cart.update({
-                    where: { id: cart.id },
-                    data: {
-                        isPaid: true,
-                        transactionReference: data.data.tx_ref,
-                    }
-                });
-            }
-
             const user = await prisma.user.findUnique({
                 where: { id: userId },
             });
@@ -229,29 +215,39 @@ export const verifyTransaction = async (paymentId: string, userId: string) => {
                 }
             });
 
-            const courseIds = [];
+            // Mark the cart as paid
+            const cart = await prisma.cart.findFirst({
+                where: { userId, isPaid: false },
+                include: { cartItems: true }
+            });
 
-            // Enroll the user in the purchased courses
-            for (const item of cart?.cartItems || []) {
-                courseIds.push(item.courseId);
-
-                await prisma.student.upsert({
-                    where: {
-                        userId_courseId: {
-                            userId,
-                            courseId: item.courseId,
-                        }
-                    },
-                    update: {},
-                    create: {
-                        userId,
-                        courseId: item.courseId,
+            if (cart) {
+                await prisma.cart.update({
+                    where: { id: cart.id },
+                    data: {
+                        isPaid: true,
+                        transactionReference: data.data.tx_ref,
                     }
                 });
             }
 
-            if (courseIds.length > 0) { // Send event to Inngest for further processing
+            const courseIds: string[] = [];
 
+            // Enroll the user in the purchased courses
+            await Promise.all(
+                (cart?.cartItems || []).map((item) => {
+                    courseIds.push(item.courseId);
+                    return prisma.student.upsert({
+                        where: {
+                            userId_courseId: { userId, courseId: item.courseId }
+                        },
+                        update: {},
+                        create: { userId, courseId: item.courseId }
+                    });
+                })
+            );
+
+            if (courseIds.length > 0) { // Send event to Inngest for further processing
                 await inngest.send({
                     name: 'course-content.requested',
                     data: {
@@ -263,6 +259,8 @@ export const verifyTransaction = async (paymentId: string, userId: string) => {
 
             return { success: true, message: "Transaction verified successfully" };
         }
+
+        return { success: false, message: "Payment verification failed. Please contact WSH support if you have been charged" };
     } catch (error) {
         console.error("Transaction verification error:", error);
         return { success: false, message: "Transaction verification failed" };

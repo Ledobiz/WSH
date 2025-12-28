@@ -2,6 +2,7 @@
 export const coursesUrl = '/courses'
 export const cartUrl = '/cart'
 export const wishlitUrl = '/wishlist'
+export const thankYouUrl = '/thank-you'
 
 // Student Routes
 export const studentDashboardUrl = '/learners/dashboard'

@@ -7,7 +7,8 @@
     "build": "prisma generate && next build",
     "start": "next start",
     "lint": "eslint",
-    "postinstall": "prisma generate && prisma migrate deploy"
+    "postinstall": "prisma generate && prisma migrate deploy",
+    "email:dev": "email dev"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.2",
@@ -16,6 +17,7 @@
     "@prisma/adapter-pg": "^7.0.1",
     "@prisma/client": "^7.2.0",
     "@react-email/components": "^1.0.2",
+    "@react-email/render": "^2.0.0",
     "@tinymce/tinymce-react": "^6.3.0",
     "@upstash/redis": "^1.35.7",
     "bcrypt": "^6.0.0",
@@ -34,10 +36,14 @@
     "react-email": "^5.1.0",
     "react-player": "^3.4.0",
     "react-toastify": "^11.0.5",
+    "resend": "^6.6.0",
+    "winston": "^3.19.0",
+    "winston-slack-webhook-transport": "^2.3.6",
     "ws": "^8.18.3",
     "zod": "^4.1.13"
   },
   "devDependencies": {
+    "@react-email/preview-server": "^5.1.0",
     "@tailwindcss/postcss": "^4",
     "@types/bcrypt": "^6.0.0",
     "@types/node": "^20.19.25",
