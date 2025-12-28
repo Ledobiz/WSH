@@ -254,13 +254,14 @@ model Student {
   course                  Course                   @relation(fields: [courseId], references: [id])
   courseContentAssigned   Boolean                  @default(false)
   lecturesCompleted       Boolean                  @default(false)
-  lastLectureId           String                   @db.VarChar(191)
+  lastLectureId           String?                  @db.VarChar(191)
   createdAt               DateTime                 @default(now())
   updatedAt               DateTime                 @updatedAt
   deletedAt               DateTime?
   studentModules          StudentModule[]
   studentModuleComponents StudentModuleComponent[]
 
+  @@unique([userId, courseId])
   @@index(courseContentAssigned)
   @@index(lecturesCompleted)
   @@index(createdAt)

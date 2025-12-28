@@ -1,5 +1,6 @@
 'use server'
 
+import { inngest } from "@/src/inngest/client";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import prisma from "@/src/lib/prisma";
@@ -170,3 +171,100 @@ export const addToCartServer = async (userId: string, courseId: string) => {
         return { success: false, message: "Database sync failed" };
     }
 };
+
+export const verifyTransaction = async (paymentId: string, userId: string) => {
+    try {
+        const secretKey = process.env.FLUTTERWAVE_SECRET_KEY!;
+        const response = await fetch('https://api.flutterwave.com/v3/transactions/' + paymentId + '/verify', {
+            method: 'GET',
+            headers: {
+                accept: 'application/json',
+                Authorization: `Bearer ${secretKey}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            return { success: false, message: "Transaction verification failed" };
+        }
+
+        const data = await response.json();
+
+        if (data.status === 'success' && data.data.status === 'successful') {
+            // Mark the cart as paid
+            const cart = await prisma.cart.findFirst({
+                where: { userId, isPaid: false },
+                include: { cartItems: true }
+            });
+
+            if (cart) {
+                await prisma.cart.update({
+                    where: { id: cart.id },
+                    data: {
+                        isPaid: true,
+                        transactionReference: data.data.tx_ref,
+                    }
+                });
+            }
+
+            const user = await prisma.user.findUnique({
+                where: { id: userId },
+            });
+
+            // Record the payment
+            await prisma.transaction.create({
+                data: {
+                    userId: userId,
+                    reference: data.data.tx_ref,
+                    gateway: 'Flutterwave',
+                    name: user ? user.name : 'Unknown',
+                    email: user ? user.email : '',
+                    phone: user ? user.phone : '',
+                    currency: data.data.currency,
+                    amount: data.data.amount,
+                    first4Digits: data.data.card?.first_6digits || '',
+                    last4Digits: data.data.card?.last_4digits || '',
+                    cardBrand: data.data.card?.type || '',
+                    status: 'success',
+                }
+            });
+
+            const courseIds = [];
+
+            // Enroll the user in the purchased courses
+            for (const item of cart?.cartItems || []) {
+                courseIds.push(item.courseId);
+
+                await prisma.student.upsert({
+                    where: {
+                        userId_courseId: {
+                            userId,
+                            courseId: item.courseId,
+                        }
+                    },
+                    update: {},
+                    create: {
+                        userId,
+                        courseId: item.courseId,
+                    }
+                });
+            }
+
+            if (courseIds.length > 0) { // Send event to Inngest for further processing
+
+                await inngest.send({
+                    name: 'course-content.requested',
+                    data: {
+                        userId,
+                        courseIds,
+                    }
+                });
+            }
+
+            return { success: true, message: "Transaction verified successfully" };
+        }
+    } catch (error) {
+        console.error("Transaction verification error:", error);
+        return { success: false, message: "Transaction verification failed" };
+    }
+}

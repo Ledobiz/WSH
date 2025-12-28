@@ -1,12 +1,92 @@
 'use client';
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { useCart } from "@/src/providers/CartProvider";
 import PageLoader from "./PageLoader";
 import { formatAmount } from "@/src/utils/client_functions";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/src/providers/AuthProvider";
+import { cartUrl, loginUrl } from "@/src/utils/url";
+import { toast } from "react-toastify";
+import ButtonLoader from "../admin/ButtonLoader";
+import { verifyTransaction } from "@/src/services/website/cart";
 
 const CartPage = () => {
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL;
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL!;
     const { cartCourses, totalFees, removeFromCart, isLoaded, clearCart } = useCart();
+    const { user } = useAuth();
+    const [paymentInProcess, setPaymentInProcess] = useState(false);
+    const router = useRouter();
+
+    useEffect(() => {
+        const script = document.createElement('script');
+        script.src = "https://checkout.flutterwave.com/v3.js";
+        script.async = true;
+        document.head.appendChild(script);
+
+        return () => {
+            document.head.removeChild(script);
+        }
+    });
+
+    const makePayment = async () => {
+        if (!user || user.role != 'student') {
+            toast.info('Please log in to proceed to checkout');
+            router.push(`${loginUrl}?return=${cartUrl}`);
+            return;
+        }
+
+        setPaymentInProcess(true);
+
+        const txRef = `wsh_${new Date().getTime()}_${Math.floor(Math.random() * 1000000)}`;
+
+        if (typeof window !== 'undefined' && (window as any).FlutterwaveCheckout) {
+            const modal = (window as any).FlutterwaveCheckout({
+                public_key: process.env.NEXT_PUBLIC_FLUTTERWAVE_PUBLIC_KEY!,
+                tx_ref: txRef,
+                amount: totalFees,
+                currency: 'NGN',
+                payment_options: 'card, ussd, banktransfer, opay, applepay, googlepay',
+                meta: {
+                    consumer_id: user.id,
+                    consumer_email: user.email,
+                },
+                customer: {
+                    email: user.email,
+                    phone_number: user.phone || '',
+                    name: user.name,
+                },
+                customizations: {
+                    title: 'Women Skills Hub Online Course Payment',
+                    description: 'Life changing courses for financial independence',
+                    logo: `${appUrl}/assets/img/wsh-logo-light.jpeg`,
+                },
+                callback: async function (payment: any) {
+                    // Send AJAX verification request to backend
+                    await verifyTransaction(payment.id, user.id);
+                    modal.close();
+                    setPaymentInProcess(false);
+                },
+                onclose: function (incomplete: boolean) {
+                    if (incomplete === true) {
+                        // Record event in analytics
+                        setPaymentInProcess(false);
+                        toast.error('Payment process was not completed. You can try again.');
+                    }
+                    modal.close();
+                },
+            });
+
+            // setTimeout(() => {
+            //     router.push(`/checkout/payment-successful?ref=${txRef}`);
+            // }, 2000);
+        } else {
+            toast.error('Payment gateway is not available. Please try again later.');
+            setPaymentInProcess(false);
+        }
+    }
 
     return (
         <section>
@@ -108,8 +188,8 @@ const CartPage = () => {
                                             <div className="flex_cart_1">Total Cost</div>
                                             <div className="flex_cart_2">{ formatAmount(totalFees) }</div>
                                         </div>
-                                        <button type="button" className="btn btn-main w-100">
-                                            Proceed To Checkout
+                                        <button onClick={makePayment} disabled={paymentInProcess} type="button" className="btn btn-main w-100">
+                                            {paymentInProcess ? <ButtonLoader /> : 'Proceed To Checkout'}
                                         </button>
                                     </div>
                                 </div>

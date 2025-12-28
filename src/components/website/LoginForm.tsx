@@ -1,21 +1,26 @@
 'use client'
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { signIn } from "@/src/services/auth"
 import { encrypt } from "@/src/utils/encryption"
 import { adminDashboardUrl, forgotPasswordUrl, studentDashboardUrl } from "@/src/utils/url"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { useState } from "react"
 import { toast } from "react-toastify"
 
 const LoginForm = () => {
     const router = useRouter();
+    const searchParams = useSearchParams();
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [formData, setFormData] = useState({
         email: '',
         password: '',
     });
+
+    const returnUrl = searchParams.get('return');
 
     const handleInputChange = (field: string, value: any) => {
         setFormData(prev => ({ ...prev, [field]: value }));
@@ -56,12 +61,16 @@ const LoginForm = () => {
                 toast.success('You are signed in successfully.');
                 setLoading(false);
 
+                let destinationUrl = '';
+
                 if (user?.user?.role == 'admin') {
-                    router.push(adminDashboardUrl);
+                    destinationUrl = returnUrl ? decodeURIComponent(returnUrl) : adminDashboardUrl;
                 }
                 else {
-                    router.push(studentDashboardUrl)
+                    destinationUrl = returnUrl ? decodeURIComponent(returnUrl) : studentDashboardUrl;
                 }
+
+                router.push(destinationUrl);
             }
             else {
                 setLoading(false);

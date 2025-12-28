@@ -5,12 +5,13 @@
 import { signUp } from '@/src/services/auth'
 import { encrypt } from '@/src/utils/encryption'
 import { studentDashboardUrl } from '@/src/utils/url'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useState } from 'react'
 import { toast } from 'react-toastify'
 
 const SignupForm = () => {
     const router = useRouter();
+    const searchParams = useSearchParams();
     const [showPassword, setShowPassword] = useState(false)
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
@@ -18,6 +19,8 @@ const SignupForm = () => {
         email: '',
         password: '',
     });
+
+    const returnUrl = searchParams.get('return');
 
     const handleInputChange = (field: string, value: any) => {
         setFormData(prev => ({ ...prev, [field]: value }));
@@ -57,7 +60,9 @@ const SignupForm = () => {
 
                 toast.success('Congratulations! Your registration was successful.');
                 setLoading(false);
-                router.push(studentDashboardUrl);
+
+                const destinationUrl = returnUrl ? decodeURIComponent(returnUrl) : studentDashboardUrl;
+                router.push(destinationUrl);
             }
             else {
                 setLoading(false);
