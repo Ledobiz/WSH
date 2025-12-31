@@ -14,7 +14,7 @@ const Checkout = () => {
 
     useEffect(() => {
         const paymentsDone = localStorage.getItem('payments-done');
-        if (!paymentsDone || paymentsDone !== 'true') {
+        if (!paymentsDone || paymentsDone !== 'yes') {
             router.push('/');
         } else {
             localStorage.removeItem('payments-done');
@@ -30,22 +30,17 @@ const Checkout = () => {
                 <section>
                     <div className="container">
                         <div className="row justify-content-center">
-                            <div className="col-xl-7 col-lg-8 col-md-12">
+                            <div className="col-xl-6 col-lg-6 col-md-12 mx-auto">
                                 <div className="thankyou-wrap text-center">
                                     <div className="square--90 circle bg-green text-light mx-auto mb-4">
                                         <i className="bi bi-patch-check-fill fs-1" />
                                     </div>
                                     <h2 className="text-dark">
-                                        Course submission completed successfully.
+                                        Thank you for your order
                                     </h2>
                                     <p>
-                                        Thank you for submitting your item. We will review it shortly and
-                                        notify you by email once your course has been accepted. Please
-                                        ensure that your{" "}
-                                        <a href="#" className="text-main">
-                                        Payment and Tax information
-                                        </a>{" "}
-                                        is accurate and up to date.
+                                        We appreciate your patronage and promise you a seamless and engaging learning experience.<br />
+                                        Simply click the button below to go to your dashboard to access your courses and start learning right away!
                                     </p>
                                     <Link href={studentDashboardUrl} className="btn btn-main mt-4 mb-5">
                                         Go to Dashboard

@@ -12,6 +12,7 @@ import { ongoingCourses } from "@/src/services/student/course";
 import { courseContentUrl, coursesUrl } from "@/src/utils/url";
 import Link from "next/link";
 import { Suspense, useEffect, useState } from "react"
+import { durationInHourMinutesAndSeconds } from "@/src/utils/client_functions";
 
 type DBStudentInterface = Prisma.StudentGetPayload<{
     include: {
@@ -35,6 +36,14 @@ const getTotalLectures = (course: DBStudentInterface): number => {
     if (!course.studentModules) return 0;
     return course.studentModules.reduce((total, module) => {
         return total + (module.studentModuleComponents?.length || 0);
+    }, 0);
+};
+
+const totalDuration = (course: DBStudentInterface): number => {
+    if (!course.course) return 30;
+
+    return course.studentModules.reduce((total, module) => {
+        return total + (module?.totalDuration || 0);
     }, 0);
 };
 
@@ -205,7 +214,7 @@ const DashboardPage = () => {
 
                                         {allCourses?.filter(c => !c.lecturesCompleted).map((course) => (
                                             <div key={course.id} className="card border-0 hover shadow-sm mb-3 rounded-4 p-3">
-                                                <Link href={`${courseContentUrl}/${course.id}`} className="row g-3 g-md-4 align-items-center">
+                                                <Link href={`${courseContentUrl}/${course.course.id}`} className="row g-3 g-md-4 align-items-center">
                                                     <div className="col-12 col-xl-4 col-lg-4 col-md-4">
                                                         <div
                                                             className="rounded-3 p-3 bg-light d-flex align-items-center justify-content-center mx-auto mx-sm-0"
@@ -222,9 +231,9 @@ const DashboardPage = () => {
                                                         <h5 className="fw-bold mb-1">{course.course.title}</h5>
 
                                                         <div className="d-flex flex-wrap align-items-center text-muted small mb-2">
-                                                            <i className="bi bi-journal-bookmark me-1" /> {getTotalLectures(course)} {getTotalLectures(course) > 1 ? 'lesson' : 'lessons'}
+                                                            <i className="bi bi-journal-bookmark me-1" /> {getTotalLectures(course)} {getTotalLectures(course) > 1 ? 'lessons' : 'lesson'}
                                                             <span className="mx-2">•</span>
-                                                            <i className="bi bi-clock me-1" /> 1h 53m
+                                                            <i className="bi bi-clock me-1" /> { durationInHourMinutesAndSeconds(totalDuration(course)) }
                                                         </div>
 
                                                         <div className="w-100">

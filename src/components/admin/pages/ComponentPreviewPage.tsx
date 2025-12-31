@@ -29,7 +29,7 @@ const ComponentPreviewPage = ({componentId}: {componentId: string}) => {
         setvideoIsLoading(true);
 
         try {
-            const result = await fetchComponentById(componentId);
+            const result = await fetchComponentById(componentId, 'admin');
 
             if (result.component?.type !== 'video') {
                 toast.error('Invalid request! You can only preview component that are videos through this medium');
@@ -113,7 +113,7 @@ const ComponentPreviewPage = ({componentId}: {componentId: string}) => {
                                                     </div>
                                                 :
                                                 <div className="card shadow-sm border rounded-4 overflow-hidden">
-                                                    <VideoPlayer videoId={component.id} />
+                                                    <VideoPlayer videoId={component.id} isStudent={false} />
                                                 </div>
                                             }
                                         </div>

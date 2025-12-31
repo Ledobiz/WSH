@@ -66,18 +66,30 @@ export const fetchActiveComponents = async (moduleId: string) => {
     }
 }
 
-export const fetchComponentById = async (id: string) => {
+export const fetchComponentById = async (id: string, forWho: string) => {
     try {
-        const component = await prisma.moduleComponent.findUnique({
-            where: { id },
-            include: {
-                courseModule: {
-                    include: {
-                        course: true
-                    }
-                },
-            }
-        });
+        let component = null;
+
+        if (forWho === 'student') {
+            component = await prisma.studentModuleComponent.findUnique({
+                where: { id },
+                include: {
+                    studentModule: true
+                }
+            });
+        }
+        else {
+            component = await prisma.moduleComponent.findUnique({
+                where: { id },
+                include: {
+                    courseModule: {
+                        include: {
+                            course: true
+                        }
+                    },
+                }
+            });
+        }
 
         return {
             success: true,

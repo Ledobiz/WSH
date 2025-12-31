@@ -1,9 +1,12 @@
 'use server'
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { Resend } from "resend";
 import ConfirmationEmail from "@/src/components/emails/ConfirmationEmail";
 import prisma from "@/src/lib/prisma";
 import { render } from "@react-email/render";
+import { Prisma } from "@prisma/client";
 
 export const ongoingCourses = async (userId: string) => {
     try {
@@ -45,6 +48,161 @@ export const ongoingCourses = async (userId: string) => {
             courses: []
         }
     }
+}
+
+export const myLecture = async (userId?: string, courseId?: string, moduleId?: string, componentId?: string) => {
+    try {
+        const student = await prisma.student.findFirst({
+            where: {
+                userId,
+                courseId,
+                deletedAt: null
+            },
+            include: {
+                course: true
+            }
+        });
+
+        let currentModule = moduleId;
+        let currentComponentId = componentId;
+        let component = null;
+        let studentModule = null;
+        let allComponents = [];
+
+        if (!moduleId) { // Fetch the first module and its first component if moduleId is not provided
+            studentModule = await prisma.studentModule.findFirst({
+                where: {
+                    studentId: student?.id,
+                    isActive: true,
+                    deletedAt: null
+                },
+                orderBy: {
+                    createdAt: 'asc'
+                },
+            });
+
+            // Get the first component of the module
+            if (studentModule) {
+                const moduleComponent = await prisma.$queryRaw<
+                    Array<{
+                        id: string;
+                        lectureRecordId: string | null;
+                        lectureStatus: string | null;
+                        [key: string]: any;
+                    }>
+                >(Prisma.sql`
+                    SELECT smc.*, slr."id" AS "lectureRecordId", slr."status" AS "lectureStatus"
+                    FROM "StudentModuleComponent" smc
+                    LEFT JOIN "StudentLectureRecord" slr
+                        ON slr."studentModuleComponentId" = smc."id"
+                        AND slr."studentModuleId" = ${studentModule.id}
+                        AND slr."deletedAt" IS NULL
+                    WHERE smc."studentModuleId" = ${studentModule.id}
+                        AND smc."deletedAt" IS NULL
+                    ORDER BY smc."createdAt" ASC
+                    LIMIT 1
+                `);
+
+                if (moduleComponent.length > 0) {
+                    component = moduleComponent[0];
+                    currentComponentId = component.id;
+                }
+
+                currentModule = studentModule.id;
+                allComponents = await lectureModuleComponent(studentModule.id) as any[];
+            }
+        }
+        else {
+            // Fetch the specificed module
+            studentModule = await prisma.studentModule.findFirst({
+                where: {
+                    id: moduleId,
+                    studentId: student?.id,
+                    isActive: true,
+                    deletedAt: null
+                },
+                orderBy: {
+                    createdAt: 'asc'
+                },
+            });
+
+            // Get the first component of the module
+            if (studentModule) {
+                const moduleComponent = await prisma.$queryRaw<
+                    Array<{
+                        id: string;
+                        lectureRecordId: string | null;
+                        lectureStatus: string | null;
+                        [key: string]: any;
+                    }>
+                >(Prisma.sql`
+                    SELECT smc.*, slr."id" AS "lectureRecordId", slr."status" AS "lectureStatus"
+                    FROM "StudentModuleComponent" smc
+                    LEFT JOIN "StudentLectureRecord" slr
+                        ON slr."studentModuleComponentId" = smc."id"
+                        AND slr."studentModuleId" = ${studentModule.id}
+                        AND slr."deletedAt" IS NULL
+                    WHERE smc."studentModuleId" = ${studentModule.id}
+                        AND smc."id" = ${componentId}
+                        AND smc."deletedAt" IS NULL
+                    ORDER BY smc."createdAt" ASC
+                    LIMIT 1
+                `);
+
+                if (moduleComponent.length > 0) {
+                    component = moduleComponent[0];
+                    currentComponentId = component.id;
+                }
+
+                currentModule = studentModule.id;
+                allComponents = await lectureModuleComponent(studentModule.id) as any[];
+            }
+        }
+
+        return {
+            success: true,
+            message: 'Success',
+            data: {
+                currentModuleId: currentModule,
+                currentComponentId,
+                currentComponent: component,
+                currentModuleData: studentModule,
+                allComponents,
+                student,
+                course: student?.course || null,
+            }
+        }
+    }
+    catch (error) {
+        console.log('Error fetching lecture:', error);
+        return {
+            success: false,
+            message: 'Something went wrong',
+            data: {
+                currentModuleId: null,
+                currentComponentId: null,
+                currentComponent: null,
+                currentModuleData: {},
+                allComponents: [],
+                student: {},
+                course: null,
+            }
+        }
+    }
+}
+
+const lectureModuleComponent = async (studentModuleId: string) => {
+    return await prisma.$queryRaw(Prisma.sql`
+        SELECT smc.*, slr."id" AS "lectureRecordId", slr."status" AS "lectureStatus"
+        FROM "StudentModuleComponent" smc
+        LEFT JOIN "StudentLectureRecord" slr
+            ON slr."studentModuleComponentId" = smc."id"
+            AND slr."studentModuleId" = ${studentModuleId}
+            AND slr."deletedAt" IS NULL
+        WHERE smc."studentModuleId" = ${studentModuleId}
+            AND smc."deletedAt" IS NULL
+        ORDER BY smc."createdAt" ASC
+    `);
 }
 
 export const populateCourseContentForStudent = async (userId: string, courseId: string) => {

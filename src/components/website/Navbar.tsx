@@ -31,7 +31,7 @@ const links = [
 const Navbar = () => {
     const appUrl = process.env.NEXT_PUBLIC_APP_URL!;
     const pathName = usePathname();
-    const { user } = useAuth();
+    const { user, loading } = useAuth();
 
     return (  
         <>
@@ -60,7 +60,7 @@ const Navbar = () => {
                                 }
                             </ul>
                             <ul className="nav-menu nav-menu-social align-to-right">
-                                {user && user.role === 'student' ? (
+                                {!loading && user?.role === 'student' ? (
                                     <li className="join-btn">
                                         <Link href={studentDashboardUrl}>
                                             <i className="bi bi-box-arrow-in-right" />

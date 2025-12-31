@@ -1,10 +1,9 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import ReactPlayer from 'react-player'
 import ButtonLoader from '../admin/ButtonLoader';
 
-const VideoPlayer = ({videoId}: {videoId: string}) => {
+const VideoPlayer = ({videoId, isStudent = false}: {videoId: string, isStudent?: boolean}) => {
     const [src, setSrc] = useState('');
     const refreshIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -29,7 +28,10 @@ const VideoPlayer = ({videoId}: {videoId: string}) => {
                 'Content-Type': 'application/json',
             },
             method: 'POST',
-            body: JSON.stringify({videoId}),
+            body: JSON.stringify({
+                videoId,
+                isStudent,
+            }),
         });
 
         if (!res.ok) return;
@@ -43,7 +45,7 @@ const VideoPlayer = ({videoId}: {videoId: string}) => {
         stopRefresh(); // reset on video change
 
         return () => stopRefresh();
-    }, [videoId]);
+    }, [videoId, isStudent]);
 
     return (
         <div className="video-box d-flex align-items-center justify-content-center">
@@ -61,10 +63,12 @@ const VideoPlayer = ({videoId}: {videoId: string}) => {
                     onPlay={startRefresh}
                     onPause={stopRefresh}
                     onEnded={stopRefresh}
+                    className="lecture-iframe"
                     style={{
                         border: 0,
                         position: 'absolute',
                         top: 0,
+                        left: 0,
                         height: '100%',
                         width: '100%'
                     }}

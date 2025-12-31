@@ -4,15 +4,17 @@ import { fetchComponentById } from "@/src/services/admin/module_component";
 import { signVideoUrl } from "@/src/lib/bunny_token";
 
 export async function POST(req: Request) {
-    const { videoId } = await req.json();
+    const { videoId, isStudent } = await req.json();
 
     const user = await getUserFromSession();
 
     if (!user) {
+        console.log(user);
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const result = await fetchComponentById(videoId);
+    const result = await fetchComponentById(videoId, isStudent ? 'student' : 'admin');
+    console.log('Fetched component:', result);
 
     if (result.component?.type !== 'video') {
         return NextResponse.json({ error: "Unauthorized" }, { status: 400 });

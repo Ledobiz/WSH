@@ -34,9 +34,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     useEffect(() => {
         const loadUser = async () => {
             try {
-                const storageKey = process.env.NEXT_PUBLIC_LOCAL_STORAGE_AUTH_KEY;
+                const storageKey = process.env.NEXT_PUBLIC_LOCAL_STORAGE_AUTH_KEY!;
                 if (typeof window === 'undefined' || !storageKey) {
                     setLoading(false);
+                    setUser(null);
                     return;
                 }
 

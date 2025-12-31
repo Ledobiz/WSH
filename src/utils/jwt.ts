@@ -22,7 +22,7 @@ export const sessionSchema = z.object({
 type UserSession = z.infer<typeof sessionSchema>
 
 const SECRET_KEY = new TextEncoder().encode(process.env.NEXT_PUBLIC_APP_KEY!);
-const SESSION_NAME = process.env.SESSION_NAME || "session_token";
+const SESSION_NAME = process.env.SESSION_NAME!;
 const SESSION_EXPIRATION_MS = 1000 * 60 * 60 * 24 * 3;
 const ONE_DAY_MS = 1000 * 60 * 60 * 24;
 export const SESSION_TTL = new Date(Date.now() + SESSION_EXPIRATION_MS);

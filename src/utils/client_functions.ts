@@ -55,3 +55,15 @@ export const getTotalLectures = (course: {
         return total + (module.moduleComponents?.length || 0);
     }, 0);
 };
+
+export const durationInHourMinutesAndSeconds = (durationInMinutes: number) => {
+    const hours = Math.floor(durationInMinutes / 60);
+    const minutes = Math.floor(durationInMinutes % 60);
+    const seconds = Math.floor((durationInMinutes * 60) % 60);
+
+    // If hour or minute or second is zero, do not display it
+    const hoursDisplay = hours > 0 ? `${hours}h ` : '';
+    const minutesDisplay = minutes > 0 ? `${minutes}m ` : '';
+    const secondsDisplay = seconds > 0 ? `${seconds}s` : '';
+    return `${hoursDisplay}${minutesDisplay}${secondsDisplay}`.trim();
+}
