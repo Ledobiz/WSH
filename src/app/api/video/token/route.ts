@@ -14,7 +14,6 @@ export async function POST(req: Request) {
     }
 
     const result = await fetchComponentById(videoId, isStudent ? 'student' : 'admin');
-    console.log('Fetched component:', result);
 
     if (result.component?.type !== 'video') {
         return NextResponse.json({ error: "Unauthorized" }, { status: 400 });
@@ -23,8 +22,6 @@ export async function POST(req: Request) {
     let isEnrolled = false;
 
     if (user.role !== 'admin') { // Check for enrolment
-        const courseId = result.component?.courseModule?.courseId;
-
         // TODO:: Check user is in enrolled table.
         isEnrolled = true;
     }
