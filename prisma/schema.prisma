@@ -335,6 +335,7 @@ model StudentLectureRecord {
   updatedAt                DateTime               @updatedAt
   deletedAt                DateTime?
 
+  @@unique([studentModuleId, studentModuleComponentId])
   @@index(status)
   @@index(createdAt)
   @@index(deletedAt)
