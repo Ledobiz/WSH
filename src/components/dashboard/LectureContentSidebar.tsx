@@ -1,180 +1,54 @@
 'use client'
 
-import styles from './LectureContentSidebar.module.css'
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
-const LectureContentSidebar = () => {
+import styles from './LectureContentSidebar.module.css'
+import { durationInHourMinutesAndSeconds } from '@/src/utils/client_functions';
+
+const LectureContentSidebar = ({lectures}: {lectures: any[]}) => {
     return (
         <div className="col-lg-4">
             <div className="bg-white rounded-4 shadow-sm">
                 <h3 className="fw-bold mb-0">Course Content</h3>
-                <h4 className="text-muted small mb-4">3 modules</h4>
+                <h4 className="text-muted small mb-4">{lectures?.length} {lectures?.length === 1 ? 'module' : 'modules'}</h4>
                 
                 <div className={styles.courseScroll}>
-                    {/* MODULE 1 */}
-                    <div className="mb-4">
-                        <button
-                            className="btn w-100 fw-semibold mb-2 px-0 d-flex justify-content-between align-items-center module-toggle"
-                            data-bs-toggle="collapse"
-                            data-bs-target="#module1"
-                            aria-expanded="true"
-                        >
-                            Module 1: Introduction to Seller Financing &nbsp;&nbsp;
-                            <i className="bi bi-chevron-down toggle-arrow"></i>
-                        </button>
-                        <h3 className="text-muted small mb-2">0/3 completed</h3>
-                        <div id="module1" className="collapse show">
-                            <div className="lesson-item p-3 mb-2 rounded-3">
-                                <div className="d-flex align-items-center">
-                                    <div className="lesson-number me-3">1</div>
-                                    <div>
-                                        <p className="mb-0 fw-semibold">
-                                            What is Seller Financing?
-                                        </p>
-                                        <span className="text-muted small">10:00</span>
-                                    </div>
-                                    <div className="ms-auto">
-                                        <span className="lesson-dot ongoing" />
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="lesson-item p-3 mb-2 rounded-3">
-                                <div className="d-flex align-items-center">
-                                    <div className="lesson-number me-3">2</div>
-                                    <div>
-                                        <p className="mb-0 fw-semibold">
-                                            Benefits for Buyers and Sellers
-                                        </p>
-                                        <span className="text-muted small">12:00</span>
-                                    </div>
-                                    <div className="ms-auto">
-                                        <span className="lesson-dot completed" />
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="lesson-item p-3 rounded-3">
-                                <div className="d-flex align-items-center">
-                                    <div className="lesson-number me-3">3</div>
-                                    <div>
-                                        <p className="mb-0 fw-semibold">Common Misconceptions</p>
-                                        <span className="text-muted small">09:00</span>
-                                    </div>
-                                    <div className="ms-auto">
-                                        <span className="lesson-dot" />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    {/* MODULE 2 (collapsed template) */}
-                    <div className="mb-4 border-top">
-                        <button
-                            className="btn w-100 fw-semibold mb-2 px-0 d-flex justify-content-between align-items-center module-toggle"
-                            data-bs-toggle="collapse"
-                            data-bs-target="#module2"
-                            aria-expanded="false"
-                        >
-                            Module 1: Introduction to Seller Financing &nbsp;&nbsp;
-                            <i className="bi bi-chevron-down toggle-arrow"></i>
-                        </button>
-                        <h3 className="text-muted small mb-2">0/3 completed</h3>
-                        <div id="module2" className="collapse">
-                            <div className="lesson-item p-3 mb-2 rounded-3">
-                                <div className="d-flex align-items-center">
-                                    <div className="lesson-number me-3">1</div>
-                                    <div>
-                                        <p className="mb-0 fw-semibold">
-                                            What is Seller Financing?
-                                        </p>
-                                        <span className="text-muted small">10:00</span>
-                                    </div>
-                                    <div className="ms-auto">
-                                        <span className="lesson-dot" />
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="lesson-item p-3 mb-2 rounded-3">
-                                <div className="d-flex align-items-center">
-                                    <div className="lesson-number me-3">2</div>
-                                    <div>
-                                        <p className="mb-0 fw-semibold">
-                                            Benefits for Buyers and Sellers
-                                        </p>
-                                        <span className="text-muted small">12:00</span>
-                                    </div>
-                                    <div className="ms-auto">
-                                        <span className="lesson-dot" />
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="lesson-item p-3 rounded-3">
-                                <div className="d-flex align-items-center">
-                                    <div className="lesson-number me-3">3</div>
-                                    <div>
-                                        <p className="mb-0 fw-semibold">Common Misconceptions</p>
-                                        <span className="text-muted small">09:00</span>
-                                    </div>
-                                    <div className="ms-auto">
-                                        <span className="lesson-dot" />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    {lectures?.map((module: any, moduleIndex: number) => (
+                        <div key={module.id} className={`mb-4 ${moduleIndex !== 0 ? 'border-top' : ''}`}>
+                            <button
+                                className="btn w-100 fw-semibold mb-2 px-0 d-flex justify-content-between align-items-center module-toggle"
+                                data-bs-toggle="collapse"
+                                data-bs-target={`#module${moduleIndex}`}
+                                aria-expanded="true"
+                            >
+                                {module.name} &nbsp;&nbsp;
+                                <i className="bi bi-chevron-down toggle-arrow"></i>
+                            </button>
 
-                    <div className="mb-4 border-top">
-                        <button
-                            className="btn w-100 fw-semibold mb-2 px-0 d-flex justify-content-between align-items-center module-toggle"
-                            data-bs-toggle="collapse"
-                            data-bs-target="#module3"
-                            aria-expanded="false"
-                        >
-                            Module 1: Introduction to Seller Financing &nbsp;&nbsp;
-                            <i className="bi bi-chevron-down toggle-arrow"></i>
-                        </button>
-                        <h3 className="text-muted small mb-2">0/3 completed</h3>
-                        <div id="module3" className="collapse">
-                            <div className="lesson-item p-3 mb-2 rounded-3">
-                                <div className="d-flex align-items-center">
-                                    <div className="lesson-number me-3">1</div>
-                                    <div>
-                                        <p className="mb-0 fw-semibold">
-                                            What is Seller Financing?
-                                        </p>
-                                        <span className="text-muted small">10:00</span>
+                            <h3 className="text-muted small mb-2">0/{module?.components?.length} completed</h3>
+                            
+                            <div id={`module${moduleIndex}`} className="collapse show">
+                                {module.components?.map((component: any, componentIndex: number) => (
+                                    <div key={component.id} className="lesson-item p-3 mb-2 rounded-3">
+                                        <div className="d-flex align-items-center">
+                                            <div className="lesson-number me-3">{ componentIndex + 1}</div>
+                                            <div>
+                                                <p className="mb-0 fw-semibold">
+                                                    { component.name}
+                                                </p>
+                                                <span className="text-muted small">{durationInHourMinutesAndSeconds(component.duration || 30 )}</span>
+                                            </div>
+                                            <div className="ms-auto">
+                                                {(!component.lectureStatus || component.lectureStatus === 'pending') && <span className="lesson-dot" />}
+                                                {component.lectureStatus && component.lectureStatus === 'completed' && <span className="lesson-dot completed" />}
+                                                {component.lectureStatus && component.lectureStatus === 'ongoing' && <span className="lesson-dot ongoing" />}
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div className="ms-auto">
-                                        <span className="lesson-dot" />
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="lesson-item p-3 mb-2 rounded-3">
-                                <div className="d-flex align-items-center">
-                                    <div className="lesson-number me-3">2</div>
-                                    <div>
-                                        <p className="mb-0 fw-semibold">
-                                            Benefits for Buyers and Sellers
-                                        </p>
-                                        <span className="text-muted small">12:00</span>
-                                    </div>
-                                    <div className="ms-auto">
-                                        <span className="lesson-dot" />
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="lesson-item p-3 rounded-3">
-                                <div className="d-flex align-items-center">
-                                    <div className="lesson-number me-3">3</div>
-                                    <div>
-                                        <p className="mb-0 fw-semibold">Common Misconceptions</p>
-                                        <span className="text-muted small">09:00</span>
-                                    </div>
-                                    <div className="ms-auto">
-                                        <span className="lesson-dot" />
-                                    </div>
-                                </div>
+                                ))}
                             </div>
                         </div>
-                    </div>
+                    ))}
                 </div>
             </div>
         </div>

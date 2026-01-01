@@ -29,7 +29,7 @@ const CourseLecturePage = ({ courseId }: { courseId: string }) => {
             try {
                 const result = await myLecture(userId, courseId);
                 setCourse(result?.data?.course);
-                setLectures(result?.data?.allComponents || []);
+                setLectures(result?.data?.modulesAndComponents || []);
                 setCurrentModuleId(result?.data?.currentModuleId || null);
                 setCurrentComponentId(result?.data?.currentComponentId || null);
                 setCurrentComponent(result?.data?.currentComponent || null);
@@ -171,7 +171,7 @@ const CourseLecturePage = ({ courseId }: { courseId: string }) => {
                     </div>
                 </div>
 
-                <LectureContentSidebar />
+                <LectureContentSidebar lectures={lectures}/>
             </div>
         </div>
     )

@@ -59,7 +59,19 @@ export const myLecture = async (userId?: string, courseId?: string, moduleId?: s
                 deletedAt: null
             },
             include: {
-                course: true
+                course: true,
+                studentModules: {
+                    where: {
+                        deletedAt: null
+                    },
+                    include: {
+                        studentModuleComponents: {
+                            where: {
+                                deletedAt: null
+                            }
+                        }
+                    }
+                }
             }
         });
 
@@ -67,7 +79,6 @@ export const myLecture = async (userId?: string, courseId?: string, moduleId?: s
         let currentComponentId = componentId;
         let component = null;
         let studentModule = null;
-        let allComponents = [];
 
         if (!moduleId) { // Fetch the first module and its first component if moduleId is not provided
             studentModule = await prisma.studentModule.findFirst({
@@ -75,6 +86,13 @@ export const myLecture = async (userId?: string, courseId?: string, moduleId?: s
                     studentId: student?.id,
                     isActive: true,
                     deletedAt: null
+                },
+                include: {
+                    studentModuleComponents: {
+                        where: {
+                            deletedAt: null
+                        }
+                    }
                 },
                 orderBy: {
                     createdAt: 'asc'
@@ -109,7 +127,6 @@ export const myLecture = async (userId?: string, courseId?: string, moduleId?: s
                 }
 
                 currentModule = studentModule.id;
-                allComponents = await lectureModuleComponent(studentModule.id) as any[];
             }
         }
         else {
@@ -155,9 +172,21 @@ export const myLecture = async (userId?: string, courseId?: string, moduleId?: s
                 }
 
                 currentModule = studentModule.id;
-                allComponents = await lectureModuleComponent(studentModule.id) as any[];
             }
         }
+
+        const modulesAndComponents = [];
+
+        for (const mod of student?.studentModules || []) {
+            const moduleComponents = await lectureModuleComponent(mod.id) as any[];
+
+            modulesAndComponents.push({
+                ...mod,
+                components: moduleComponents
+            });
+        }
+
+        console.log('Modules and Components:', modulesAndComponents);
 
         return {
             success: true,
@@ -167,7 +196,7 @@ export const myLecture = async (userId?: string, courseId?: string, moduleId?: s
                 currentComponentId,
                 currentComponent: component,
                 currentModuleData: studentModule,
-                allComponents,
+                modulesAndComponents,
                 student,
                 course: student?.course || null,
             }
