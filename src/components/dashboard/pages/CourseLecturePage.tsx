@@ -2,7 +2,7 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { lectureIsComplete, myLecture, getUserProgressCounts } from "@/src/services/student/course";
+import { lectureIsComplete, myLecture, getUserProgressCounts, courseLectureIsCompleted } from "@/src/services/student/course";
 import LectureContentSidebar from "../LectureContentSidebar"
 import VideoPlayer from "../VideoPlayer"
 import { useAuth } from "@/src/providers/AuthProvider";
@@ -14,6 +14,7 @@ import FileViewer from "../FileViewer";
 import { useProgressCounts } from "@/src/providers/StudentSidebarProvider";
 import confetti from 'canvas-confetti';
 import ConfirmationModal from "../../ConfirmationModal";
+import CelebrationModal from "../CelebrationModal";
 
 const CourseLecturePage = ({ courseId }: { courseId: string }) => {
     const { user } = useAuth();
@@ -32,10 +33,52 @@ const CourseLecturePage = ({ courseId }: { courseId: string }) => {
     const [totalCompletedLectures, setTotalCompletedLectures] = useState<number>(0);
     const [totalLectures, setTotalLectures] = useState<number>(0);
     const [displayConfirmation, setDisplayConfirmation] = useState<boolean>(false);
+    const [showCelebration, setShowCelebration] = useState<boolean>(false);
 
     // Prevent duplicate fetches (e.g., React Strict Mode) and loops from broad dependencies
     const lastFetchKeyRef = useRef<string | null>(null);
     const confettiFiredRef = useRef<boolean>(false);
+    const cheerAudioRef = useRef<HTMLAudioElement | null>(null);
+    const congratsAudioRef = useRef<HTMLAudioElement | null>(null);
+
+    const ensureAudioInit = () => {
+        if (!cheerAudioRef.current) {
+            const cheer = new Audio('/assets/audio/cheer.wav');
+            cheer.preload = 'auto';
+            cheer.volume = 0.8;
+            cheerAudioRef.current = cheer;
+        }
+        if (!congratsAudioRef.current) {
+            const congrats = new Audio('/assets/audio/congrat.mp3');
+            congrats.preload = 'auto';
+            congrats.volume = 0.95;
+            congratsAudioRef.current = congrats;
+        }
+    };
+
+    const playCelebrationAudio = () => {
+        ensureAudioInit();
+        const cheer = cheerAudioRef.current!;
+        const congrats = congratsAudioRef.current!;
+
+        // Show celebration banner while audio sequence runs
+        setShowCelebration(true);
+
+        // Chain playback: play congrats after cheer ends
+        cheer.onended = () => {
+            
+        };
+
+        try { congrats.play().catch(() => {}); } catch { /* noop */ }
+        // Auto-close banner after second audio ends
+        congrats.onended = () => setShowCelebration(false);
+
+        // Safety: if cheer already unlocked/playing, restart from 0
+        try {
+            cheer.currentTime = 0;
+            cheer.play().catch(() => {});
+        } catch { /* noop */ }
+    };
 
     const fireCompletionConfetti = () => {
         const duration = 15000;
@@ -107,9 +150,10 @@ const CourseLecturePage = ({ courseId }: { courseId: string }) => {
                 const total = result?.data?.totalLectures || 0;
                 setTotalCompletedLectures(completed);
                 setTotalLectures(total);
-                // If course already complete on initial load, fire once
+                // If course already complete on initial load, fire once (confetti only to avoid autoplay issues)
                 if (total > 0 && completed === total && !confettiFiredRef.current) {
                     fireCompletionConfetti();
+                    setShowCelebration(true);
                     confettiFiredRef.current = true;
                 } else if (completed < total) {
                     confettiFiredRef.current = false;
@@ -137,14 +181,41 @@ const CourseLecturePage = ({ courseId }: { courseId: string }) => {
         fetchLecture();
     }, [courseId, user?.id, setLecturesDone]);
 
+    // Cleanup audio handlers on unmount
+    useEffect(() => {
+        return () => {
+            const c = cheerAudioRef.current;
+            const g = congratsAudioRef.current;
+            if (c) {
+                c.onended = null;
+                try { c.pause(); } catch {}
+            }
+            if (g) {
+                g.onended = null;
+                try { g.pause(); } catch {}
+            }
+        };
+    }, []);
+
     const markLectureAsComplete = async () => {
         if (!currentModuleId || !currentComponentId) return;
+
+        // Pre-unlock audio on user gesture before any awaits (autoplay policy)
+        try {
+            ensureAudioInit();
+            const cheer = cheerAudioRef.current!;
+            cheer.muted = true;
+            await cheer.play().then(() => {
+                cheer.pause();
+                cheer.currentTime = 0;
+                cheer.muted = false;
+            }).catch(() => {});
+        } catch { /* noop */ }
 
         // Implementation for marking lecture as complete
         const result = await lectureIsComplete(currentModuleId, currentComponentId);
 
         if (result.success) {
-            toast.success('Lecture marked as complete, you may proceed to the next lecture.');
             setDisplayConfirmation(false);
 
             // Refetch to recompute next/previous based on updated completion,
@@ -172,8 +243,15 @@ const CourseLecturePage = ({ courseId }: { courseId: string }) => {
             // Fire confetti when course is fully completed
             if (refreshedTotal > 0 && refreshedCompleted === refreshedTotal && !confettiFiredRef.current) {
                 fireCompletionConfetti();
+                playCelebrationAudio();
                 confettiFiredRef.current = true;
+                
+                await courseLectureIsCompleted(userId, courseId);
             }
+            else {
+                toast.success('Lecture marked as complete, you may proceed to the next lecture.');
+            }
+
             if (refreshed?.data?.nextPrevious && 'previousComponent' in refreshed.data.nextPrevious) {
                 setPreviousComponent(refreshed.data.nextPrevious.previousComponent || null);
                 setNextComponent(refreshed.data.nextPrevious.nextComponent || null);
@@ -420,6 +498,13 @@ const CourseLecturePage = ({ courseId }: { courseId: string }) => {
                 isForDelete={false}
                 onClose={() => setDisplayConfirmation(false)}
                 onConfirm={markLectureAsComplete}
+            />
+
+            <CelebrationModal
+                isOpen={showCelebration}
+                onClose={() => setShowCelebration(false)}
+                title="Congratulations!"
+                message="You've completed this course. Great job!"
             />
         </div>
     )

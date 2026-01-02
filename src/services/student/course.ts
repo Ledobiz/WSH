@@ -520,6 +520,109 @@ export const sendCourseConfirmationEmail = async (userId: string, courseId: stri
     }
 }
 
+export const getUserProgressCounts = async (userId: string) => {
+    try {
+        const coursesCount = await prisma.student.count({
+            where: {
+                userId,
+                deletedAt: null,
+            }
+        });
+
+        const lecturesCompletedCount = await prisma.studentLectureRecord.count({
+            where: {
+                status: 'completed',
+                deletedAt: null,
+                studentModule: {
+                    deletedAt: null,
+                    student: {
+                        userId,
+                        deletedAt: null,
+                    }
+                }
+            }
+        });
+
+        return {
+            success: true,
+            message: 'Success',
+            data: {
+                coursesCount,
+                lecturesCompletedCount,
+            }
+        };
+    } catch (error) {
+        console.log('Error fetching user progress counts:', error);
+        return {
+            success: false,
+            message: 'Failed to fetch progress counts',
+            data: {
+                coursesCount: 0,
+                lecturesCompletedCount: 0,
+            }
+        };
+    }
+}
+
+export const courseLectureIsCompleted = async (userId: string, courseId: string) => {
+    try {
+        const student = await prisma.student.findFirst({
+            where: {
+                userId,
+                courseId,
+                deletedAt: null
+            }
+        });
+
+        if (!student) {
+            return {
+                success: false,
+                message: 'Student not found for the given course.'
+            };
+        }
+
+        const totalLectures = await prisma.studentModuleComponent.count({
+            where: {
+                studentModule: {
+                    studentId: student.id,
+                    deletedAt: null
+                },
+                deletedAt: null
+            }
+        });
+
+        const completedLectures = await prisma.studentLectureRecord.count({
+            where: {
+                status: 'completed',
+                studentModule: {
+                    studentId: student.id,
+                    deletedAt: null
+                },
+                deletedAt: null
+            }
+        });
+
+        if (totalLectures > 0 && totalLectures === completedLectures) {
+            await prisma.student.update({
+                where: { id: student.id },
+                data: { lecturesCompleted: true }
+            });
+        }
+
+        return {
+            success: true,
+            message: 'Lecture completion status updated successfully.'
+        };
+    }
+    catch (error) {
+        console.log('Error updating lecture completion status:', error);
+        return {
+            success: false,
+            message: 'Failed to update lecture completion status.'
+        };
+    }
+}
+
 const lectureModuleComponent = async (studentModuleId: string) => {
     return await prisma.$queryRaw(Prisma.sql`
         SELECT smc.*, slr."id" AS "lectureRecordId", slr."status" AS "lectureStatus"
@@ -611,48 +714,4 @@ const getNextAndPreviousComponents = async (
         previousModule,
         nextModule,
     };
-}
-
-export const getUserProgressCounts = async (userId: string) => {
-    try {
-        const coursesCount = await prisma.student.count({
-            where: {
-                userId,
-                deletedAt: null,
-            }
-        });
-
-        const lecturesCompletedCount = await prisma.studentLectureRecord.count({
-            where: {
-                status: 'completed',
-                deletedAt: null,
-                studentModule: {
-                    deletedAt: null,
-                    student: {
-                        userId,
-                        deletedAt: null,
-                    }
-                }
-            }
-        });
-
-        return {
-            success: true,
-            message: 'Success',
-            data: {
-                coursesCount,
-                lecturesCompletedCount,
-            }
-        };
-    } catch (error) {
-        console.log('Error fetching user progress counts:', error);
-        return {
-            success: false,
-            message: 'Failed to fetch progress counts',
-            data: {
-                coursesCount: 0,
-                lecturesCompletedCount: 0,
-            }
-        };
-    }
 }
