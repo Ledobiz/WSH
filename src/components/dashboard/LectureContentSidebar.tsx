@@ -5,6 +5,15 @@
 import styles from './LectureContentSidebar.module.css'
 import { durationInHourMinutesAndSeconds } from '@/src/utils/client_functions';
 
+const totalCompletedLectures = (module: any) => {
+    console.log('Module in totalCompletedLectures:', module);
+    if (!module?.components || module.components.length === 0) return 0;
+
+    return module.components.reduce((total: number, component: any) => {
+        return total + (component.lectureStatus && component.lectureStatus === 'completed' ? 1 : 0);
+    }, 0);
+}
+
 const LectureContentSidebar = ({lectures}: {lectures: any[]}) => {
     return (
         <div className="col-lg-4">
@@ -25,7 +34,7 @@ const LectureContentSidebar = ({lectures}: {lectures: any[]}) => {
                                 <i className="bi bi-chevron-down toggle-arrow"></i>
                             </button>
 
-                            <h3 className="text-muted small mb-2">0/{module?.components?.length} completed</h3>
+                            <h3 className="text-muted small mb-2">{totalCompletedLectures(module)}/{module?.components?.length} completed</h3>
                             
                             <div id={`module${moduleIndex}`} className="collapse show">
                                 {module.components?.map((component: any, componentIndex: number) => (

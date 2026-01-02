@@ -2,22 +2,23 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { lectureIsComplete, myLecture } from "@/src/services/student/course";
+import { lectureIsComplete, myLecture, getUserProgressCounts } from "@/src/services/student/course";
 import LectureContentSidebar from "../LectureContentSidebar"
 import VideoPlayer from "../VideoPlayer"
 import { useAuth } from "@/src/providers/AuthProvider";
 import { useEffect, useRef, useState } from "react";
-import WebViewer from '@pdftron/webviewer'
 import { toast } from "react-toastify";
 import { durationInHourMinutesAndSeconds } from "@/src/utils/client_functions";
 import ButtonLoader from "../../admin/ButtonLoader";
 import FileViewer from "../FileViewer";
+import { useProgressCounts } from "@/src/providers/StudentSidebarProvider";
+import ConfirmationModal from "../../ConfirmationModal";
 
 const CourseLecturePage = ({ courseId }: { courseId: string }) => {
     const { user } = useAuth();
+    const { setLecturesDone } = useProgressCounts();
     const [course, setCourse] = useState<any>(null);
     const [lectures, setLectures] = useState<any[]>([]);
-    const [student, setStudent] = useState<any>(null);
     const [currentModuleId, setCurrentModuleId] = useState<string | null>(null);
     const [currentComponentId, setCurrentComponentId] = useState<string | null>(null);
     const [currentComponent, setCurrentComponent] = useState<any>(null);
@@ -29,6 +30,7 @@ const CourseLecturePage = ({ courseId }: { courseId: string }) => {
     const [nextModule, setNextModule] = useState<any>(null);
     const [totalCompletedLectures, setTotalCompletedLectures] = useState<number>(0);
     const [totalLectures, setTotalLectures] = useState<number>(0);
+    const [displayConfirmation, setDisplayConfirmation] = useState<boolean>(false);
 
     // Prevent duplicate fetches (e.g., React Strict Mode) and loops from broad dependencies
     const lastFetchKeyRef = useRef<string | null>(null);
@@ -51,9 +53,11 @@ const CourseLecturePage = ({ courseId }: { courseId: string }) => {
                 setCurrentComponentId(result?.data?.currentComponentId || null);
                 setCurrentComponent(result?.data?.currentComponent || null);
                 setCurrentModuleData(result?.data?.currentModuleData || null);
-                setStudent(result?.data?.student || null);
-                setTotalCompletedLectures(result?.data?.lecturesCompleted || 0);
-                setTotalLectures(result?.data?.totalLectures || 0);
+                
+                const completed = result?.data?.lecturesCompleted || 0;
+                const total = result?.data?.totalLectures || 0;
+                setTotalCompletedLectures(completed);
+                setTotalLectures(total);
 
                 if (result?.data?.nextPrevious && 'previousComponent' in result.data.nextPrevious) {
                     setPreviousComponent(result.data.nextPrevious.previousComponent || null);
@@ -75,7 +79,7 @@ const CourseLecturePage = ({ courseId }: { courseId: string }) => {
         };
 
         fetchLecture();
-    }, [courseId, user?.id]);
+    }, [courseId, user?.id, setLecturesDone]);
 
     const markLectureAsComplete = async () => {
         if (!currentModuleId || !currentComponentId) return;
@@ -85,6 +89,7 @@ const CourseLecturePage = ({ courseId }: { courseId: string }) => {
 
         if (result.success) {
             toast.success('Lecture marked as complete, you may proceed to the next lecture.');
+            setDisplayConfirmation(false);
 
             // Refetch to recompute next/previous based on updated completion,
             // then auto-navigate using refreshed pointers.
@@ -98,9 +103,16 @@ const CourseLecturePage = ({ courseId }: { courseId: string }) => {
             setCurrentComponentId(refreshed?.data?.currentComponentId || null);
             setCurrentComponent(refreshed?.data?.currentComponent || null);
             setCurrentModuleData(refreshed?.data?.currentModuleData || null);
-            setStudent(refreshed?.data?.student || null);
-            setTotalCompletedLectures(refreshed?.data?.lecturesCompleted || 0);
-            setTotalLectures(refreshed?.data?.totalLectures || 0);
+            
+            const refreshedCompleted = refreshed?.data?.lecturesCompleted || 0;
+            const refreshedTotal = refreshed?.data?.totalLectures || 0;
+            setTotalCompletedLectures(refreshedCompleted);
+            setTotalLectures(refreshedTotal);
+            // Refresh global sidebar counts after completion
+            const counts = await getUserProgressCounts(userId);
+            if (counts?.success) {
+                setLecturesDone(counts.data.lecturesCompletedCount);
+            }
             if (refreshed?.data?.nextPrevious && 'previousComponent' in refreshed.data.nextPrevious) {
                 setPreviousComponent(refreshed.data.nextPrevious.previousComponent || null);
                 setNextComponent(refreshed.data.nextPrevious.nextComponent || null);
@@ -115,7 +127,6 @@ const CourseLecturePage = ({ courseId }: { courseId: string }) => {
 
             const np = refreshed?.data?.nextPrevious;
             if (np && 'nextModule' in np && 'nextComponent' in np && np.nextModule && np.nextComponent) {
-                console.log('Navigating to next lecture:', np.nextModule, np.nextComponent);
                 await handleLectureNavigation(np.nextModule, np.nextComponent);
             }
         }
@@ -155,9 +166,17 @@ const CourseLecturePage = ({ courseId }: { courseId: string }) => {
             setCurrentComponentId(result?.data?.currentComponentId || null);
             setCurrentComponent(result?.data?.currentComponent || null);
             setCurrentModuleData(result?.data?.currentModuleData || null);
-            setStudent(result?.data?.student || null);
-            setTotalCompletedLectures(result?.data?.lecturesCompleted || 0);
-            setTotalLectures(result?.data?.totalLectures || 0);
+            
+            const navCompleted = result?.data?.lecturesCompleted || 0;
+            const navTotal = result?.data?.totalLectures || 0;
+            setTotalCompletedLectures(navCompleted);
+            setTotalLectures(navTotal);
+
+            // Refresh global sidebar counts after navigation
+            const counts = await getUserProgressCounts(userId);
+            if (counts?.success) {
+                setLecturesDone(counts.data.lecturesCompletedCount);
+            }
 
             if (result?.data?.nextPrevious && 'previousComponent' in result.data.nextPrevious) {
                 setPreviousComponent(result.data.nextPrevious.previousComponent || null);
@@ -223,8 +242,14 @@ const CourseLecturePage = ({ courseId }: { courseId: string }) => {
                                     />
                                 }
 
-                                {currentComponent?.type !== 'video' &&
+                                {currentComponent?.type !== 'video' && currentComponent?.fileName &&
                                     <FileViewer fileUrl={currentComponent?.fileName} />
+                                }
+
+                                {currentComponent?.type !== 'video' && !currentComponent?.fileName && 
+                                    <div className="d-flex align-items-center justify-content-center p-4">
+                                        <p className="text-muted mb-0">Lecture content is not available. Please reach out to support for resolution.</p>
+                                    </div>
                                 }
                             </div>
                         }
@@ -249,7 +274,7 @@ const CourseLecturePage = ({ courseId }: { courseId: string }) => {
                             <div className="d-flex flex-wrap gap-2 pt-3">
                                 {currentComponent?.lectureStatus !== 'completed' && (
                                     <button className="btn btn-main px-4 py-2 rounded-3 d-flex align-items-center justify-content-center gap-2"
-                                        onClick={markLectureAsComplete}
+                                        onClick={() => setDisplayConfirmation(true)}
                                     >
                                         <svg
                                             width={20}
@@ -271,7 +296,6 @@ const CourseLecturePage = ({ courseId }: { courseId: string }) => {
                                 <button
                                     className="btn btn-light text-secondary px-2 py-2 rounded-3 d-flex align-items-center justify-content-center gap-2"
                                     disabled={!previousComponent}
-                                    style={{cursor: 'not-allowed'}}
                                     onClick={showPreviousLecture}
                                 >
                                     <svg
@@ -324,6 +348,14 @@ const CourseLecturePage = ({ courseId }: { courseId: string }) => {
 
                 <LectureContentSidebar lectures={lectures}/>
             </div>
+
+            <ConfirmationModal 
+                isOpen={displayConfirmation}
+                text="Are you sure you want to mark this lecture as complete?"
+                isForDelete={false}
+                onClose={() => setDisplayConfirmation(false)}
+                onConfirm={markLectureAsComplete}
+            />
         </div>
     )
 }

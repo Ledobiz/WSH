@@ -42,7 +42,7 @@ const links = [
 
 const Sidebar = () => {
     const { user } = useAuth();
-    const { lecturesDone, coursesDone } = useProgressCounts();
+    const { lecturesDone, coursesEnrolled } = useProgressCounts();
     const pathName = usePathname();
     const appUrl = process.env.NEXT_PUBLIC_APP_URL;
 
@@ -94,12 +94,12 @@ const Sidebar = () => {
                             </div>
                             <div className="d-flex justify-content-between mb-4">
                                 <div className="d-flex flex-column justify-content-center align-items-center gap-1">
-                                    <h6 className="text-dark lh-1 fw-semibold m-0">{ coursesDone }</h6>
-                                    <span className="text-muted-2 m-0">Done Courses</span>
+                                    <h6 className="text-dark lh-1 fw-semibold m-0">{ coursesEnrolled }</h6>
+                                    <span className="text-muted-2 m-0">Courses Enrolled</span>
                                 </div>
                                 <div className="d-flex flex-column justify-content-center align-items-center gap-2">
                                     <h6 className="text-dark lh-1 fw-semibold m-0">{ lecturesDone }</h6>
-                                    <span className="text-muted-2 m-0">Done Lessons</span>
+                                    <span className="text-muted-2 m-0">Lessons Completed</span>
                                 </div>
                             </div>
                         </div>

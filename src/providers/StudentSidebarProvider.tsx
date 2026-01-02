@@ -2,10 +2,20 @@
 
 import { createContext, useContext, useState, useEffect } from 'react'
 import { useAuth } from './AuthProvider';
+import { getUserProgressCounts } from '@/src/services/student/course';
 
-const SidebarContext = createContext({
-    coursesDone: 0,
+type SidebarContextType = {
+    coursesEnrolled: number;
+    lecturesDone: number;
+    setCoursesEnrolled: (value: number) => void;
+    setLecturesDone: (value: number) => void;
+};
+
+const SidebarContext = createContext<SidebarContextType>({
+    coursesEnrolled: 0,
     lecturesDone: 0,
+    setCoursesEnrolled: () => {},
+    setLecturesDone: () => {},
 });
 
 export const useProgressCounts = () => {
@@ -18,16 +28,24 @@ export const useProgressCounts = () => {
 }
 
 export function SidebarProvider({ children }: { children: React.ReactNode }) {
-    const [coursesDone, setCoursesDone] = useState(0);
+    const [coursesEnrolled, setCoursesEnrolled] = useState(0);
     const [lecturesDone, setLecturesDone] = useState(0);
     const { user } = useAuth();
 
     useEffect(() => {
-        // TODO:: Calculations for lectures done and courses done.
-    }, []);
+        const fetchCounts = async () => {
+            if (!user?.id) return;
+            const res = await getUserProgressCounts(user.id);
+            if (res?.success) {
+                setCoursesEnrolled(res.data.coursesCount);
+                setLecturesDone(res.data.lecturesCompletedCount);
+            }
+        };
+        fetchCounts();
+    }, [user?.id]);
 
     return (
-        <SidebarContext.Provider value={{coursesDone, lecturesDone}}>
+        <SidebarContext.Provider value={{coursesEnrolled, lecturesDone, setCoursesEnrolled, setLecturesDone}}>
             {children}
         </SidebarContext.Provider>
     )

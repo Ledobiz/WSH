@@ -100,7 +100,7 @@ export const myLecture = async (userId?: string, courseId?: string, moduleId?: s
         let totalLectures = 0;
         let fetchNextComponent = false;
 
-        if (student.lastLectureId) { // Check if there's a last lecture record
+        if (student.lastLectureId && !moduleId && !componentId) { // No moduleId or componentId provided, fetch last accessed lecture
             // Get the component details
             const lastLectureComponent = await prisma.studentModuleComponent.findFirst({
                 where: {
@@ -608,4 +608,48 @@ const getNextAndPreviousComponents = async (
         previousModule,
         nextModule,
     };
+}
+
+export const getUserProgressCounts = async (userId: string) => {
+    try {
+        const coursesCount = await prisma.student.count({
+            where: {
+                userId,
+                deletedAt: null,
+            }
+        });
+
+        const lecturesCompletedCount = await prisma.studentLectureRecord.count({
+            where: {
+                status: 'completed',
+                deletedAt: null,
+                studentModule: {
+                    deletedAt: null,
+                    student: {
+                        userId,
+                        deletedAt: null,
+                    }
+                }
+            }
+        });
+
+        return {
+            success: true,
+            message: 'Success',
+            data: {
+                coursesCount,
+                lecturesCompletedCount,
+            }
+        };
+    } catch (error) {
+        console.log('Error fetching user progress counts:', error);
+        return {
+            success: false,
+            message: 'Failed to fetch progress counts',
+            data: {
+                coursesCount: 0,
+                lecturesCompletedCount: 0,
+            }
+        };
+    }
 }
