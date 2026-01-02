@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import ButtonLoader from '../admin/ButtonLoader';
 
 const VideoPlayer = ({videoId, isStudent = false}: {videoId: string, isStudent?: boolean}) => {
@@ -22,15 +22,19 @@ const VideoPlayer = ({videoId, isStudent = false}: {videoId: string, isStudent?:
         }
     }
 
-    async function fetchVideoToken() {
+    const stableVideoId = useMemo(() => videoId, [videoId]);
+    const stableIsStudent = useMemo(() => isStudent, [isStudent]);
+
+    const fetchVideoToken = useCallback(async (resetSrc = false) => {
+        if (resetSrc) setSrc('');
         const res = await fetch('/api/video/token', {
             headers: {
                 'Content-Type': 'application/json',
             },
             method: 'POST',
             body: JSON.stringify({
-                videoId,
-                isStudent,
+                videoId: stableVideoId,
+                isStudent: stableIsStudent,
             }),
         });
 
@@ -38,14 +42,15 @@ const VideoPlayer = ({videoId, isStudent = false}: {videoId: string, isStudent?:
         const data = await res.json();
 
         setSrc(data.playbackUrl);
-    }
+    }, [stableVideoId, stableIsStudent]);
 
     useEffect(() => {
-        fetchVideoToken();
-        stopRefresh(); // reset on video change
+        // Hard reset on video change to show loader and refresh token
+        stopRefresh();
+        fetchVideoToken(true);
 
         return () => stopRefresh();
-    }, [videoId, isStudent]);
+    }, [videoId, isStudent, fetchVideoToken]);
 
     return (
         <div className="video-box d-flex align-items-center justify-content-center">

@@ -7,9 +7,11 @@ import LectureContentSidebar from "../LectureContentSidebar"
 import VideoPlayer from "../VideoPlayer"
 import { useAuth } from "@/src/providers/AuthProvider";
 import { useEffect, useRef, useState } from "react";
+import WebViewer from '@pdftron/webviewer'
 import { toast } from "react-toastify";
 import { durationInHourMinutesAndSeconds } from "@/src/utils/client_functions";
 import ButtonLoader from "../../admin/ButtonLoader";
+import FileViewer from "../FileViewer";
 
 const CourseLecturePage = ({ courseId }: { courseId: string }) => {
     const { user } = useAuth();
@@ -82,16 +84,40 @@ const CourseLecturePage = ({ courseId }: { courseId: string }) => {
         const result = await lectureIsComplete(currentModuleId, currentComponentId);
 
         if (result.success) {
-            const nextLectureComponent = nextComponent;
-            const nextLectureModule = nextModule;
-
             toast.success('Lecture marked as complete, you may proceed to the next lecture.');
 
-            // Refresh the lecture data to reflect the change and enable Next
+            // Refetch to recompute next/previous based on updated completion,
+            // then auto-navigate using refreshed pointers.
             const userId = user?.id;
             if (!userId) return;
 
-            await handleLectureNavigation(nextLectureModule, nextLectureComponent);
+            const refreshed = await myLecture(userId, courseId);
+            setCourse(refreshed?.data?.course);
+            setLectures(refreshed?.data?.modulesAndComponents || []);
+            setCurrentModuleId(refreshed?.data?.currentModuleId || null);
+            setCurrentComponentId(refreshed?.data?.currentComponentId || null);
+            setCurrentComponent(refreshed?.data?.currentComponent || null);
+            setCurrentModuleData(refreshed?.data?.currentModuleData || null);
+            setStudent(refreshed?.data?.student || null);
+            setTotalCompletedLectures(refreshed?.data?.lecturesCompleted || 0);
+            setTotalLectures(refreshed?.data?.totalLectures || 0);
+            if (refreshed?.data?.nextPrevious && 'previousComponent' in refreshed.data.nextPrevious) {
+                setPreviousComponent(refreshed.data.nextPrevious.previousComponent || null);
+                setNextComponent(refreshed.data.nextPrevious.nextComponent || null);
+                setPreviousModule(refreshed.data.nextPrevious.previousModule || null);
+                setNextModule(refreshed.data.nextPrevious.nextModule || null);
+            } else {
+                setPreviousComponent(null);
+                setNextComponent(null);
+                setPreviousModule(null);
+                setNextModule(null);
+            }
+
+            const np = refreshed?.data?.nextPrevious;
+            if (np && 'nextModule' in np && 'nextComponent' in np && np.nextModule && np.nextComponent) {
+                console.log('Navigating to next lecture:', np.nextModule, np.nextComponent);
+                await handleLectureNavigation(np.nextModule, np.nextComponent);
+            }
         }
         else {
             toast.error(result.message || 'Failed to mark lecture as complete, please try again');            
@@ -118,28 +144,38 @@ const CourseLecturePage = ({ courseId }: { courseId: string }) => {
         const userId = user?.id;
         if (!userId || !moduleId || !componentId) return;
 
-        const result = await myLecture(userId, courseId, moduleId, componentId);
+        setLectureLoading(true);
 
-        setCourse(result?.data?.course);
-        setLectures(result?.data?.modulesAndComponents || []);
-        setCurrentModuleId(result?.data?.currentModuleId || null);
-        setCurrentComponentId(result?.data?.currentComponentId || null);
-        setCurrentComponent(result?.data?.currentComponent || null);
-        setCurrentModuleData(result?.data?.currentModuleData || null);
-        setStudent(result?.data?.student || null);
-        setTotalCompletedLectures(result?.data?.lecturesCompleted || 0);
-        setTotalLectures(result?.data?.totalLectures || 0);
+        try {
+            const result = await myLecture(userId, courseId, moduleId, componentId);
 
-        if (result?.data?.nextPrevious && 'previousComponent' in result.data.nextPrevious) {
-            setPreviousComponent(result.data.nextPrevious.previousComponent || null);
-            setNextComponent(result.data.nextPrevious.nextComponent || null);
-            setPreviousModule(result.data.nextPrevious.previousModule || null);
-            setNextModule(result.data.nextPrevious.nextModule || null);
-        } else {
-            setPreviousComponent(null);
-            setNextComponent(null);
-            setPreviousModule(null);
-            setNextModule(null);
+            setCourse(result?.data?.course);
+            setLectures(result?.data?.modulesAndComponents || []);
+            setCurrentModuleId(result?.data?.currentModuleId || null);
+            setCurrentComponentId(result?.data?.currentComponentId || null);
+            setCurrentComponent(result?.data?.currentComponent || null);
+            setCurrentModuleData(result?.data?.currentModuleData || null);
+            setStudent(result?.data?.student || null);
+            setTotalCompletedLectures(result?.data?.lecturesCompleted || 0);
+            setTotalLectures(result?.data?.totalLectures || 0);
+
+            if (result?.data?.nextPrevious && 'previousComponent' in result.data.nextPrevious) {
+                setPreviousComponent(result.data.nextPrevious.previousComponent || null);
+                setNextComponent(result.data.nextPrevious.nextComponent || null);
+                setPreviousModule(result.data.nextPrevious.previousModule || null);
+                setNextModule(result.data.nextPrevious.nextModule || null);
+            } else {
+                setPreviousComponent(null);
+                setNextComponent(null);
+                setPreviousModule(null);
+                setNextModule(null);
+            }
+        } 
+        catch (error) {
+            console.error('Error navigating to lecture:', error);
+        }
+        finally {
+            setLectureLoading(false);
         }
     }
     
@@ -179,7 +215,17 @@ const CourseLecturePage = ({ courseId }: { courseId: string }) => {
                                 </div>
                             ) :
                             <div>
-                                <VideoPlayer videoId={currentComponent?.id ?? ''} isStudent={true} />
+                                {currentComponent?.type === 'video' &&
+                                    <VideoPlayer
+                                        key={currentComponent?.id ?? ''}
+                                        videoId={currentComponent?.id ?? ''}
+                                        isStudent={true}
+                                    />
+                                }
+
+                                {currentComponent?.type !== 'video' &&
+                                    <FileViewer fileUrl={currentComponent?.fileName} />
+                                }
                             </div>
                         }
 

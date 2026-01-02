@@ -16,7 +16,7 @@ export async function POST(req: Request) {
     const result = await fetchComponentById(videoId, isStudent ? 'student' : 'admin');
 
     if (result.component?.type !== 'video') {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 400 });
+        return NextResponse.json({ error: "Bad request. Make sure the lecture is a video" }, { status: 400 });
     }
 
     let isEnrolled = false;

@@ -98,6 +98,7 @@ export const myLecture = async (userId?: string, courseId?: string, moduleId?: s
         let studentModule = null;
         let lecturesCompleted = 0;
         let totalLectures = 0;
+        let fetchNextComponent = false;
 
         if (student.lastLectureId) { // Check if there's a last lecture record
             // Get the component details
@@ -111,6 +112,19 @@ export const myLecture = async (userId?: string, courseId?: string, moduleId?: s
             if (lastLectureComponent) { // If the component exists, set the moduleId and componentId so that the lecture resumes from there
                 moduleId = lastLectureComponent.studentModuleId;
                 componentId = lastLectureComponent.id;
+
+                // Check if this lecture has been completed already.
+                const lectureRecord = await prisma.studentLectureRecord.findFirst({
+                    where: {
+                        studentModuleId: moduleId,
+                        studentModuleComponentId: componentId,
+                        deletedAt: null
+                    }
+                });
+
+                if (lectureRecord && lectureRecord.status === 'completed') {
+                    fetchNextComponent = true;
+                }
             }
         }
 
@@ -206,6 +220,57 @@ export const myLecture = async (userId?: string, courseId?: string, moduleId?: s
                 }
 
                 currentModule = studentModule.id;
+            }
+        }
+
+        // If the last accessed lecture was completed, auto-advance to the next lecture
+        if (fetchNextComponent && currentModule && currentComponentId) {
+            const np = await getNextAndPreviousComponents(currentModule, currentComponentId, student.id);
+            if (np?.nextComponent) {
+                const targetModuleId = np.nextModule || currentModule;
+                const targetComponentId = np.nextComponent;
+
+                const targetStudentModule = await prisma.studentModule.findFirst({
+                    where: {
+                        id: targetModuleId,
+                        studentId: student.id,
+                        isActive: true,
+                        deletedAt: null,
+                    },
+                    orderBy: {
+                        createdAt: 'asc'
+                    },
+                });
+
+                if (targetStudentModule) {
+                    const targetComponent = await prisma.$queryRaw<
+                        Array<{
+                            id: string;
+                            lectureRecordId: string | null;
+                            lectureStatus: string | null;
+                            [key: string]: any;
+                        }>
+                    >(Prisma.sql`
+                        SELECT smc.*, slr."id" AS "lectureRecordId", slr."status" AS "lectureStatus"
+                        FROM "StudentModuleComponent" smc
+                        LEFT JOIN "StudentLectureRecord" slr
+                            ON slr."studentModuleComponentId" = smc."id"
+                            AND slr."studentModuleId" = ${targetStudentModule.id}
+                            AND slr."deletedAt" IS NULL
+                        WHERE smc."studentModuleId" = ${targetStudentModule.id}
+                            AND smc."id" = ${targetComponentId}
+                            AND smc."deletedAt" IS NULL
+                        ORDER BY smc."createdAt" ASC
+                        LIMIT 1
+                    `);
+
+                    if (targetComponent.length > 0) {
+                        component = targetComponent[0];
+                        currentComponentId = targetComponent[0].id;
+                        currentModule = targetStudentModule.id;
+                        studentModule = targetStudentModule;
+                    }
+                }
             }
         }
 
