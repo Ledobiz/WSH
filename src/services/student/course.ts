@@ -388,7 +388,10 @@ export const populateCourseContentForStudent = async (userId: string, courseId: 
 
         if (student.courseContentAssigned) {
             console.log(`Course content already assigned to student with User ID ${userId} for course ID ${courseId}.`);
-            return;
+            return {
+                success: false,
+                message: `Course content already assigned to student with User ID ${userId} for course ID ${courseId}.`
+            }
         }
 
         const modules = await prisma.courseModule.findMany({
