@@ -12,6 +12,7 @@ import { durationInHourMinutesAndSeconds } from "@/src/utils/client_functions";
 import ButtonLoader from "../../admin/ButtonLoader";
 import FileViewer from "../FileViewer";
 import { useProgressCounts } from "@/src/providers/StudentSidebarProvider";
+import confetti from 'canvas-confetti';
 import ConfirmationModal from "../../ConfirmationModal";
 
 const CourseLecturePage = ({ courseId }: { courseId: string }) => {
@@ -34,6 +35,54 @@ const CourseLecturePage = ({ courseId }: { courseId: string }) => {
 
     // Prevent duplicate fetches (e.g., React Strict Mode) and loops from broad dependencies
     const lastFetchKeyRef = useRef<string | null>(null);
+    const confettiFiredRef = useRef<boolean>(false);
+
+    const fireCompletionConfetti = () => {
+        const duration = 15000;
+        const animationEnd = Date.now() + duration;
+        const colors = ['#ff3b3b', '#ffd43b', '#22c55e', '#3b82f6', '#a855f7'];
+
+        const randomInRange = (min: number, max: number) => Math.random() * (max - min) + min;
+
+        const interval = setInterval(() => {
+            const timeLeft = animationEnd - Date.now();
+            if (timeLeft <= 0) {
+                clearInterval(interval);
+                return;
+            }
+
+            const particleCount = Math.max(20, Math.floor(60 * (timeLeft / duration)));
+
+            // Launch two bursts from random positions for a fireworks feel
+            confetti({
+                particleCount,
+                spread: 360,
+                startVelocity: 35,
+                ticks: 120,
+                scalar: 1.2,
+                gravity: 1,
+                origin: {
+                    x: randomInRange(0.1, 0.9),
+                    y: randomInRange(0.1, 0.4)
+                },
+                colors,
+            });
+
+            confetti({
+                particleCount,
+                spread: 360,
+                startVelocity: 35,
+                ticks: 120,
+                scalar: 1.2,
+                gravity: 1,
+                origin: {
+                    x: randomInRange(0.1, 0.9),
+                    y: randomInRange(0.1, 0.4)
+                },
+                colors,
+            });
+        }, 200);
+    };
 
     useEffect(() => {
         const userId = user?.id;
@@ -58,6 +107,13 @@ const CourseLecturePage = ({ courseId }: { courseId: string }) => {
                 const total = result?.data?.totalLectures || 0;
                 setTotalCompletedLectures(completed);
                 setTotalLectures(total);
+                // If course already complete on initial load, fire once
+                if (total > 0 && completed === total && !confettiFiredRef.current) {
+                    fireCompletionConfetti();
+                    confettiFiredRef.current = true;
+                } else if (completed < total) {
+                    confettiFiredRef.current = false;
+                }
 
                 if (result?.data?.nextPrevious && 'previousComponent' in result.data.nextPrevious) {
                     setPreviousComponent(result.data.nextPrevious.previousComponent || null);
@@ -112,6 +168,11 @@ const CourseLecturePage = ({ courseId }: { courseId: string }) => {
             const counts = await getUserProgressCounts(userId);
             if (counts?.success) {
                 setLecturesDone(counts.data.lecturesCompletedCount);
+            }
+            // Fire confetti when course is fully completed
+            if (refreshedTotal > 0 && refreshedCompleted === refreshedTotal && !confettiFiredRef.current) {
+                fireCompletionConfetti();
+                confettiFiredRef.current = true;
             }
             if (refreshed?.data?.nextPrevious && 'previousComponent' in refreshed.data.nextPrevious) {
                 setPreviousComponent(refreshed.data.nextPrevious.previousComponent || null);
@@ -176,6 +237,10 @@ const CourseLecturePage = ({ courseId }: { courseId: string }) => {
             const counts = await getUserProgressCounts(userId);
             if (counts?.success) {
                 setLecturesDone(counts.data.lecturesCompletedCount);
+            }
+            // Reset confetti flag if navigating within incomplete course
+            if (navTotal > 0 && navCompleted < navTotal) {
+                confettiFiredRef.current = false;
             }
 
             if (result?.data?.nextPrevious && 'previousComponent' in result.data.nextPrevious) {
