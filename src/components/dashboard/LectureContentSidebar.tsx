@@ -6,7 +6,6 @@ import styles from './LectureContentSidebar.module.css'
 import { durationInHourMinutesAndSeconds } from '@/src/utils/client_functions';
 
 const totalCompletedLectures = (module: any) => {
-    console.log('Module in totalCompletedLectures:', module);
     if (!module?.components || module.components.length === 0) return 0;
 
     return module.components.reduce((total: number, component: any) => {

@@ -623,6 +623,48 @@ export const courseLectureIsCompleted = async (userId: string, courseId: string)
     }
 }
 
+export const saveCourseReview = async (
+    userId: string,
+    courseId: string,
+    studentId: string,
+    ratingData: { rating: number; review: string; anonymous: boolean }
+) => {
+    try {
+        if (!userId || !courseId || !studentId) {
+            throw new Error('Missing identifiers for saving review');
+        }
+
+        await prisma.$transaction(async (tx) => {
+            await tx.studentReview.create({
+                data: {
+                    userId,
+                    studentId,
+                    courseId,
+                    rating: ratingData.rating,
+                    comment: ratingData.review,
+                    isAnonymous: ratingData.anonymous,
+                },
+            });
+
+            await tx.student.update({
+                where: { id: studentId },
+                data: { submittedReview: true },
+            });
+        });
+
+        return {
+            success: true,
+            message: 'Course review saved successfully.',
+        };
+    } catch (error) {
+        console.log('Error saving course review:', error);
+        return {
+            success: false,
+            message: 'Failed to save course review.',
+        };
+    }
+}
+
 const lectureModuleComponent = async (studentModuleId: string) => {
     return await prisma.$queryRaw(Prisma.sql`
         SELECT smc.*, slr."id" AS "lectureRecordId", slr."status" AS "lectureStatus"

@@ -7691,3 +7691,29 @@ ul.edu_list li {
 .text-custom {
     color: var(--darkcolor) !important;
 }
+
+/* WhatsApp floating button pulse animation */
+@keyframes whatsappPulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.6);
+    }
+    70% {
+        transform: scale(1.06);
+        box-shadow: 0 0 0 14px rgba(37, 211, 102, 0);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(37, 211, 102, 0);
+    }
+}
+
+.whatsapp-float.pulse {
+    animation: whatsappPulse 2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .whatsapp-float.pulse {
+        animation: none;
+    }
+}

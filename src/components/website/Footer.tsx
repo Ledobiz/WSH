@@ -20,15 +20,15 @@ const Footer = () => {
                                     />
                                     <div className="footer-add">
                                         <address className="mb-4 lh-base">
-                                            6, Wilson Estate, Asore Town, Ajuwon
+                                            Alagbole, Ojodu Berger,
                                             <br />
-                                            Ogun State, Nigeria.
+                                            Lagos State, Nigeria.
                                         </address>
                                         <div className="d-flex align-items-center call-now gap-2 mb-3">
                                             <div className="square--30 circle">
                                                 <i className="bi bi-telephone" />
                                             </div>
-                                            <div className="fs-6 fw-semibold">+2348180525079</div>
+                                            <div className="fs-6 fw-semibold">+2349075144830</div>
                                         </div>
                                         <div className="d-flex align-items-center call-now gap-2">
                                             <div className="square--30 circle">
@@ -48,9 +48,6 @@ const Footer = () => {
                                         </li>
                                         <li>
                                             <Link href={cartUrl}>Cart</Link>
-                                        </li>
-                                        <li>
-                                            <Link href={wishlitUrl}>Wishlit</Link>
                                         </li>
                                         <li>
                                             <a href="#">Contact</a>
@@ -123,7 +120,7 @@ const Footer = () => {
                             <div className="col-lg-6 col-md-6">
                                 <p className="mb-0">
                                     © 2025 Women Skills Hub. Developed By{" "}
-                                    <a href="https://ledobiz.com/" style={{color: '#ffc107'}}>Ledobiz Technologies Ltd</a>.
+                                    {/* <a href="https://ledobiz.com/" style={{color: '#ffc107'}}>Ledobiz Technologies Ltd</a>. */}
                                 </p>
                             </div>
                             <div className="col-lg-6 col-md-6 text-md-end">
@@ -135,17 +132,12 @@ const Footer = () => {
                                     </li>
                                     <li>
                                         <a href="#">
-                                        <i className="ti-twitter" />
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="#">
                                         <i className="ti-instagram" />
                                         </a>
                                     </li>
                                     <li>
                                         <a href="#">
-                                        <i className="ti-linkedin" />
+                                        <i className="ti-tiktok" />
                                         </a>
                                     </li>
                                 </ul>
@@ -157,6 +149,31 @@ const Footer = () => {
             
             <a id="back2Top" className="top-scroll" title="Back to top" href="#">
                 <i className="ti-arrow-up" />
+            </a>
+
+            <a
+                href="https://wa.me/2349075144830"
+                aria-label="Chat with us on WhatsApp"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="whatsapp-float pulse"
+                style={{
+                    position: 'fixed',
+                    right: 20,
+                    bottom: 70,
+                    width: 56,
+                    height: 56,
+                    borderRadius: '50%',
+                    backgroundColor: '#25D366',
+                    color: '#ffffff',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    boxShadow: '0 8px 16px rgba(0,0,0,0.15)',
+                    zIndex: 1050
+                }}
+            >
+                <i className="bi bi-whatsapp" style={{fontSize: 24}} />
             </a>
         </>
     )

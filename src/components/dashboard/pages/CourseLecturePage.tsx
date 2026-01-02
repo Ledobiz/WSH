@@ -2,7 +2,7 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { lectureIsComplete, myLecture, getUserProgressCounts, courseLectureIsCompleted } from "@/src/services/student/course";
+import { lectureIsComplete, myLecture, getUserProgressCounts, courseLectureIsCompleted, saveCourseReview } from "@/src/services/student/course";
 import LectureContentSidebar from "../LectureContentSidebar"
 import VideoPlayer from "../VideoPlayer"
 import { useAuth } from "@/src/providers/AuthProvider";
@@ -15,11 +15,13 @@ import { useProgressCounts } from "@/src/providers/StudentSidebarProvider";
 import confetti from 'canvas-confetti';
 import ConfirmationModal from "../../ConfirmationModal";
 import CelebrationModal from "../CelebrationModal";
+import CustomModal from "../../admin/CustomModal";
 
 const CourseLecturePage = ({ courseId }: { courseId: string }) => {
     const { user } = useAuth();
     const { setLecturesDone } = useProgressCounts();
     const [course, setCourse] = useState<any>(null);
+    const [student, setStudent] = useState<any>(null);
     const [lectures, setLectures] = useState<any[]>([]);
     const [currentModuleId, setCurrentModuleId] = useState<string | null>(null);
     const [currentComponentId, setCurrentComponentId] = useState<string | null>(null);
@@ -34,6 +36,11 @@ const CourseLecturePage = ({ courseId }: { courseId: string }) => {
     const [totalLectures, setTotalLectures] = useState<number>(0);
     const [displayConfirmation, setDisplayConfirmation] = useState<boolean>(false);
     const [showCelebration, setShowCelebration] = useState<boolean>(false);
+    const [showRatingModal, setShowRatingModal] = useState<boolean>(false);
+    const [loading, setLoading] = useState<boolean>(false);
+    const [review, setReview] = useState<string>('');
+    const [rating, setRating] = useState<number>(0);
+    const [anonymous, setAnonymous] = useState<boolean>(false);
 
     // Prevent duplicate fetches (e.g., React Strict Mode) and loops from broad dependencies
     const lastFetchKeyRef = useRef<string | null>(null);
@@ -145,6 +152,7 @@ const CourseLecturePage = ({ courseId }: { courseId: string }) => {
                 setCurrentComponentId(result?.data?.currentComponentId || null);
                 setCurrentComponent(result?.data?.currentComponent || null);
                 setCurrentModuleData(result?.data?.currentModuleData || null);
+                setStudent(result?.data?.student || null);
                 
                 const completed = result?.data?.lecturesCompleted || 0;
                 const total = result?.data?.totalLectures || 0;
@@ -230,6 +238,7 @@ const CourseLecturePage = ({ courseId }: { courseId: string }) => {
             setCurrentComponentId(refreshed?.data?.currentComponentId || null);
             setCurrentComponent(refreshed?.data?.currentComponent || null);
             setCurrentModuleData(refreshed?.data?.currentModuleData || null);
+            setStudent(refreshed?.data?.student || null);   
             
             const refreshedCompleted = refreshed?.data?.lecturesCompleted || 0;
             const refreshedTotal = refreshed?.data?.totalLectures || 0;
@@ -305,6 +314,7 @@ const CourseLecturePage = ({ courseId }: { courseId: string }) => {
             setCurrentComponentId(result?.data?.currentComponentId || null);
             setCurrentComponent(result?.data?.currentComponent || null);
             setCurrentModuleData(result?.data?.currentModuleData || null);
+            setStudent(result?.data?.student || null);
             
             const navCompleted = result?.data?.lecturesCompleted || 0;
             const navTotal = result?.data?.totalLectures || 0;
@@ -338,6 +348,54 @@ const CourseLecturePage = ({ courseId }: { courseId: string }) => {
         }
         finally {
             setLectureLoading(false);
+        }
+    }
+
+    const handleCelebrationModal = () => {
+        setShowCelebration(false);
+
+        if (student?.lecturesCompleted && !student?.submittedReview) {
+            setShowRatingModal(true);
+        }
+    }
+
+    const handleCourseRating = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        if (!rating || rating < 1) {
+            toast.error('Please select a star rating.');
+            return;
+        }
+
+        if (!review || review.trim().length === 0) {
+            toast.error('Please provide a review.');
+            return;
+        }
+
+        const reviewData = {
+            rating,
+            review,
+            anonymous
+        };
+
+        try {
+            setLoading(true);
+            const userId = user?.id;
+            if (!userId) return;
+
+            // Save course review
+            await saveCourseReview(userId, courseId, student?.id, reviewData);
+            toast.success('Thank you for submitting your review! We appreciate your feedback');
+            setShowRatingModal(false);
+            setRating(0);
+            setReview('');
+            setAnonymous(false);
+        }
+        catch (error) {
+            console.log('Error saving course review: ', error);
+        }
+        finally {
+            setLoading(false);
         }
     }
     
@@ -494,7 +552,7 @@ const CourseLecturePage = ({ courseId }: { courseId: string }) => {
 
             <ConfirmationModal 
                 isOpen={displayConfirmation}
-                text="Are you sure you want to mark this lecture as complete?"
+                text="⚠️ Are you sure you want to mark this lecture as complete?"
                 isForDelete={false}
                 onClose={() => setDisplayConfirmation(false)}
                 onConfirm={markLectureAsComplete}
@@ -502,10 +560,91 @@ const CourseLecturePage = ({ courseId }: { courseId: string }) => {
 
             <CelebrationModal
                 isOpen={showCelebration}
-                onClose={() => setShowCelebration(false)}
+                reviewSubmitted={student?.submittedReview}
+                onClose={handleCelebrationModal}
                 title="Congratulations!"
                 message="You've completed this course. Great job!"
             />
+
+            <CustomModal
+                isOpen={showRatingModal}
+                title='Submit Review'
+                onClose={() => {}}
+                closable={false}
+            >
+                <div className="edu_wraper">
+                    <div className="review-form-box form-submit">
+                        <form onSubmit={handleCourseRating}>
+                            <div className="row g-3">
+                                <div className="col-lg-12 col-md-12 col-sm-12">
+                                    <div className="form-group">
+                                        <label className="mb-2">What is the overall rating you believe this course deserves? <sup className="text-danger">*</sup></label>
+                                        <div className="d-flex align-items-center gap-2">
+                                            {[1,2,3,4,5].map((star) => (
+                                                <button
+                                                    key={star}
+                                                    type="button"
+                                                    aria-label={`${star} star${star > 1 ? 's' : ''}`}
+                                                    onClick={() => setRating(star)}
+                                                    className="btn p-0 border-0"
+                                                    style={{
+                                                        lineHeight: 1,
+                                                        cursor: 'pointer',
+                                                        background: 'transparent'
+                                                    }}
+                                                >
+                                                    <svg width={28} height={28} viewBox="0 0 24 24" fill={star <= rating ? '#f59e0b' : 'none'} stroke={star <= rating ? '#f59e0b' : '#cbd5e1'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                        <polygon points="12 2 15 8 22 9 17 14 18 21 12 18 6 21 7 14 2 9 9 8" />
+                                                    </svg>
+                                                </button>
+                                            ))}
+                                            <span className="ms-2 text-muted small">{rating}/5</span>
+                                        </div>
+                                        <input type="hidden" name="rating" value={rating} />
+                                    </div>
+                                </div>
+                                <div className="col-lg-12 col-md-12 col-sm-12">
+                                    <div className="form-group">
+                                        <label className="mb-2">Tell us why you think so <sup className="text-danger">*</sup></label>
+                                        <textarea
+                                            className="form-control ht-140"
+                                            placeholder=""
+                                            value={review}
+                                            onChange={(e) => setReview(e.target.value)}
+                                            required
+                                        />
+                                    </div>
+                                </div>
+                                <div className="col-lg-12 col-md-12 col-sm-12">
+                                    <div className="form-group">
+                                        <label className="mb-2">Do you want to hide who you are?</label>
+                                        <div className="form-check">
+                                            <input
+                                                className="form-check-input"
+                                                type="checkbox"
+                                                id="anonymousCheck"
+                                                checked={anonymous}
+                                                onChange={(e) => setAnonymous(e.target.checked)}
+                                            />
+                                            <label className="form-check-label" htmlFor="anonymousCheck">
+                                                Yes, I want to submit this review anonymously.
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="col-lg-12 col-md-12 col-sm-12">
+                                    <div className="form-group">
+                                        <button disabled={loading} type="submit" className="btn btn-main px-5">
+                                            { loading ? <ButtonLoader /> : 'Submit Review' }
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </CustomModal>
         </div>
     )
 }

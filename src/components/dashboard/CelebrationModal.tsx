@@ -2,12 +2,13 @@
 
 interface CelebrationModalProps {
   isOpen: boolean;
+  reviewSubmitted: boolean;
   onClose: () => void;
   title?: string;
   message?: string;
 }
 
-const CelebrationModal = ({ isOpen, onClose, title = 'Congratulations!', message = "You've completed this course. Great job!" }: CelebrationModalProps) => {
+const CelebrationModal = ({ isOpen, reviewSubmitted, onClose, title = 'Congratulations!', message = "You've completed this course. Great job!" }: CelebrationModalProps) => {
   if (!isOpen) return null;
 
   return (
@@ -37,7 +38,7 @@ const CelebrationModal = ({ isOpen, onClose, title = 'Congratulations!', message
                 </div>
                 <h2 className="fw-bold mb-2">{title}</h2>
                 <p className="text-muted mb-4">{message}</p>
-                <button className="btn btn-main px-4" onClick={onClose}>Close</button>
+                <button className="btn btn-main px-4" onClick={onClose}>{reviewSubmitted ? 'Close' : 'Submit Review'}</button>
             </div>
         </div>
     </div>

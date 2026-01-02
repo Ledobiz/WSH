@@ -9,6 +9,7 @@ interface ModalInterface {
     title?: string;
     size?: 'modal-sm' | 'modal-lg' | 'modal-xl';
     onClose: () => void;
+    closable?: boolean;
     children: React.ReactNode
 }
 
@@ -23,6 +24,7 @@ const CustomModal = ({
     title, 
     onClose, 
     size= 'modal-lg', 
+    closable = true,
     children
 }: ModalInterface) => {
     const modalRef = useRef<HTMLDivElement | null>(null);
@@ -33,7 +35,7 @@ const CustomModal = ({
 
         instanceRef.current = instanceRef.current || new window.bootstrap.Modal(modalRef.current, {
             backdrop: 'static',
-            keyboard: true
+            keyboard: closable
         })
 
         if (isOpen) {
@@ -42,7 +44,7 @@ const CustomModal = ({
         else {
             instanceRef.current.hide();
         }
-    }, [isOpen]);
+    }, [isOpen, closable]);
 
     return (
         <div
@@ -59,19 +61,21 @@ const CustomModal = ({
                 onClick={(e) => e.stopPropagation()}
             >
                 <div className="modal-content" id="signup">
-                    <div className="position-absolute end-0 top-0 mt-3 me-3 z-1 cursor-pointer"
-                        onClick={onClose}
-                        style={{cursor: 'pointer'}}
-                    >
-                        <span
-                            className="square--30 circle bg-light z-2 cursor-pointer"
-                            data-bs-dismiss="modal"
-                            aria-hidden="true"
+                    {closable && (
+                        <div className="position-absolute end-0 top-0 mt-3 me-3 z-1 cursor-pointer"
+                            onClick={onClose}
                             style={{cursor: 'pointer'}}
                         >
-                            <i className="bi bi-x" />
-                        </span>
-                    </div>
+                            <span
+                                className="square--30 circle bg-light z-2 cursor-pointer"
+                                data-bs-dismiss="modal"
+                                aria-hidden="true"
+                                style={{cursor: 'pointer'}}
+                            >
+                                <i className="bi bi-x" />
+                            </span>
+                        </div>
+                    )}
                     <div className="modal-body p-4">
                         <div className="login-caps mb-4">
                             <div className="text-center">
