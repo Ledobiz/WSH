@@ -31,7 +31,7 @@ const MyCourses = () => {
     const appUrl = process.env.NEXT_PUBLIC_APP_URL;
 
     // States
-    const [myCourses, setMyCourses] = useState<DBStudentInterface[] | null>(null);
+    const [myCourses, setMyCourses] = useState<DBStudentInterface[]>([]);
     const [loadingCourses, setLoadingCourses] = useState<boolean>(true);
     const { user } = useAuth();
 
@@ -80,10 +80,10 @@ const MyCourses = () => {
                             
                             <Suspense fallback={<Loading />}>
                                 { loadingCourses ? <PageLoader /> : (
-                                    (myCourses ?? [])?.length > 0 ? (
+                                    myCourses.length > 0 ? (
                                         <>
                                             {/* Show ongoing/new courses only when there are unfinished courses */}
-                                            {(myCourses ?? []).filter(student => !student.lecturesCompleted).length > 0 && (
+                                            {myCourses.filter(student => !student.lecturesCompleted).length > 0 && (
                                                 <div className="row mb-4">
                                                     <div className="col-lg-12 col-md-12 col-sm-12">
                                                         <div className="d-flex align-items-center justify-content-between gap-2 mb-3">
@@ -94,7 +94,7 @@ const MyCourses = () => {
                                                     </div>
                                                     <div className="col-lg-12 col-md-12 col-sm-12">
                                                         <div className="row g-3">
-                                                            {(myCourses ?? []).filter(student => !student.lecturesCompleted).map((student) => (
+                                                            {myCourses.filter(student => !student.lecturesCompleted).map((student) => (
                                                                 <div key={student.id} className="col-xl-4 col-lg-4 col-md-6">
                                                                     <div className="education_block_grid border">
                                                                         <div className="education-thumb position-relative">
@@ -141,7 +141,7 @@ const MyCourses = () => {
                                                 </div>
                                             )}
                                         
-                                            {(myCourses ?? []).filter(student => student.lecturesCompleted).length > 0 && (
+                                            {myCourses.filter(student => student.lecturesCompleted).length > 0 && (
                                                 <div className="row">
                                                     <div className="col-lg-12 col-md-12 col-sm-12">
                                                         <div className="d-flex align-items-center justify-content-between gap-2 mb-3">
@@ -152,7 +152,7 @@ const MyCourses = () => {
                                                     </div>
                                                     <div className="col-lg-12 col-md-12 col-sm-12">
                                                         <div className="row g-3">
-                                                            {(myCourses ?? []).filter(student => student.lecturesCompleted).map((student) => (
+                                                            {myCourses.filter(student => student.lecturesCompleted).map((student) => (
                                                                 <div key={student.id} className="col-xl-4 col-lg-4 col-md-6">
                                                                     <div className="education_block_grid border">
                                                                         <div className="education-thumb position-relative">

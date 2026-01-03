@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     description: "The home for upskilling for financial independence"
 };
 
-const MyCourses = async ({ params }: { params: Promise<{slug: string}>} ) => {
+const CourseContent = async ({ params }: { params: Promise<{slug: string}>} ) => {
     const { slug } = await params;
     
     const appUrl = process.env.NEXT_PUBLIC_APP_URL;
@@ -42,4 +42,4 @@ const MyCourses = async ({ params }: { params: Promise<{slug: string}>} ) => {
         </Suspense>
     )
 }
-export default MyCourses
+export default CourseContent
