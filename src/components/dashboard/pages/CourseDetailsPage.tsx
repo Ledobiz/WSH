@@ -148,7 +148,7 @@ const CourseDetailsPage = ({courseId}: {courseId: string}) => {
                                                         {module.components.map((component: any) => (
                                                             <li key={component.id} className="d-flex flex-row justify-content-between align-items-center">
                                                                 <div className="d-flex align-items-center flex-row gap-2">
-                                                                    <Link href={`${courseContentUrl}/${course.id}`} 
+                                                                    <Link href={`${courseContentUrl}/${course.id}?moduleId=${module.id}&componentId=${component.id}`} 
                                                                         className={`square--30 circle ${component.lectureStatus && component.lectureStatus === 'completed' ? 'btn-green' : 'btn-light-red'}`}
                                                                     >
                                                                         <i className="bi bi-play-fill fs-5" />
@@ -158,7 +158,7 @@ const CourseDetailsPage = ({courseId}: {courseId: string}) => {
                                                                     </span>
 
                                                                     {component.lectureStatus && component.lectureStatus === 'completed' && (
-                                                                        <Link href={`${courseContentUrl}/${course.id}`} className="badge bg-dark text-white">
+                                                                        <Link href={`${courseContentUrl}/${course.id}?moduleId=${module.id}&componentId=${component.id}`} className="badge bg-dark text-white">
                                                                             Play again
                                                                         </Link>
                                                                     )}

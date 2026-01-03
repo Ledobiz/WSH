@@ -28,3 +28,8 @@
   scrollbar-color: #9868A7 #f1f1f1;
   scrollbar-width: thin;
 }
+
+/* Highlight the currently active/ongoing lecture */
+.activeLesson {
+  background-color: #FFF9DB !important; /* light yellow */
+}

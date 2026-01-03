@@ -13,7 +13,17 @@ const totalCompletedLectures = (module: any) => {
     }, 0);
 }
 
-const LectureContentSidebar = ({lectures}: {lectures: any[]}) => {
+const LectureContentSidebar = ({
+    lectures,
+    onSelectLecture,
+    activeModuleId,
+    activeComponentId,
+}: {
+    lectures: any[];
+    onSelectLecture?: (moduleId: string, componentId: string) => void;
+    activeModuleId?: string | null;
+    activeComponentId?: string | null;
+}) => {
     return (
         <div className="col-lg-4">
             <div className="bg-white rounded-4 shadow-sm">
@@ -36,24 +46,42 @@ const LectureContentSidebar = ({lectures}: {lectures: any[]}) => {
                             <h3 className="text-muted small mb-2">{totalCompletedLectures(module)}/{module?.components?.length} completed</h3>
                             
                             <div id={`module${moduleIndex}`} className="collapse show">
-                                {module.components?.map((component: any, componentIndex: number) => (
-                                    <div key={component.id} className="lesson-item p-3 mb-2 rounded-3">
-                                        <div className="d-flex align-items-center">
-                                            <div className="lesson-number me-3">{ componentIndex + 1}</div>
-                                            <div>
-                                                <p className="mb-0 fw-semibold">
-                                                    { component.name}
-                                                </p>
-                                                <span className="text-muted small">{durationInHourMinutesAndSeconds(component.duration || 30 )}</span>
-                                            </div>
-                                            <div className="ms-auto">
-                                                {(!component.lectureStatus || component.lectureStatus === 'pending') && <span className="lesson-dot" />}
-                                                {component.lectureStatus && component.lectureStatus === 'completed' && <span className="lesson-dot completed" />}
-                                                {component.lectureStatus && component.lectureStatus === 'ongoing' && <span className="lesson-dot ongoing" />}
+                                {module.components?.map((component: any, componentIndex: number) => {
+                                    const moduleOffset = (lectures?.slice(0, moduleIndex) || []).reduce((sum: number, prevModule: any) => {
+                                        return sum + (prevModule?.components?.length || 0);
+                                    }, 0);
+                                    const lessonNumber = moduleOffset + componentIndex + 1;
+                                    return (
+                                        <div
+                                            key={component.id}
+                                            className={`lesson-item p-3 mb-2 rounded-3 ${activeModuleId && activeComponentId && module.id === activeModuleId && component.id === activeComponentId ? styles.activeLesson : ''}`}
+                                            role="button"
+                                            tabIndex={0}
+                                            onClick={() => onSelectLecture?.(module.id, component.id)}
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter' || e.key === ' ') {
+                                                    e.preventDefault();
+                                                    onSelectLecture?.(module.id, component.id);
+                                                }
+                                            }}
+                                        >
+                                            <div className="d-flex align-items-center">
+                                                <div className="lesson-number me-3">{ lessonNumber }</div>
+                                                <div>
+                                                    <p className="mb-0 fw-semibold">
+                                                        { component.name}
+                                                    </p>
+                                                    <span className="text-muted small">{durationInHourMinutesAndSeconds(component.duration || 30 )}</span>
+                                                </div>
+                                                <div className="ms-auto">
+                                                    {(!component.lectureStatus || component.lectureStatus === 'pending') && <span className="lesson-dot" />}
+                                                    {component.lectureStatus && component.lectureStatus === 'completed' && <span className="lesson-dot completed" />}
+                                                    {component.lectureStatus && component.lectureStatus === 'ongoing' && <span className="lesson-dot ongoing" />}
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                ))}
+                                    );
+                                })}
                             </div>
                         </div>
                     ))}

@@ -7,6 +7,7 @@ import LectureContentSidebar from "../LectureContentSidebar"
 import VideoPlayer from "../VideoPlayer"
 import { useAuth } from "@/src/providers/AuthProvider";
 import { useEffect, useRef, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { toast } from "react-toastify";
 import { durationInHourMinutesAndSeconds } from "@/src/utils/client_functions";
 import ButtonLoader from "../../admin/ButtonLoader";
@@ -19,6 +20,12 @@ import CustomModal from "../../admin/CustomModal";
 
 const CourseLecturePage = ({ courseId }: { courseId: string }) => {
     const { user } = useAuth();
+    const searchParams = useSearchParams();
+    const pathname = usePathname();
+    const router = useRouter();
+    const urlModuleId = searchParams?.get('moduleId') || null;
+    const urlComponentId = searchParams?.get('componentId') || null;
+    
     const { setLecturesDone } = useProgressCounts();
     const [course, setCourse] = useState<any>(null);
     const [student, setStudent] = useState<any>(null);
@@ -45,6 +52,14 @@ const CourseLecturePage = ({ courseId }: { courseId: string }) => {
     // Prevent duplicate fetches (e.g., React Strict Mode) and loops from broad dependencies
     const lastFetchKeyRef = useRef<string | null>(null);
     const confettiFiredRef = useRef<boolean>(false);
+        const updateUrlWithLecture = (moduleId: string, componentId: string) => {
+            if (!pathname) return;
+            const params = new URLSearchParams(searchParams?.toString() || '');
+            params.set('moduleId', moduleId);
+            params.set('componentId', componentId);
+            router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+        };
+
     const cheerAudioRef = useRef<HTMLAudioElement | null>(null);
     const congratsAudioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -138,14 +153,14 @@ const CourseLecturePage = ({ courseId }: { courseId: string }) => {
         const userId = user?.id;
         if (!userId) return;
 
-        const key = `${userId}:${courseId}`;
+        const key = `${userId}:${courseId}:${urlModuleId ?? ''}:${urlComponentId ?? ''}`;
         if (lastFetchKeyRef.current === key) return;
         lastFetchKeyRef.current = key;
 
         const fetchLecture = async () => {
             try {
                 setLectureLoading(true);
-                const result = await myLecture(userId, courseId);
+                const result = await myLecture(userId, courseId, urlModuleId ?? undefined, urlComponentId ?? undefined);
                 setCourse(result?.data?.course);
                 setLectures(result?.data?.modulesAndComponents || []);
                 setCurrentModuleId(result?.data?.currentModuleId || null);
@@ -187,7 +202,7 @@ const CourseLecturePage = ({ courseId }: { courseId: string }) => {
         };
 
         fetchLecture();
-    }, [courseId, user?.id, setLecturesDone]);
+    }, [courseId, user?.id, setLecturesDone, urlModuleId, urlComponentId]);
 
     // Cleanup audio handlers on unmount
     useEffect(() => {
@@ -342,6 +357,9 @@ const CourseLecturePage = ({ courseId }: { courseId: string }) => {
                 setPreviousModule(null);
                 setNextModule(null);
             }
+
+            // Sync URL to reflect current module/component
+            updateUrlWithLecture(moduleId, componentId);
         } 
         catch (error) {
             console.error('Error navigating to lecture:', error);
@@ -547,7 +565,15 @@ const CourseLecturePage = ({ courseId }: { courseId: string }) => {
                     </div>
                 </div>
 
-                <LectureContentSidebar lectures={lectures}/>
+                <LectureContentSidebar
+                    lectures={lectures}
+                    activeModuleId={currentModuleId}
+                    activeComponentId={currentComponentId}
+                    onSelectLecture={(mId, cId) => {
+                        // Navigate and sync URL
+                        handleLectureNavigation(mId, cId);
+                    }}
+                />
             </div>
 
             <ConfirmationModal 
