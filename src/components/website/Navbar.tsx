@@ -60,29 +60,18 @@ const Navbar = () => {
                                 }
                             </ul>
                             <ul className="nav-menu nav-menu-social align-to-right">
-                                {!loading && user?.role === 'student' ? (
-                                    <li className="join-btn">
-                                        <Link href={studentDashboardUrl}>
-                                            <i className="bi bi-box-arrow-in-right" />
-                                            My Portal
-                                        </Link>
-                                    </li>
-                                ) : (
-                                    <>
-                                        <li className="become-tutor">
-                                            <Link href={registerUrl}>
-                                                <i className="bi bi-person-circle" />
-                                                Register
-                                            </Link>
-                                        </li>
-                                        <li className="join-btn">
-                                            <Link href={loginUrl}>
-                                                <i className="bi bi-box-arrow-in-right" />
-                                                Sign In
-                                            </Link>
-                                        </li>
-                                    </>
-                                )}
+                                <li className="become-tutor">
+                                    <Link href={registerUrl}>
+                                        <i className="bi bi-person-circle" />
+                                        Register
+                                    </Link>
+                                </li>
+                                <li className="join-btn">
+                                    <Link href={loginUrl}>
+                                        <i className="bi bi-box-arrow-in-right" />
+                                        Sign In
+                                    </Link>
+                                </li>
                             </ul>
                         </div>
                     </nav>

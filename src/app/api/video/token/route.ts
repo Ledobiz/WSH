@@ -9,7 +9,6 @@ export async function POST(req: Request) {
     const user = await getUserFromSession();
 
     if (!user) {
-        console.log(user);
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -19,7 +18,7 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: "Bad request. Make sure the lecture is a video" }, { status: 400 });
     }
 
-    let isEnrolled = false;
+    /*let isEnrolled = false;
 
     if (user.role !== 'admin') { // Check for enrolment
         // TODO:: Check user is in enrolled table.
@@ -31,7 +30,7 @@ export async function POST(req: Request) {
 
     if (!isEnrolled) {
         return NextResponse.json({ error: "Not enrolled for course" }, { status: 403 });
-    }
+    }*/
 
     const signedVideoUrl = signVideoUrl(result.component?.vimeoVideoUrl);
 

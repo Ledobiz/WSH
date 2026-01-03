@@ -28,7 +28,21 @@ type DBStudentInterface = Prisma.StudentGetPayload<{
 const totalActiveCourses = (courses: DBStudentInterface[]): number => {
     if (!courses.length) return 0;
     return courses.reduce((total, student) => {
+        return total + (!student.lecturesCompleted ? 1 : 0);
+    }, 0);
+}
+
+const completedCourses = (courses: DBStudentInterface[]): number => {
+    if (!courses.length) return 0;
+    return courses.reduce((total, student) => {
         return total + (student.lecturesCompleted ? 1 : 0);
+    }, 0);
+}
+
+const certificatesAvailable = (courses: DBStudentInterface[]): number => {
+    if (!courses.length) return 0;
+    return courses.reduce((total, student) => {
+        return total + (student.lecturesCompleted && student.course.hasCertificate ? 1 : 0);
     }, 0);
 }
 
@@ -50,7 +64,6 @@ const totalDuration = (course: DBStudentInterface): number => {
 const DashboardPage = () => {
     const appUrl = process.env.NEXT_PUBLIC_APP_URL;
     const [allCourses, setAllCourses] = useState<DBStudentInterface[] | null>(null);
-    const [certificates, setCertificates] = useState(0);
 
     const { lecturesDone } = useProgressCounts();
     const { user } = useAuth();
@@ -128,7 +141,7 @@ const DashboardPage = () => {
                                             style={{ background: "linear-gradient(135deg, #b83aff, #7b38ff)" }}
                                         >
                                             <span className="position-absolute top-0 end-0 m-3 fw-bold fs-4">
-                                                { lecturesDone}
+                                                { completedCourses(allCourses ?? []) }
                                             </span>
                                             <div className="mb-3">
                                                 <div
@@ -142,8 +155,8 @@ const DashboardPage = () => {
                                                     <i className="bi bi-check-circle fs-4" />
                                                 </div>
                                             </div>
-                                            <h5 className="opacity-75 text-white mb-1">Lessons Complete</h5>
-                                            <p className="opacity-75 mb-0">Keep learning!</p>
+                                            <h5 className="opacity-75 text-white mb-1">Courses Completed</h5>
+                                            <p className="opacity-75 mb-0">You're doing well!</p>
                                             <div className="circle-bg" />
                                         </div>
                                     </div>
@@ -154,7 +167,7 @@ const DashboardPage = () => {
                                             style={{ background: "linear-gradient(135deg, #ff9800, #f44336)" }}
                                         >
                                             <span className="position-absolute top-0 end-0 m-3 fw-bold fs-4">
-                                                { certificates }
+                                                { certificatesAvailable(allCourses ?? []) }
                                             </span>
                                             <div className="mb-3">
                                                 <div
@@ -180,7 +193,7 @@ const DashboardPage = () => {
                                             style={{ background: "linear-gradient(135deg, #00b97c, #0ca77f)" }}
                                         >
                                             <span className="position-absolute top-0 end-0 m-3 fw-bold fs-4">
-                                                0
+                                                { lecturesDone}
                                             </span>
                                             <div className="mb-3">
                                                 <div
@@ -194,14 +207,14 @@ const DashboardPage = () => {
                                                     <i className="bi bi-lightning-charge fs-4" />
                                                 </div>
                                             </div>
-                                            <h5 className="opacity-75 text-white mb-1">Day Streak</h5>
-                                            <p className="opacity-75 mb-0">Start learning today!</p>
+                                            <h5 className="opacity-75 text-white mb-1">Lessons Completed</h5>
+                                            <p className="opacity-75 mb-0">Keep learning!</p>
                                             <div className="circle-bg" />
                                         </div>
                                     </div>
                                 </div>
 
-                                {allCourses?.length ? (
+                                {totalActiveCourses(allCourses ?? []) ? (
                                     <div className="row mb-4">
                                         <div className="col-12 mb-0">
                                             <div className="d-flex align-items-start justify-content-between gap-2 flex-column flex-sm-row">
@@ -263,7 +276,7 @@ const DashboardPage = () => {
                                             className="img-fluid mb-4"
                                             style={{ maxWidth: 260, opacity: "0.9" }}
                                         />
-                                        <h4 className="fw-bold">No Courses Yet</h4>
+                                        <h4 className="fw-bold">No Active Courses Yet</h4>
                                         <p className="text-muted mb-4">
                                             Start your learning journey by exploring our available courses.
                                         </p>

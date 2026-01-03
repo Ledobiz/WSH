@@ -20,6 +20,7 @@ export default function RootLayout({
         <link href={`${appUrl}/assets/css/styles.css`} rel="stylesheet" />
         <link href={`${appUrl}/assets/css/colors.css`} rel="stylesheet" />
         <link rel="icon" type="image/svg+xml" href={`${appUrl}/assets/img/wsh-logo-light.jpeg`}></link>
+        <title>Student Dashboard - Women Skills Hub</title>
       </head>
       <body>
         <AuthProvider>
