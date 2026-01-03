@@ -24,6 +24,14 @@ const LectureContentSidebar = ({
     activeModuleId?: string | null;
     activeComponentId?: string | null;
 }) => {
+    // Precompute continuous numbering offsets per module
+    const moduleOffsets: number[] = [];
+    let acc = 0;
+    (lectures ?? []).forEach((m: any, idx: number) => {
+        moduleOffsets[idx] = acc;
+        acc += (m?.components?.length || 0);
+    });
+
     return (
         <div className="col-lg-4">
             <div className="bg-white rounded-4 shadow-sm">
@@ -47,10 +55,7 @@ const LectureContentSidebar = ({
                             
                             <div id={`module${moduleIndex}`} className="collapse show">
                                 {module.components?.map((component: any, componentIndex: number) => {
-                                    const moduleOffset = (lectures?.slice(0, moduleIndex) || []).reduce((sum: number, prevModule: any) => {
-                                        return sum + (prevModule?.components?.length || 0);
-                                    }, 0);
-                                    const lessonNumber = moduleOffset + componentIndex + 1;
+                                    const lessonNumber = (moduleOffsets[moduleIndex] || 0) + componentIndex + 1;
                                     return (
                                         <div
                                             key={component.id}
