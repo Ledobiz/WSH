@@ -11,7 +11,10 @@ export const categoryCourses = async () => {
                 deletedAt: null,
                 // This ensures only categories with at least one non-deleted course are returned
                 courses: {
-                    some: { deletedAt: null },
+                    some: {
+                        isActive: true,
+                        deletedAt: null
+                    },
                 },
             },
             include: {
