@@ -16,7 +16,10 @@ export const categoryCourses = async () => {
             },
             include: {
                 courses: {
-                    where: { deletedAt: null },
+                    where: {
+                        isActive: true,
+                        deletedAt: null
+                    },
                     take: 8,
                     include: {
                         courseModules: {
@@ -58,11 +61,13 @@ export const allCoursesForWebsite = async (page: number = 1, pageSize: number = 
         include: {
             courseModules: {
                 where: {
+                    isActive: true,
                     deletedAt: null,
                 },
                 include: {
                     moduleComponents: {
                         where: {
+                            isActive: true,
                             deletedAt: null,
                         }
                     }
@@ -83,6 +88,7 @@ export const singleCourseWebsite = async (slug: string) => {
                 students: true,
                 courseModules: {
                     where: {
+                        isActive: true,
                         deletedAt: null,
                     },
                     include: {

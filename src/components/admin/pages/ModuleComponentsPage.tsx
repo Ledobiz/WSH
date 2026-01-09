@@ -61,7 +61,7 @@ const ModuleComponentsPage = ({moduleId}: {moduleId: string}) => {
 
     const handleComponentCreation = async (data: CreateModuleComponentInterface) => {
         if (!data.name.trim() || !data.description.trim() || !data.duration || 
-            !data.isPrerequisite || !data.type.trim()
+            !data.type.trim()
         ) {
             toast.error('Please submit the name of the component');
             return;

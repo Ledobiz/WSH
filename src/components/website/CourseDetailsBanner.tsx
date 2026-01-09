@@ -30,10 +30,10 @@ const CourseDetailsBanner = ({title, description, lectures, totalEnrolled, level
                                         <i className="bi bi-camera-video" />
                                         {lectures} Lectures
                                     </li>
-                                    <li>
+                                    {/* <li>
                                         <i className="bi bi-people" />
                                         {totalEnrolled} Student Enrolled
-                                    </li>
+                                    </li> */}
                                 </ul>
                             </div>
                             <div className="ed_header_short">
