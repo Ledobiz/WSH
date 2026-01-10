@@ -10,6 +10,10 @@ export interface User {
     phone?: string | null | undefined;
     uid?: string | null | undefined;
     role: UserRole;
+    country?: string | null | undefined;
+    state?: string | null | undefined;
+    city?: string | null | undefined;
+    gender: 'male' | 'female';
     isActive: boolean;
     createdAt: string | Date | null | undefined;
     updatedAt: string | Date | null | undefined;

@@ -8,17 +8,21 @@ datasource db {
 }
 
 model User {
-  id        String    @id @default(uuid()) @db.VarChar(191)
-  name      String?   @db.VarChar(191)
-  email     String    @unique @db.VarChar(191)
-  password  String?   @db.VarChar(191)
+  id        String     @id @default(uuid()) @db.VarChar(191)
+  name      String?    @db.VarChar(191)
+  email     String     @unique @db.VarChar(191)
+  password  String?    @db.VarChar(191)
   image     String?
-  phone     String?   @db.VarChar(191)
-  uid       String?   @db.VarChar(191)
-  role      UserRole  @default(student)
-  isActive  Boolean   @default(true)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  phone     String?    @db.VarChar(191)
+  uid       String?    @db.VarChar(191)
+  role      UserRole   @default(student)
+  isActive  Boolean    @default(true)
+  country   String?    @db.VarChar(191)
+  state     String?    @db.VarChar(191)
+  city      String?    @db.VarChar(191)
+  gender    UserGender @default(female)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
   deletedAt DateTime?
 
   // relationships
@@ -37,6 +41,11 @@ model User {
 enum UserRole {
   student
   admin
+}
+
+enum UserGender {
+  male
+  female
 }
 
 model Course {

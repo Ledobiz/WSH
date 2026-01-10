@@ -23,11 +23,11 @@ const links = [
         label: "Profile",
         icon: "bi-person"
     },
-    {
+    /*{
         uri: "/learners/wishlist",
         label: "Wishlist",
         icon: "bi-wallet2"
-    },
+    },*/
     {
         uri: "/learners/payment-details",
         label: "Payment Details",
