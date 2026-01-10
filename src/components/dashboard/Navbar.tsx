@@ -23,27 +23,29 @@ const links = [
         label: "Profile",
         icon: "bi-person",
     },
-    {
+    /*{
         uri: "/learners/wishlist",
         label: "Wishlist",
         icon: "bi-wallet2"
-    },
+    },*/
     {
-        uri: "/learners/payment-details",
-        label: "Payment Details",
+        uri: "/learners/payments",
+        label: "Payment History",
         icon: "bi-star-half"
     },
-    {
+    /*{
         uri: "/learners/support",
         label: "Help & Support",
         icon: "bi-question-octagon"
-    },
+    },*/
 ];
 
 const Navbar = () => {
     const pathName = usePathname();
     const appUrl = process.env.NEXT_PUBLIC_APP_URL;
     const { user } = useAuth();
+
+    const defaultAvatar = user?.gender === 'male' ? `${appUrl}/assets/img/male-avatar.webp` : `${appUrl}/assets/img/female-avatar.webp`;
 
     return (  
         <>
@@ -74,7 +76,7 @@ const Navbar = () => {
                                                 aria-haspopup="true"
                                                 aria-expanded="false"
                                             >
-                                                <img src={ user?.image ? user?.image : `${appUrl}/assets/img/female-avatar.webp`} className="avater-img" alt="" />
+                                                <img src={ user?.image ? user?.image : defaultAvatar} className="avater-img" alt="" />
                                             </button>
                                             <div className="dropdown-menu pull-right animated flipInX box-shadow-sm">
                                                 <div className="dropdown-header py-3 border-bottom">
@@ -82,7 +84,7 @@ const Navbar = () => {
                                                         <div className="avatar-flex">
                                                             <div className="square--50 circle">
                                                                 <img
-                                                                    src={ user?.image ? user?.image : `${appUrl}/assets/img/female-avatar.webp`}
+                                                                    src={ user?.image ? user?.image : defaultAvatar}
                                                                     className="img-fluid circle"
                                                                     alt=""
                                                                 />
@@ -129,7 +131,7 @@ const Navbar = () => {
                                             aria-haspopup="true"
                                             aria-expanded="false"
                                         >
-                                            <img src={ user?.image ? user?.image : `${appUrl}/assets/img/female-avatar.webp`} className="avater-img" alt="" />
+                                            <img src={ user?.image ? user?.image : defaultAvatar} className="avater-img" alt="" />
                                         </button>
                                         <div className="dropdown-menu pull-right animated flipInX box-shadow-sm">
                                             <div className="dropdown-header py-3 border-bottom">
@@ -137,7 +139,7 @@ const Navbar = () => {
                                                     <div className="avatar-flex">
                                                         <div className="square--50 circle">
                                                             <img
-                                                                src={ user?.image ? user?.image : `${appUrl}/assets/img/female-avatar.webp`}
+                                                                src={ user?.image ? user?.image : defaultAvatar}
                                                                 className="img-fluid circle"
                                                                 alt=""
                                                             />

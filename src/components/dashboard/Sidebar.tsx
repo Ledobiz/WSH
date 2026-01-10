@@ -29,15 +29,15 @@ const links = [
         icon: "bi-wallet2"
     },*/
     {
-        uri: "/learners/payment-details",
-        label: "Payment Details",
+        uri: "/learners/payments",
+        label: "Payment History",
         icon: "bi-star-half"
     },
-    {
+    /*{
         uri: "/learners/support",
         label: "Help & Support",
         icon: "bi-question-octagon"
-    },
+    },*/
 ];
 
 const Sidebar = () => {
@@ -45,6 +45,8 @@ const Sidebar = () => {
     const { lecturesDone, coursesEnrolled } = useProgressCounts();
     const pathName = usePathname();
     const appUrl = process.env.NEXT_PUBLIC_APP_URL;
+
+    const defaultAvatar = user?.gender === 'male' ? `${appUrl}/assets/img/male-avatar.webp` : `${appUrl}/assets/img/female-avatar.webp`;
 
     return (
         <div className="col-lg-3">
@@ -71,7 +73,7 @@ const Sidebar = () => {
                             <div className="avatar-box d-flex justify-content-center mb-4">
                                 <div className="square--120 circle shadow-sm border border-3 position-relative">
                                     <img
-                                        src={ user?.image ? user?.image : `${appUrl}/assets/img/female-avatar.webp`}
+                                        src={ user?.image ? user?.image : defaultAvatar}
                                         className="img-fluid circle"
                                         alt="Avatar"
                                     />

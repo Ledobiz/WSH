@@ -190,8 +190,6 @@ export const verifyTransaction = async (paymentId: string, userId: string) => {
 
         const data = await response.json();
 
-        console.log('Transaction verification response:', data);
-
         if (data.status === 'success' && data.data.status === 'successful') {
             const user = await prisma.user.findUnique({
                 where: { id: userId },
