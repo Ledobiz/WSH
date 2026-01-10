@@ -13,6 +13,7 @@ import { courseContentUrl, coursesUrl } from "@/src/utils/url";
 import Link from "next/link";
 import { Suspense, useEffect, useState } from "react"
 import { durationInHourMinutesAndSeconds } from "@/src/utils/client_functions";
+import RequireCompleteProfile from "@/src/components/dashboard/RequireCompleteProfile";
 
 type DBStudentInterface = Prisma.StudentGetPayload<{
     include: {
@@ -82,7 +83,7 @@ const DashboardPage = () => {
     }, []);
 
     return (
-        <>    
+        <RequireCompleteProfile>
             <Navbar />
 
             <section
@@ -290,7 +291,7 @@ const DashboardPage = () => {
             </section>
             
             <Footer />
-        </>
+        </RequireCompleteProfile>
     )
 }
 export default DashboardPage

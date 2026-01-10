@@ -4,7 +4,7 @@
 
 import { signIn } from "@/src/services/auth"
 import { encrypt } from "@/src/utils/encryption"
-import { adminDashboardUrl, forgotPasswordUrl, studentDashboardUrl } from "@/src/utils/url"
+import { adminDashboardUrl, forgotPasswordUrl, studentDashboardUrl, studentProfileUrl } from "@/src/utils/url"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useState } from "react"
@@ -63,11 +63,16 @@ const LoginForm = () => {
 
                 let destinationUrl = '';
 
-                if (user?.user?.role == 'admin') {
+                if (user?.user?.role === 'admin') {
                     destinationUrl = returnUrl ? decodeURIComponent(returnUrl) : adminDashboardUrl;
-                }
-                else {
-                    destinationUrl = returnUrl ? decodeURIComponent(returnUrl) : studentDashboardUrl;
+                } else {
+                    const hasCompleteProfile = !!(user?.user?.phone && user?.user?.country);
+                    if (!hasCompleteProfile) {
+                        destinationUrl = returnUrl ? decodeURIComponent(returnUrl) : studentProfileUrl;
+                    } 
+                    else {
+                        destinationUrl = returnUrl ? decodeURIComponent(returnUrl) : studentDashboardUrl;
+                    }
                 }
 
                 router.push(destinationUrl);

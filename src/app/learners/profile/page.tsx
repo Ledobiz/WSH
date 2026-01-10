@@ -14,11 +14,14 @@ import { encrypt } from "@/src/utils/encryption";
 import { Suspense, useState } from "react";
 import type { User } from "@/src/types";
 import { toast } from "react-toastify";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const ProfilePage = () => {
     const appUrl = process.env.NEXT_PUBLIC_APP_URL;
 
     const { user, updateUser } = useAuth();
+    const searchParams = useSearchParams();
+    const router = useRouter();
     const [loading, setLoading] = useState<boolean>(false);
     const [formData, setFormData] = useState({
         name: '',
@@ -29,6 +32,8 @@ const ProfilePage = () => {
         city: '',
         gender: '',
     });
+
+    const returnUrl = searchParams.get('return');
 
     // No effect-based setState: we derive initial values from `user`
     
@@ -100,6 +105,10 @@ const ProfilePage = () => {
             }
 
             setLoading(false);
+
+            if (returnUrl) {
+                router.push(decodeURIComponent(returnUrl));
+            }
         } catch (error) {
             console.log(error);
             toast.error('Something went wrong. Please try again.');

@@ -9,6 +9,7 @@ export const studentDashboardUrl = '/learners/dashboard'
 export const myCoursesUrl = '/learners/my-courses'
 export const courseContentUrl = '/learners/course/content'
 export const courseDetailUrl = '/learners/course/details'
+export const studentProfileUrl = '/learners/profile'
 
 // Admin Routes
 export const adminDashboardUrl = '/admin/dashboard'

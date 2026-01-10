@@ -15,6 +15,7 @@ import Link from "next/link";
 import { Prisma } from "@prisma/client";
 import { Suspense, useEffect, useState } from "react"
 import { formatDate } from "@/src/utils/client_functions";
+import RequireCompleteProfile from "@/src/components/dashboard/RequireCompleteProfile";
 
 type DBStudentInterface = Prisma.StudentGetPayload<{
     include: {
@@ -57,7 +58,7 @@ const MyCourses = () => {
     }, [user?.id]);
 
     return (
-        <>    
+        <RequireCompleteProfile>
             <Navbar />
 
             <section
@@ -227,7 +228,7 @@ const MyCourses = () => {
             </section>
             
             <Footer />
-        </>
+        </RequireCompleteProfile>
     )
 }
 export default MyCourses
