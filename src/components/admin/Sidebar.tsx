@@ -88,16 +88,6 @@ const Sidebar = () => {
                                     </div>
                                 </div>
                             </div>
-                            <div className="d-flex justify-content-between mb-4">
-                                <div className="d-flex flex-column gap-1">
-                                    <h6 className="text-dark lh-1 fw-semibold m-0">12</h6>
-                                    <span className="text-muted-2 m-0">Students</span>
-                                </div>
-                                <div className="d-flex flex-column gap-2">
-                                    <h6 className="text-dark lh-1 fw-semibold m-0">156</h6>
-                                    <span className="text-muted-2 m-0">Courses</span>
-                                </div>
-                            </div>
                         </div>
                         <div className="d-navigation">
                             <ul id="side-menu">
