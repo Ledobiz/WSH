@@ -1,5 +1,7 @@
 import { Metadata } from "next";
 import StudentListPage from "@/src/components/admin/pages/StudentListPage";
+import { Suspense } from "react";
+import PageLoader from "@/src/components/website/PageLoader";
 
 export const metadata: Metadata = {
     title: "Student - Women Skills Hub",
@@ -8,7 +10,9 @@ export const metadata: Metadata = {
 
 const Students = () => {
     return (
-        <StudentListPage />
+        <Suspense fallback={<PageLoader />}>
+            <StudentListPage />
+        </Suspense>
     )
 }
 export default Students

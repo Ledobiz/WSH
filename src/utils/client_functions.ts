@@ -45,6 +45,31 @@ export function formatDate(
     });
 }
 
+export function formatDateAndTime(
+    date: string | Date | null | undefined,
+    options: {
+        month?: "numeric" | "2-digit" | "short" | "long" | "narrow";
+        day?: "numeric" | "2-digit";
+        year?: "numeric" | "2-digit";
+        hour12?: boolean;
+    } = {}
+): string {
+    if (!date) {
+        return '- - - -';
+    }
+
+    const d = new Date(date);
+
+    return d.toLocaleDateString("en-US", {
+        month: options.month ?? "short",
+        day: options.day ?? "numeric",
+        year: options.year ?? "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true
+    });
+}
+
 export const getTotalLectures = (course: {
     courseModules: {
         moduleComponents: any[]

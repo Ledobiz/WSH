@@ -221,31 +221,29 @@ const CoursesPage = () => {
                             </div>
                             
                             <div className="card-body">
+                                <div className="row g-3 align-items-center justify-content-between mb-4">
+                                    <div className="col-md-5">
+                                        <form onSubmit={(e) => e.preventDefault()} className="rounded position-relative">
+                                            <input
+                                                className="form-control pe-5 bg-transparent"
+                                                type="search"
+                                                placeholder="Search courses..."
+                                                aria-label="Search"
+                                                value={searchInput}
+                                                onChange={(e) => setSearchInput(e.target.value)}
+                                            />
+                                            <button
+                                                className="bg-transparent p-2 position-absolute top-50 end-0 translate-middle-y border-0 text-primary-hover text-reset"
+                                                type="submit"
+                                            >
+                                                <i className="bi bi-search text-muted opacity-75 fs-6 " />
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
 
                                 {tableIsLoading ? <PageLoader /> : (
                                     <>
-                                        <div className="row g-3 align-items-center justify-content-between mb-4">
-                                            <div className="col-md-5">
-                                                <form onSubmit={(e) => e.preventDefault()} className="rounded position-relative">
-                                                    <input
-                                                        className="form-control pe-5 bg-transparent"
-                                                        type="search"
-                                                        placeholder="Search courses..."
-                                                        aria-label="Search"
-                                                        value={searchInput}
-                                                        onChange={(e) => setSearchInput(e.target.value)}
-                                                    />
-                                                    <button
-                                                        className="bg-transparent p-2 position-absolute top-50 end-0 translate-middle-y border-0 text-primary-hover text-reset"
-                                                        type="submit"
-                                                    >
-                                                        <i className="bi bi-search text-muted opacity-75 fs-6 " />
-                                                    </button>
-                                                </form>
-                                            </div>
-                                        </div>
-
-
                                         <div className="table-responsive border-0 rounded-3">
                                             {
                                                 !courses?.length ? 
@@ -356,11 +354,9 @@ const CoursesPage = () => {
                                     </>
                                 )}
                             </div>
-                            {/* Card body START */}
                         </div>
                     </div>
                 </div>
-                {/* /Row */}
             </div>
 
             <CustomModal
