@@ -1,5 +1,7 @@
 import { Metadata } from "next";
+import { Suspense } from "react";
 import EarningPage from "@/src/components/admin/pages/EarningPage";
+import PageLoader from "@/src/components/website/PageLoader";
 
 export const metadata: Metadata = {
     title: "Earnings - Women Skills Hub",
@@ -8,7 +10,9 @@ export const metadata: Metadata = {
 
 const Earnings = () => {
     return (
-        <EarningPage />
+        <Suspense fallback={<PageLoader />}> 
+            <EarningPage />
+        </Suspense>
     )
 }
 export default Earnings

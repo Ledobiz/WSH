@@ -3,6 +3,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import prisma from "@/src/lib/prisma";
+import { paginateQuery } from "@/src/utils/pagination";
 
 export const getDashboardData = async () => {
     try {
@@ -51,6 +52,76 @@ export const getDashboardData = async () => {
             totalUsers: 0,
             enrolledStudents: 0,
             topSalesCourses: []
+        };
+    }
+}
+
+export const getSalesData = async (page: number = 1, pageSize: number = 20) => {
+    try {
+        const totalSale = await prisma.transaction.aggregate({
+            _sum: {
+                amount: true
+            }
+        });
+
+        const salesInNumber = await prisma.transaction.count();
+
+        // Total sale this month
+        const now = new Date();
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+        const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
+        const salesThisMonth = await prisma.transaction.aggregate({
+            _sum: {
+                amount: true
+            },
+            where: {
+                createdAt: {
+                    gte: startOfMonth,
+                    lte: endOfMonth
+                }
+            }
+        });
+
+        const transactionHistory = await paginateQuery<any>({
+            page,
+            pageSize,
+            dataQuery: ({ skip, take }) => prisma.transaction.findMany({
+                orderBy: {
+                    createdAt: 'desc',
+                },
+                skip,
+                take,
+                include: {
+                    carts: {
+                        include: {
+                            cartItems: {
+                                include: {
+                                    course: true
+                                }
+                            }
+                        }
+                    }
+                }
+            }),
+            countQuery: () => prisma.transaction.count()
+        });
+
+        return {
+            totalSalesAmount: totalSale._sum.amount || 0,
+            salesThisMonth: salesThisMonth._sum.amount || 0,
+            salesInNumber: salesInNumber,
+            transactionHistory,
+        };
+    }
+    catch (error) {
+        console.log("Error fetching sales data:", error);
+        return {
+            totalSalesAmount: 0,
+            salesThisMonth: 0,
+            salesInNumber: 0,
+            transactionHistory: [],
+            pagination: {},
         };
     }
 }

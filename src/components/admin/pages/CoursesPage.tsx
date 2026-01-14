@@ -5,7 +5,7 @@ import NavBreadcrumb from "../NavBreadcrumb"
 import { createCourse, deleteCourse, fetchAllCourses, updateCourse } from "@/src/services/admin/course";
 import { toast } from "react-toastify";
 import { Prisma } from "@prisma/client";
-import PageLoader from "../../website/PageLoader";
+import PageLoader from "@/src/components/website/PageLoader";
 import Link from "next/link";
 import { courseModules, coursesUrl } from "@/src/utils/url";
 import { formatAmount } from "@/src/utils/client_functions";

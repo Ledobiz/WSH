@@ -1,8 +1,113 @@
 'use client'
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+import { useEffect, useState } from "react";
 import NavBreadcrumb from "../NavBreadcrumb"
+import { getSalesData } from "@/src/services/admin/dashboard";
+import { formatAmount } from "@/src/utils/client_functions";
+import Pagination from "@/src/components/admin/Pagination";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import PageLoader from "@/src/components/website/PageLoader";
+
+const appUrl = process.env.NEXT_PUBLIC_APP_URL;
+
+const decideCard = (brand: string) => {
+    switch (brand) {
+        case 'mastercard':
+            return `${appUrl}/assets/img/card-1.png`;
+        case 'visa':
+            return `${appUrl}/assets/img/card-2.png`;
+        default:
+            return `${appUrl}/assets/img/card-5.png`;
+    }
+}
+
+const decideBadge = (status: string) => {
+    switch (status) {
+        case 'success':
+            return 'bg-success text-success';
+        case 'failed':
+            return 'bg-danger text-danger';
+        default:
+            return 'bg-info text-info';
+    }
+}
+
+const formatCourses = (transaction: any) => {
+    const courses: string[] = [];
+    transaction.carts.forEach((cart: any) => {
+        cart.cartItems.forEach((item: any) => {
+            if (item.course) {
+                courses.push(item.course.title);
+            }
+        });   
+    });
+    return courses.join(', ');
+}
 
 const EarningPage = () => {
+    const [loading, setLoading] = useState<boolean>(false);
+    const [salesThisMonth, setSalesThisMonth] = useState<number>(0);
+    const[totalSales, setTotalSales] = useState<number>(0);
+    const[numberOfSales, setNumberOfSales] = useState<number>(0);
+    const [saleHistory, setSaleHistory] = useState<Array<any>>([]);
+    const [totalPages, setTotalPages] = useState(0);
+    const [totalEntries, setTotalEntries] = useState(0);
+
+    const { replace } = useRouter();
+    const pathName = usePathname();
+
+    const pageSize = 20; // Items per page
+
+    const searchParams = useSearchParams()
+    const currentPage = Number(searchParams.get('page')) || 1;
+
+    // 2. Function to update the URL
+    const handleUrlChange = (name: string, value: string | number) => {
+        const params = new URLSearchParams(searchParams);
+        
+        if (value) {
+            params.set(name, value.toString().trim());
+        } else {
+            params.delete(name);
+        }
+
+        replace(`${pathName}?${params.toString()}`);
+    };
+
+    useEffect(() => {
+        const fetchSalesData = async () => {
+            setLoading(true);
+
+            try {
+                const result = await getSalesData(currentPage, pageSize);
+                setSalesThisMonth(result.salesThisMonth);
+                setTotalSales(result.totalSalesAmount);
+                setNumberOfSales(result.salesInNumber);
+                if (result.transactionHistory && 'data' in result.transactionHistory && Array.isArray(result.transactionHistory.data)) {
+                    setSaleHistory(result.transactionHistory.data);
+                } else {
+                    console.error('Unexpected transactionHistory format:', result.transactionHistory);
+                }
+                if (Array.isArray(result.transactionHistory) && result.transactionHistory.length > 0) {
+                    console.error('Unexpected transactionHistory format:', result.transactionHistory);
+                } else if ('pagination' in result.transactionHistory) {
+                    setTotalPages(result.transactionHistory.pagination.totalPages);
+                    setTotalEntries(result.transactionHistory.pagination.totalCount);
+                }
+            }
+            catch (error) {
+                console.error('Error fetching sales data:', error);
+            }
+            finally {
+                setLoading(false);
+            }
+        }
+
+        fetchSalesData();
+    }, [currentPage, pageSize]);
+
     return (
         <div className="col-lg-9 col-md-12 col-sm-12">
             <NavBreadcrumb page="Earnings" />
@@ -15,7 +120,7 @@ const EarningPage = () => {
                                 <i className="bi bi-coin text-green" />
                             </div>
                             <div className="d-flex flex-column gap-1">
-                                <h2 className="fw-semibold m-0">$890</h2>
+                                <h2 className="fw-semibold m-0">{formatAmount(salesThisMonth)}</h2>
                                 <span className="text-muted">Sales This Month</span>
                             </div>
                         </div>
@@ -28,8 +133,8 @@ const EarningPage = () => {
                                 <i className="bi bi-wallet2 text-red" />
                             </div>
                             <div className="d-flex flex-column gap-1">
-                                <h2 className="fw-semibold m-0">$2,580</h2>
-                                <span className="text-muted">Next Payout</span>
+                                <h2 className="fw-semibold m-0">{numberOfSales}</h2>
+                                <span className="text-muted">Number of Sales</span>
                             </div>
                         </div>
                     </div>
@@ -41,7 +146,7 @@ const EarningPage = () => {
                                 <i className="bi bi-piggy-bank text-main" />
                             </div>
                             <div className="d-flex flex-column gap-1">
-                                <h2 className="fw-semibold m-0">$60,550</h2>
+                                <h2 className="fw-semibold m-0">{formatAmount(totalSales)}</h2>
                                 <span className="text-muted">Sales Overall</span>
                             </div>
                         </div>
@@ -54,304 +159,83 @@ const EarningPage = () => {
                     <div className="card border bg-transparent rounded-3">
                         <div className="card-header border-bottom">
                             <div className="d-flex align-items-center justify-content-between w-100">
-                                <h4 className="mb-2 mb-sm-0">Recent Selling Courses</h4>
-                                <a href="#" className="btns text-muted mb-0">
-                                View All
-                                </a>
+                                <h4 className="mb-2 mb-sm-0">Recent Courses Sold</h4>
                             </div>
                         </div>
                         
                         <div className="card-body">
-                            <div className="table-responsive border-0 rounded-3">
-                                <table className="table align-middle p-4 mb-0">
-                                    <thead className="table-dark">
-                                        <tr>
-                                            <th scope="col" className="border-0 rounded-start">
-                                                Course Name
-                                            </th>
-                                            <th scope="col" className="border-0">
-                                                Selling
-                                            </th>
-                                            <th scope="col" className="border-0">
-                                                Amount
-                                            </th>
-                                            <th scope="col" className="border-0">
-                                                Period
-                                            </th>
-                                            <th scope="col" className="border-0 rounded-end">
-                                                Action
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>
-                                                <div className="d-flex align-items-center">
-                                                    <div className="w-15">
-                                                        <img
-                                                        src="assets/img/courses-1.jpg"
-                                                        className="img-fluid rounded"
-                                                        alt=""
-                                                        />
-                                                    </div>
-                                                    <h6 className="mb-0 fw-semibold ms-2 table-responsive-title">
-                                                        <a href="#">Building Scalable APIs with GraphQL</a>
-                                                    </h6>
-                                                </div>
-                                            </td>
-                                            {/* Selling item */}
-                                            <td>
-                                                <span className="text-muted-2">42</span>
-                                            </td>
-                                            {/* Amount item */}
-                                            <td>
-                                                <span className="text-muted-2">$18,432</span>
-                                            </td>
-                                            {/* Period item */}
-                                            <td>
-                                                <span className="badge bg-light-green text-green">
-                                                06 months
-                                                </span>
-                                            </td>
-                                            {/* Action item */}
-                                            <td>
-                                                <a href="#" className="btn btn-sm btn-gray me-1 mb-0">
-                                                <i className="bi bi-pencil-square" />
-                                                </a>
-                                                <button className="btn btn-sm btn-light-red mb-0">
-                                                <i className="bi bi-trash3" />
-                                                </button>
-                                            </td>
-                                        </tr>
-                                        {/* Table item */}
-                                        <tr>
-                                            {/* Course item */}
-                                            <td>
-                                                <div className="d-flex align-items-center">
-                                                    {/* Image */}
-                                                    <div className="w-15">
-                                                        <img
-                                                        src="assets/img/courses-2.jpg"
-                                                        className="img-fluid rounded"
-                                                        alt=""
-                                                        />
-                                                    </div>
-                                                    {/* Title */}
-                                                    <h6 className="mb-0 fw-semibold ms-2 table-responsive-title">
-                                                        <a href="#">Building Scalable APIs with GraphQL</a>
-                                                    </h6>
-                                                </div>
-                                            </td>
-                                            {/* Selling item */}
-                                            <td>
-                                                <span className="text-muted-2">36</span>
-                                            </td>
-                                            {/* Amount item */}
-                                            <td>
-                                                <span className="text-muted-2">$20,560</span>
-                                            </td>
-                                            {/* Period item */}
-                                            <td>
-                                                <span className="badge bg-light-green text-green">
-                                                09 months
-                                                </span>
-                                            </td>
-                                            {/* Action item */}
-                                            <td>
-                                                <a href="#" className="btn btn-sm btn-gray me-1 mb-0">
-                                                <i className="bi bi-pencil-square" />
-                                                </a>
-                                                <button className="btn btn-sm btn-light-red mb-0">
-                                                <i className="bi bi-trash3" />
-                                                </button>
-                                            </td>
-                                        </tr>
-                                        {/* Table item */}
-                                        <tr>
-                                            {/* Course item */}
-                                            <td>
-                                                <div className="d-flex align-items-center">
-                                                    {/* Image */}
-                                                    <div className="w-15">
-                                                        <img
-                                                        src="assets/img/courses-3.jpg"
-                                                        className="img-fluid rounded"
-                                                        alt=""
-                                                        />
-                                                    </div>
-                                                    {/* Title */}
-                                                    <h6 className="mb-0 fw-semibold ms-2 table-responsive-title">
-                                                        <a href="#">Building Scalable APIs with GraphQL</a>
-                                                    </h6>
-                                                </div>
-                                            </td>
-                                            {/* Selling item */}
-                                            <td>
-                                                <span className="text-muted-2">44</span>
-                                            </td>
-                                            {/* Amount item */}
-                                            <td>
-                                                <span className="text-muted-2">$45,550</span>
-                                            </td>
-                                            {/* Period item */}
-                                            <td>
-                                                <span className="badge bg-light-green text-green">
-                                                    12 months
-                                                </span>
-                                            </td>
-                                            {/* Action item */}
-                                            <td>
-                                                <a href="#" className="btn btn-sm btn-gray me-1 mb-0">
-                                                <i className="bi bi-pencil-square" />
-                                                </a>
-                                                <button className="btn btn-sm btn-light-red mb-0">
-                                                <i className="bi bi-trash3" />
-                                                </button>
-                                            </td>
-                                        </tr>
-                                        {/* Table item */}
-                                        <tr>
-                                            {/* Course item */}
-                                            <td>
-                                                <div className="d-flex align-items-center">
-                                                    {/* Image */}
-                                                    <div className="w-15">
-                                                        <img
-                                                        src="assets/img/courses-4.jpg"
-                                                        className="img-fluid rounded"
-                                                        alt=""
-                                                        />
-                                                    </div>
-                                                    {/* Title */}
-                                                    <h6 className="mb-0 fw-semibold ms-2 table-responsive-title">
-                                                        <a href="#">Building Scalable APIs with GraphQL</a>
-                                                    </h6>
-                                                </div>
-                                            </td>
-                                            {/* Selling item */}
-                                            <td>
-                                                <span className="text-muted-2">65</span>
-                                            </td>
-                                            {/* Amount item */}
-                                            <td>
-                                                <span className="text-muted-2">$22,568</span>
-                                            </td>
-                                            {/* Period item */}
-                                            <td>
-                                                <span className="badge bg-light-green text-green">
-                                                18 months
-                                                </span>
-                                            </td>
-                                            {/* Action item */}
-                                            <td>
-                                                <a href="#" className="btn btn-sm btn-gray me-1 mb-0">
-                                                <i className="bi bi-pencil-square" />
-                                                </a>
-                                                <button className="btn btn-sm btn-light-red mb-0">
-                                                <i className="bi bi-trash3" />
-                                                </button>
-                                            </td>
-                                        </tr>
-                                        {/* Table item */}
-                                        <tr>
-                                            {/* Course item */}
-                                            <td>
-                                                <div className="d-flex align-items-center">
-                                                    {/* Image */}
-                                                    <div className="w-15">
-                                                        <img
-                                                            src="assets/img/courses-5.jpg"
-                                                            className="img-fluid rounded"
-                                                            alt=""
-                                                        />
-                                                    </div>
-                                                    {/* Title */}
-                                                    <h6 className="mb-0 fw-semibold ms-2 table-responsive-title">
-                                                        <a href="#">Building Scalable APIs with GraphQL</a>
-                                                    </h6>
-                                                </div>
-                                            </td>
-                                            {/* Selling item */}
-                                            <td>
-                                                <span className="text-muted-2">75</span>
-                                            </td>
-                                            {/* Amount item */}
-                                            <td>
-                                                <span className="text-muted-2">$36,980</span>
-                                            </td>
-                                            {/* Period item */}
-                                            <td>
-                                                <span className="badge bg-light-green text-green">
-                                                08 months
-                                                </span>
-                                            </td>
-                                            {/* Action item */}
-                                            <td>
-                                                <a href="#" className="btn btn-sm btn-gray me-1 mb-0">
-                                                <i className="bi bi-pencil-square" />
-                                                </a>
-                                                <button className="btn btn-sm btn-light-red mb-0">
-                                                <i className="bi bi-trash3" />
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                {/* Table body END */}
-                                </table>
-                                {/* Table END */}
-                            </div>
-                            {/* Pagination */}
-                            <div className="d-sm-flex justify-content-sm-between align-items-sm-center mt-3">
-                                {/* Content */}
-                                <p className="mb-0 text-center text-sm-start text-muted">
-                                Showing 1 to 8 of 20 entries
-                                </p>
-                                {/* Pagination */}
-                                <nav
-                                className="d-flex justify-content-center mb-0"
-                                aria-label="navigation"
-                                >
-                                    <ul className="pagination pagination-sm pagination-primary-soft d-inline-block d-md-flex rounded mb-0">
-                                        <li className="page-item mb-0">
-                                        <a className="page-link" href="#" tabIndex={-1}>
-                                            <i className="fas fa-angle-left" />
-                                        </a>
-                                        </li>
-                                        <li className="page-item mb-0">
-                                        <a className="page-link" href="#">
-                                            1
-                                        </a>
-                                        </li>
-                                        <li className="page-item mb-0 active">
-                                        <a className="page-link" href="#">
-                                            2
-                                        </a>
-                                        </li>
-                                        <li className="page-item mb-0">
-                                        <a className="page-link" href="#">
-                                            3
-                                        </a>
-                                        </li>
-                                        <li className="page-item mb-0">
-                                        <a className="page-link" href="#">
-                                            4
-                                        </a>
-                                        </li>
-                                        <li className="page-item mb-0">
-                                        <a className="page-link" href="#">
-                                            5
-                                        </a>
-                                        </li>
-                                        <li className="page-item mb-0">
-                                        <a className="page-link" href="#">
-                                            <i className="fas fa-angle-right" />
-                                        </a>
-                                        </li>
-                                    </ul>
-                                </nav>
-                            </div>
+                            {loading ? <PageLoader /> : (
+                                <>
+                                    <div className="table-responsive border-0 rounded-3">
+                                        {!saleHistory.length && (
+                                            <div className="text-center p-5">
+                                                <img
+                                                    src={`${appUrl}/assets/img/empty.svg`}
+                                                    alt="Empty State"
+                                                    className="img-fluid mb-4"
+                                                    style={{ maxWidth: 260, opacity: "0.9" }}
+                                                />
+                                                <h4 className="fw-bold">No course has been sold yet</h4>
+                                            </div>
+                                        )}
+
+                                        { saleHistory.length > 0 && (
+                                            <table className="table align-middle p-4 mb-0">
+                                                <thead className="table-dark">
+                                                    <tr>
+                                                        <th scope="col" className="border-0 rounded-start">
+                                                            Course Name
+                                                        </th>
+                                                        <th scope="col" className="border-0">
+                                                            Payment Method
+                                                        </th>
+                                                        <th scope="col" className="border-0">
+                                                            Amount
+                                                        </th>
+                                                        <th scope="col" className="border-0">
+                                                            Status
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {saleHistory.map((sale) => (
+                                                        <tr key={sale.id}>
+                                                            <td>
+                                                                <div className="d-flex align-items-center">
+                                                                    <h6 className="mb-0 fw-semibold ms-2 table-responsive-title">
+                                                                        <a href="#">{formatCourses(sale)}</a>
+                                                                    </h6>
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <img src={decideCard(sale.cardBrand.toLowerCase())} className="w-12" alt="" />
+                                                                <span className="ms-2">****{sale.last4Digits}</span>
+                                                            </td>
+                                                            <td>
+                                                                <span className="text-muted-2">{ formatAmount(sale.amount) }</span>
+                                                            </td>
+                                                            <td>
+                                                                <span className={`badge bg-opacity-10 ${decideBadge(sale.status)}`}>
+                                                                    {sale.status.toUpperCase()}
+                                                                </span>
+                                                            </td>
+                                                        </tr>
+                                                    )) }
+                                                </tbody>
+                                            </table>
+                                        )}
+                                    </div>
+
+                                    <Pagination
+                                        currentPage={currentPage}
+                                        totalPages={totalPages}
+                                        totalEntries={totalEntries}
+                                        pageSize={pageSize}
+                                        onPageChange={(page) => handleUrlChange('page', page)}
+                                    />
+                                </>
+                            )}
                         </div>
-                        {/* Card body START */}
                     </div>
                 </div>
             </div>
