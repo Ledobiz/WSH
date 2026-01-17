@@ -4,6 +4,7 @@
 
 import prisma from "@/src/lib/prisma";
 import { paginateQuery } from "@/src/utils/pagination";
+import { inngest } from "@/src/inngest/client";
 
 export const getAllStudents = async (page: number = 1, pageSize: number = 20, searchTerm?: string) => {
     try {
@@ -33,7 +34,7 @@ export const getAllStudents = async (page: number = 1, pageSize: number = 20, se
                                     }
                                 }
                             ],
-                          }
+                        }
                         : {}
                     ),
                 },
@@ -71,7 +72,7 @@ export const getAllStudents = async (page: number = 1, pageSize: number = 20, se
                                     }
                                 }
                             ],
-                          }
+                        }
                         : {}
                     ),
                 }
@@ -82,5 +83,103 @@ export const getAllStudents = async (page: number = 1, pageSize: number = 20, se
         return {
             students: [],
         };
+    }
+}
+
+export const getStudentCourses = async (userId: string) => {
+    try {
+        const courses = await prisma.student.findMany({
+            where: {
+                userId,
+                deletedAt: null
+            },
+            include: {
+                course: true,
+                studentModules: {
+                    where: { deletedAt: null },
+                    include: {
+                        studentModuleComponents: true,
+                    }
+                }
+            }
+        });
+
+        const otherCourses = await prisma.course.findMany({
+            where: {
+                deletedAt: null,
+                isActive: true,
+                students: {
+                    none: {
+                        userId
+                    }
+                }
+            }
+        })
+
+        return {
+            courses,
+            otherCourses,
+        };
+    } catch (error) {
+        console.log("Error fetching student courses:", error);
+        return {
+            courses: [],
+            otherCourses: [],
+        };
+    }
+}
+
+export const assignCourseToStudent = async (userId: string, courseId: string) => {
+    try {
+        const student = await prisma.student.findFirst({
+            where: {
+                userId,
+                courseId,
+                deletedAt: null
+            }
+        });
+
+        if (student) {
+            return {
+                success: false,
+                message: "Student is already enrolled in this course",
+            };
+        }
+
+        const createdStudent = await prisma.student.create({
+            data: {
+                userId,
+                courseId,
+                courseContentAssigned: false,
+            }
+        });
+
+        if (!createdStudent) {
+            return {
+                success: false,
+                message: "Failed to assign course to student. Please try again",
+            }
+        }
+
+        const courseIds = [courseId];
+
+        await inngest.send({
+            name: 'course-content.requested',
+            data: {
+                userId,
+                courseIds,
+            }
+        });
+
+        return {
+            success: true,
+            message: "Course assigned to student successfully",
+        }
+    } catch (error) {
+        console.log("Error assigning course to student:", error);
+        return {
+            success: false,
+            message: "Failed to assign course to student. Please try again",
+        }
     }
 }

@@ -49,8 +49,8 @@ const formatCourses = (transaction: any) => {
 const EarningPage = () => {
     const [loading, setLoading] = useState<boolean>(false);
     const [salesThisMonth, setSalesThisMonth] = useState<number>(0);
-    const[totalSales, setTotalSales] = useState<number>(0);
-    const[numberOfSales, setNumberOfSales] = useState<number>(0);
+    const [totalSales, setTotalSales] = useState<number>(0);
+    const [numberOfSales, setNumberOfSales] = useState<number>(0);
     const [saleHistory, setSaleHistory] = useState<Array<any>>([]);
     const [totalPages, setTotalPages] = useState(0);
     const [totalEntries, setTotalEntries] = useState(0);
