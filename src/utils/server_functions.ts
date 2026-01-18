@@ -2,6 +2,7 @@
 
 import cloudinary from "@/src/lib/cloudinary";
 import bcrypt from "bcrypt";
+import { myLecture } from "../services/student/course";
 
 export const fileToBuffer = async (file: File) => {
     const arrayBuffer = await file.arrayBuffer();
@@ -51,4 +52,13 @@ export async function hashPassword(password: string): Promise<string> {
 export async function verifyPassword(password: string, hashedPassword: string): Promise<boolean> {
     const match = await bcrypt.compare(password, hashedPassword);
     return match;
+}
+
+export const courseProgress = async (userId: string, courseId: string) => {
+    const lectureData = await myLecture(userId, courseId);
+
+    return {
+        lecturesCompleted: lectureData.data.lecturesCompleted,
+        totalLectures: lectureData.data.totalLectures,
+    }
 }

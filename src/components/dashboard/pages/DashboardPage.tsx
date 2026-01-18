@@ -13,7 +13,9 @@ import { courseContentUrl, coursesUrl } from "@/src/utils/url";
 import Link from "next/link";
 import { Suspense, useEffect, useState } from "react"
 import { durationInHourMinutesAndSeconds } from "@/src/utils/client_functions";
+import { courseProgress } from "@/src/utils/server_functions";
 import RequireCompleteProfile from "@/src/components/dashboard/RequireCompleteProfile";
+import PageLoader from "../../website/PageLoader";
 
 type DBStudentInterface = Prisma.StudentGetPayload<{
     include: {
@@ -65,6 +67,8 @@ const totalDuration = (course: DBStudentInterface): number => {
 const DashboardPage = () => {
     const appUrl = process.env.NEXT_PUBLIC_APP_URL;
     const [allCourses, setAllCourses] = useState<DBStudentInterface[] | null>(null);
+    const [progressData, setProgressData] = useState<Record<string, number>>({}); // Store progress for each course
+    const [loading, setLoading] = useState<boolean>(false);
 
     const { lecturesDone } = useProgressCounts();
     const { user } = useAuth();
@@ -75,12 +79,35 @@ const DashboardPage = () => {
                 return;
             }
 
-            const enrolledCourses = await ongoingCourses(user.id);
-            setAllCourses(enrolledCourses.courses);
+            setLoading(true);
+            
+            try {
+                const enrolledCourses = await ongoingCourses(user.id);
+
+                const progress: Record<string, number> = {};
+
+                for (const course of enrolledCourses.courses ?? []) {
+                    const lectureProgress = await courseProgress(user.id, course.course.id);
+                    const progressPercent =
+                        lectureProgress.totalLectures > 0
+                            ? (lectureProgress.lecturesCompleted / lectureProgress.totalLectures) * 100
+                            : 0;
+                    progress[course.course.id] = progressPercent;
+                }
+
+                setProgressData(progress);
+                setAllCourses(enrolledCourses.courses);
+            } catch (error) {
+                console.error("Error fetching courses:", error);
+                setProgressData({});
+                setAllCourses(null);
+            } finally {
+                setLoading(false);
+            }
         }
 
         myCourses();
-    }, []);
+    }, [user]);
 
     return (
         <RequireCompleteProfile>
@@ -215,74 +242,75 @@ const DashboardPage = () => {
                                     </div>
                                 </div>
 
-                                {totalActiveCourses(allCourses ?? []) ? (
-                                    <div className="row mb-4">
-                                        <div className="col-12 mb-0">
-                                            <div className="d-flex align-items-start justify-content-between gap-2 flex-column flex-sm-row">
-                                                <div className="head-title">
-                                                    <h4 className="mb-2 mb-sm-0">Continue Learning</h4>
-                                                    <p className="text-muted mb-0">Pick up where you left off</p>
+                                {loading ? <PageLoader /> : (
+                                    totalActiveCourses(allCourses ?? []) ? (
+                                        <div className="row mb-4">
+                                            <div className="col-12 mb-0">
+                                                <div className="d-flex align-items-start justify-content-between gap-2 flex-column flex-sm-row">
+                                                    <div className="head-title">
+                                                        <h4 className="mb-2 mb-sm-0">Continue Learning</h4>
+                                                        <p className="text-muted mb-0">Pick up where you left off</p>
+                                                    </div>
                                                 </div>
                                             </div>
+
+                                            {allCourses?.filter(c => !c.lecturesCompleted).map((course) => (
+                                                <div key={course.id} className="card border-0 hover shadow-sm mb-3 rounded-4 p-3">
+                                                    <Link href={`${courseContentUrl}/${course.course.id}`} className="row g-3 g-md-4 align-items-center">
+                                                        <div className="col-12 col-xl-4 col-lg-4 col-md-4">
+                                                            <div
+                                                                className="rounded-3 p-3 bg-light d-flex align-items-center justify-content-center mx-auto mx-sm-0"
+                                                                style={{
+                                                                    background: "linear-gradient(135deg, #dee8ff, #f3e8ff)"
+                                                                }}
+                                                            >
+                                                                <img src={course.course.thumbnail ?? ''} alt="icon" style={{width: '100%', height: '200px'}} className="img-fluid" />
+                                                            </div>
+                                                        </div>
+
+                                                        {/* Text column */}
+                                                        <div className="col">
+                                                            <h5 className="fw-bold mb-1">{course.course.title}</h5>
+
+                                                            <div className="d-flex flex-wrap align-items-center text-muted small mb-2">
+                                                                <i className="bi bi-journal-bookmark me-1" /> {getTotalLectures(course)} {getTotalLectures(course) > 1 ? 'lessons' : 'lesson'}
+                                                                <span className="mx-2">•</span>
+                                                                <i className="bi bi-clock me-1" /> { durationInHourMinutesAndSeconds(totalDuration(course)) }
+                                                            </div>
+
+                                                            <div className="w-100">
+                                                                <div className="d-flex justify-content-between small text-muted">
+                                                                    <span>Progress</span>
+                                                                    <span>{progressData[course.course.id]?.toFixed()}%</span>
+                                                                </div>
+                                                                <div className="progress mt-1" style={{ height: 6 }}>
+                                                                    <div className="progress-bar" style={{ width: `${progressData[course.course.id]}%` }} />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="col-auto d-none d-sm-block">
+                                                            <i className="bi bi-chevron-right fs-5 text-muted" />
+                                                        </div>
+                                                    </Link>
+                                                </div>
+                                            ))}
                                         </div>
-
-                                        {allCourses?.filter(c => !c.lecturesCompleted).map((course) => (
-                                            <div key={course.id} className="card border-0 hover shadow-sm mb-3 rounded-4 p-3">
-                                                <Link href={`${courseContentUrl}/${course.course.id}`} className="row g-3 g-md-4 align-items-center">
-                                                    <div className="col-12 col-xl-4 col-lg-4 col-md-4">
-                                                        <div
-                                                            className="rounded-3 p-3 bg-light d-flex align-items-center justify-content-center mx-auto mx-sm-0"
-                                                            style={{
-                                                                background: "linear-gradient(135deg, #dee8ff, #f3e8ff)"
-                                                            }}
-                                                        >
-                                                            <img src={course.course.thumbnail ?? ''} alt="icon" style={{width: '100%', height: '200px'}} className="img-fluid" />
-                                                        </div>
-                                                    </div>
-
-                                                    {/* Text column */}
-                                                    <div className="col">
-                                                        <h5 className="fw-bold mb-1">{course.course.title}</h5>
-
-                                                        <div className="d-flex flex-wrap align-items-center text-muted small mb-2">
-                                                            <i className="bi bi-journal-bookmark me-1" /> {getTotalLectures(course)} {getTotalLectures(course) > 1 ? 'lessons' : 'lesson'}
-                                                            <span className="mx-2">•</span>
-                                                            <i className="bi bi-clock me-1" /> { durationInHourMinutesAndSeconds(totalDuration(course)) }
-                                                        </div>
-
-                                                        <div className="w-100">
-                                                            <div className="d-flex justify-content-between small text-muted">
-                                                                <span>Progress</span>
-                                                                <span>0%</span>
-                                                            </div>
-                                                            <div className="progress mt-1" style={{ height: 6 }}>
-                                                                <div className="progress-bar" style={{ width: "0%" }} />
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-                                                    {/* Chevron (hidden on xs) */}
-                                                    <div className="col-auto d-none d-sm-block">
-                                                        <i className="bi bi-chevron-right fs-5 text-muted" />
-                                                    </div>
-                                                </Link>
-                                            </div>
-                                        ))}
-                                    </div>
-                                ) : (
-                                    <div className="text-center p-5">
-                                        <img
-                                            src={`${appUrl}/assets/img/empty.svg`}
-                                            alt="Empty State"
-                                            className="img-fluid mb-4"
-                                            style={{ maxWidth: 260, opacity: "0.9" }}
-                                        />
-                                        <h4 className="fw-bold">No Active Courses Yet</h4>
-                                        <p className="text-muted mb-4">
-                                            Start your learning journey by exploring our available courses.
-                                        </p>
-                                        <Link href={coursesUrl} className="btn btn-main px-4 py-2">Browse Courses</Link>
-                                    </div>
+                                    ) : (
+                                        <div className="text-center p-5">
+                                            <img
+                                                src={`${appUrl}/assets/img/empty.svg`}
+                                                alt="Empty State"
+                                                className="img-fluid mb-4"
+                                                style={{ maxWidth: 260, opacity: "0.9" }}
+                                            />
+                                            <h4 className="fw-bold">No Active Courses Yet</h4>
+                                            <p className="text-muted mb-4">
+                                                Start your learning journey by exploring our available courses.
+                                            </p>
+                                            <Link href={coursesUrl} className="btn btn-main px-4 py-2">Browse Courses</Link>
+                                        </div>
+                                    )
                                 )}
                             </Suspense>
                         </div>

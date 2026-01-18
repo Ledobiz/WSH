@@ -88,6 +88,8 @@ export const myLecture = async (userId?: string, courseId?: string, moduleId?: s
                     student: {},
                     course: null,
                     nextPrevious: {},
+                    lecturesCompleted: 0,
+                    totalLectures: 0,
                 }
             }
         }
@@ -332,6 +334,8 @@ export const myLecture = async (userId?: string, courseId?: string, moduleId?: s
                 allComponents: [],
                 student: {},
                 course: null,
+                lecturesCompleted: 0,
+                totalLectures: 0,
                 nextPrevious: {}
             }
         }

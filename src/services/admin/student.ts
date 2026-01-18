@@ -183,3 +183,109 @@ export const assignCourseToStudent = async (userId: string, courseId: string) =>
         }
     }
 }
+
+export const courseReviews = async (page: number = 1, pageSize: number = 20) => {
+    try {
+        return await paginateQuery<any>({
+            page,
+            pageSize,
+            dataQuery: ({ skip, take }) => prisma.studentReview.findMany({
+                orderBy: {
+                    createdAt: 'desc'
+                },
+                skip,
+                take,
+                include: {
+                    user: true,
+                    course: true,
+                }
+            }),
+            countQuery: () => prisma.studentReview.count()
+        });
+    } catch (error) {
+        console.log("Error fetching course reviews:", error);
+        return {
+            success: false,
+            message: 'No result found',
+            data: [],
+            pagination: {
+                totalCount: 0,
+                totalPages: 0,
+                currentPage: page,
+                pageSize: pageSize,
+            },
+        }
+    }
+}
+
+export const replyToCourseReview = async (reviewId: string, replyComment: string) => {
+    try {
+        await prisma.studentReview.update({
+            where: { id: reviewId },
+            data: {
+                reply: replyComment,
+                isApproved: true,
+                isReviewed: true,
+                replyDate: new Date(),
+            }
+        });
+
+        return {
+            success: true,
+            message: "Reply has been submitted successfully. The review will now appear on the website.",
+        };
+    }
+    catch (error) {
+        console.log("Error replying to course review:", error);
+        return {
+            success: false,
+            message: "Failed to submit reply. Please try again",
+        }
+    }
+}
+
+export const approveReviewWithoutReply = async (reviewId: string) => {
+    try {
+        await prisma.studentReview.update({
+            where: { id: reviewId },
+            data: {
+                isApproved: true,
+                isReviewed: true,
+            }
+        });
+        return {
+            success: true,
+            message: "The review has been approved successfully. It will now appear on the website.",
+        };
+    }
+    catch (error) {
+        console.log("Error approving course review:", error);
+        return {
+            success: false,
+            message: "Failed to approve review. Please try again",
+        }
+    }
+}
+
+export const markAsReviewedWithoutApproval = async (reviewId: string) => {
+    try {
+        await prisma.studentReview.update({
+            where: { id: reviewId },
+            data: {
+                isApproved: false,
+                isReviewed: true,
+            }
+        });
+        return {
+            success: true,
+            message: "The review has been marked as reviewed. It will not appear on the website.",
+        };
+    }
+    catch (error) {
+        console.log("Error marking course review as reviewed:", error);
+        return {
+            success: false,
+            message: "Failed to mark review as reviewed. Please try again",
+        }
+    }
+}

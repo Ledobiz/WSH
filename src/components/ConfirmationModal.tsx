@@ -22,6 +22,8 @@ const ConfirmationModal = ({
     const [loading, setLoading] = useState(false);
 
     const handleConfirmation = async () => {
+        setLoading(true);
+        
         try {
             await onConfirm();
 
@@ -63,7 +65,7 @@ const ConfirmationModal = ({
                     onClick={handleConfirmation}
                     disabled={loading}
                 >
-                    {loading ? <ButtonLoader /> : 'Proceed'}
+                    {loading ? <ButtonLoader color="#ffffff" /> : 'Proceed'}
                 </button>
             </div>
         </CustomModal>
