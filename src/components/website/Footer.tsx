@@ -1,4 +1,4 @@
-import { cartUrl, faq, privacyPolicyUrl, refundPolicyUrl, termsAndConditionsUrl, wishlitUrl } from "@/src/utils/url";
+import { aboutUsUrl, cartUrl, faq, privacyPolicyUrl, refundPolicyUrl, termsAndConditionsUrl, wishlitUrl } from "@/src/utils/url";
 import Link from "next/link";
 
 const Footer = () => {
@@ -44,7 +44,7 @@ const Footer = () => {
                                     <h4 className="widget-title">Navigations</h4>
                                     <ul className="footer-menu">
                                         <li>
-                                            <a href="#">About Us</a>
+                                            <Link href={aboutUsUrl}>About Us</Link>
                                         </li>
                                         <li>
                                             <Link href={cartUrl}>Cart</Link>

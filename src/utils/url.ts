@@ -7,6 +7,7 @@ export const privacyPolicyUrl = '/privacy-policy'
 export const termsAndConditionsUrl = '/terms-and-conditions'
 export const refundPolicyUrl = '/refund-policy'
 export const faq = '/faq'
+export const aboutUsUrl = '/about-us'
 
 // Student Routes
 export const studentDashboardUrl = '/learners/dashboard'

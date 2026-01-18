@@ -1,7 +1,7 @@
 'use client';
 
 import { useAuth } from "@/src/providers/AuthProvider";
-import { loginUrl, registerUrl, studentDashboardUrl } from "@/src/utils/url";
+import { loginUrl, registerUrl } from "@/src/utils/url";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -9,6 +9,10 @@ const links = [
     {
         uri: "/",
         label: "Home"
+    },
+    {
+        uri: "/about-us",
+        label: "About Us"
     },
     {
         uri: "/courses",
@@ -31,7 +35,6 @@ const links = [
 const Navbar = () => {
     const appUrl = process.env.NEXT_PUBLIC_APP_URL!;
     const pathName = usePathname();
-    const { user, loading } = useAuth();
 
     return (  
         <>

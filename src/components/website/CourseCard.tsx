@@ -45,9 +45,10 @@ const CourseCard = ({slug, course, title, lectures, level, originalPrice, discou
                     
                     <Link href={`${coursesUrl}/${slug}`}>
                         <img
-                            src={ image }
+                            src={image}
                             className="img-fluid"
-                            alt={ title }
+                            alt={title}
+                            style={{ width: '100%', height: '200px', objectFit: 'cover' }}
                         />
                     </Link>
 
