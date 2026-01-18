@@ -35,11 +35,11 @@ const Navbar = () => {
 
     return (  
         <>
-            <div className="header header-light">
+            <div className="header header-transparent change-logo">
                 <div className="container">
                     <nav id="navigation" className="navigation navigation-landscape">
                         <div className="nav-header">
-                            <Link className="nav-brand" href="/">
+                            <Link className="nav-brand static-logo" href="/">
                                 <img 
                                     src={`${appUrl}/assets/img/wsh-logo-light.jpeg`}
                                     className="logo"
@@ -47,9 +47,17 @@ const Navbar = () => {
                                     style={{width: '60px', height: '100%'}}
                                 />
                             </Link>
-                            <div className="nav-toggle" />
+                            <Link className="nav-brand fixed-logo" href="/">
+                                <img 
+                                    src={`${appUrl}/assets/img/wsh-logo-light.jpeg`}
+                                    className="logo"
+                                    alt="Women Skills Hub logo"
+                                    style={{width: '60px', height: '100%'}}
+                                />
+                            </Link>
+                            <div className="nav-toggle"></div>
                         </div>
-                        <div className="nav-menus-wrapper">
+                        <div className="nav-menus-wrapper" style={{transitionProperty: 'none'}}>
                             <ul className="nav-menu">
                                 {
                                     links.map((link) => (
@@ -60,13 +68,13 @@ const Navbar = () => {
                                 }
                             </ul>
                             <ul className="nav-menu nav-menu-social align-to-right">
-                                <li className="become-tutor">
+                                <li className="become-tutor light">
                                     <Link href={registerUrl}>
                                         <i className="bi bi-person-circle" />
                                         Register
                                     </Link>
                                 </li>
-                                <li className="join-btn">
+                                <li className="join-btn light">
                                     <Link href={loginUrl}>
                                         <i className="bi bi-box-arrow-in-right" />
                                         Sign In
@@ -77,7 +85,7 @@ const Navbar = () => {
                     </nav>
                 </div>
             </div>
-            <div className="clearfix" />
+            <div className="clearfix"></div>
         </>
     )
 }

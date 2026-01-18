@@ -3,6 +3,9 @@ export const coursesUrl = '/courses'
 export const cartUrl = '/cart'
 export const wishlitUrl = '/wishlist'
 export const thankYouUrl = '/thank-you'
+export const privacyPolicyUrl = '/privacy-policy'
+export const termsAndConditionsUrl = '/terms-and-conditions'
+export const refundPolicyUrl = '/refund-policy'
 
 // Student Routes
 export const studentDashboardUrl = '/learners/dashboard'

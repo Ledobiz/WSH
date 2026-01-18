@@ -1,4 +1,4 @@
-import { cartUrl, wishlitUrl } from "@/src/utils/url";
+import { cartUrl, privacyPolicyUrl, refundPolicyUrl, termsAndConditionsUrl, wishlitUrl } from "@/src/utils/url";
 import Link from "next/link";
 
 const Footer = () => {
@@ -50,10 +50,13 @@ const Footer = () => {
                                             <Link href={cartUrl}>Cart</Link>
                                         </li>
                                         <li>
-                                            <Link href="#">Terms & Conditions</Link>
+                                            <Link href={termsAndConditionsUrl}>Terms & Conditions</Link>
                                         </li>
                                         <li>
-                                            <Link href="#">Privacy Policy</Link>
+                                            <Link href={privacyPolicyUrl}>Privacy Policy</Link>
+                                        </li>
+                                        <li>
+                                            <Link href={refundPolicyUrl}>Refund Policy</Link>
                                         </li>
                                     </ul>
                                 </div>

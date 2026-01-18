@@ -1297,7 +1297,7 @@ div[data-overlay] p{
 }
 /*-------------- Global Settings: Background Colors ----------------*/
 .bg-gredient{
-	background-image: linear-gradient(to right, #ec77ab 0%, #7873f5 100%);
+	background-image: linear-gradient(to right, #6a1b9a 0%, #a57cb2 100%);
 }
 .bg-main {
   background-color:var(--maincolor) !important;
@@ -3760,9 +3760,9 @@ li.login-attri .account-drop a {
 	background:linear-gradient(90deg,rgba(224, 232, 255, 1) 0%, rgba(243, 250, 255, 1) 47%, rgba(227, 239, 255, 1) 100%);
 }
 .home-5{
-	background: #4776E6;
-	background: -webkit-linear-gradient(to right, #8E54E9, #4776E6);
-	background: linear-gradient(to right, #8E54E9, #4776E6);
+	background: #6a1b9a;
+	background: -webkit-linear-gradient(to right, #6a1b9a, #a57cb2);
+	background: linear-gradient(to right, #6a1b9a, #a57cb2);
 }
 .half_banner {
     padding:70px 0;

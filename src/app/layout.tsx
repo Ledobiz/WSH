@@ -22,7 +22,7 @@ export default function RootLayout({
         <link rel="icon" type="image/svg+xml" href={`${appUrl}/assets/img/wsh-logo-light.jpeg`}></link>
         <title>Student Dashboard - Women Skills Hub</title>
       </head>
-      <body>
+      <body className="red-skin">
         <AuthProvider>
           <CartProvider>
             <SidebarProvider>
