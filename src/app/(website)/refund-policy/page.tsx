@@ -44,10 +44,12 @@ const RefundPolicy = () => {
 
                                             <li style={{fontSize: '18px', fontWeight: 'bold'}}>Refund Guarantee – Course Not as Advertised</li>
                                             <p>
-                                                A full refund will be granted if:<br />
-                                                The content delivered is significantly different from what was stated in the official course outline, sales page, or promotional flyer.<br />
-                                                The refund request is made within 24 hours of gaining course access <br />
-                                                The student has not completed a substantial portion of the course.<br />
+                                                A full refund will be granted ONLY
+                                                <strong>
+                                                    if the content delivered is significantly different from what was stated in the official course outline, sales page, or promotional flyer
+                                                    and the refund request is made within 48 hours of gaining course access
+                                                </strong>
+                                                <br />
                                                 Each request will be reviewed fairly, and if confirmed, a refund will be issued.
                                             </p>
 

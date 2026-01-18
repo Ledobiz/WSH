@@ -1,4 +1,4 @@
-import { cartUrl, privacyPolicyUrl, refundPolicyUrl, termsAndConditionsUrl, wishlitUrl } from "@/src/utils/url";
+import { cartUrl, faq, privacyPolicyUrl, refundPolicyUrl, termsAndConditionsUrl, wishlitUrl } from "@/src/utils/url";
 import Link from "next/link";
 
 const Footer = () => {
@@ -72,7 +72,7 @@ const Footer = () => {
                                             <Link href="mailto:support@womenskillshub.com">Mail Us</Link>
                                         </li>
                                         <li>
-                                            <Link href="#">Faqs</Link>
+                                            <Link href={faq}>Faqs</Link>
                                         </li>
                                     </ul>
                                 </div>
@@ -86,24 +86,25 @@ const Footer = () => {
                         <div className="row align-items-center g-3">
                             <div className="col-lg-6 col-md-6">
                                 <p className="mb-0">
-                                    © {new Date().getFullYear()} Women Skills Hub Limited. All Rights Reserved.
+                                    © {new Date().getFullYear()} Women Skills Hub Limited. All Rights Reserved. <br />
+                                    RC 7108779
                                     {/* Developed By{" "} <a href="https://ledobiz.com/" style={{color: '#ffc107'}}>Ledobiz Technologies Ltd</a>. */}
                                 </p>
                             </div>
                             <div className="col-lg-6 col-md-6 text-md-end">
                                 <ul className="footer-bottom-social">
                                     <li>
-                                        <Link href="https://www.facebook.com/share/1BbVDSP7Ut/">
-                                        <i className="ti-facebook" />
+                                        <Link href="https://www.facebook.com/share/1BbVDSP7Ut/" target="_blank">
+                                            <i className="ti-facebook" />
                                         </Link>
                                     </li>
                                     <li>
-                                        <Link href="https://www.instagram.com/reel/DRBEZv_kxQn/?igsh=aWV3cXZtY2hwazls">
+                                        <Link href="https://www.instagram.com/reel/DRBEZv_kxQn/?igsh=aWV3cXZtY2hwazls" target="_blank">
                                         <i className="ti-instagram" />
                                         </Link>
                                     </li>
                                     <li>
-                                        <Link href="https://www.tiktok.com/@womenskillshub?_r=1&_t=ZS-92k75jCDjiq">
+                                        <Link href="https://www.tiktok.com/@womenskillshub?_r=1&_t=ZS-92k75jCDjiq" target="_blank">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style={{marginBottom: '-3px'}}>
                                                 <path d="M9 0h1.98c.144.715.54 1.617 1.235 2.512C12.895 3.389 13.797 4 15 4v2c-1.753 0-3.07-.814-4-1.829V11a5 5 0 1 1-5-5v2a3 3 0 1 0 3 3z"/>
                                             </svg>
