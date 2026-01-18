@@ -13,7 +13,7 @@ const AdminDashboard = () => {
     const appUrl = process.env.NEXT_PUBLIC_APP_URL;
     const [loading, setLoading] = useState<boolean>(false);
     const [totalCourses, setTotalCourses] = useState<number>(0);
-    const [totalUsers, setTotalUsers] = useState<number>(0);
+    const [newReviews, setNewReviews] = useState<number>(0);
     const [enrolledStudents, setEnrolledStudents] = useState<number>(0);
     const [topSalesCourses, setTopSalesCourses] = useState<Array<any>>([]);
 
@@ -24,7 +24,7 @@ const AdminDashboard = () => {
                 const result = await getDashboardData();
                 console.log('Dashboard data:', result);
                 setTotalCourses(result.totalCourses);
-                setTotalUsers(result.totalUsers);
+                setNewReviews(result.newReviews);
                 setEnrolledStudents(result.enrolledStudents);
                 setTopSalesCourses(result.topSalesCourses);
             } 
@@ -65,8 +65,8 @@ const AdminDashboard = () => {
                                     <i className="fas fa-user-graduate text-red" />
                                 </div>
                                 <div className="d-flex flex-column gap-1">
-                                    <h2 className="fw-semibold m-0">{totalUsers}</h2>
-                                    <span className="text-muted">Total Users</span>
+                                    <h2 className="fw-semibold m-0">{enrolledStudents}</h2>
+                                    <span className="text-muted">Total Enrolments</span>
                                 </div>
                             </div>
                         </div>
@@ -78,8 +78,8 @@ const AdminDashboard = () => {
                                     <i className="bi bi-gem text-main" />
                                 </div>
                                 <div className="d-flex flex-column gap-1">
-                                    <h2 className="fw-semibold m-0">{enrolledStudents}</h2>
-                                    <span className="text-muted">Enrolled Students</span>
+                                    <h2 className="fw-semibold m-0">{newReviews}</h2>
+                                    <span className="text-muted">New Reviews</span>
                                 </div>
                             </div>
                         </div>

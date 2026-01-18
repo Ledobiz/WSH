@@ -8,9 +8,9 @@ import { paginateQuery } from "@/src/utils/pagination";
 export const getDashboardData = async () => {
     try {
         const totalCourses = await prisma.course.count();
-        const totalUsers = await prisma.user.count({
+        const newReviews = await prisma.studentReview.count({
             where: {
-                role: 'student'
+                isReviewed: false
             }
         });
         const enrolledStudents = await prisma.student.count();
@@ -41,7 +41,7 @@ export const getDashboardData = async () => {
 
         return {
             totalCourses,
-            totalUsers,
+            newReviews,
             enrolledStudents,
             topSalesCourses: topSalesWithTotals
         }
@@ -49,7 +49,7 @@ export const getDashboardData = async () => {
         console.log("Error fetching dashboard data:", error);
         return {
             totalCourses: 0,
-            totalUsers: 0,
+            newReviews: 0,
             enrolledStudents: 0,
             topSalesCourses: []
         };
