@@ -296,27 +296,31 @@ const CourseDetailsPage = ({course}: {course: DBCourseInterface}) => {
                         {/* Sidebar */}
                         <div className="col-xl-4 col-lg-4 col-md-12">
                             <div className="ed_view_box border">
-                                <div className="courses-video">
-                                    <div className="thumb">
-                                        <img
-                                            className="pro_img img-fluid w100"
-                                            src={course.thumbnail ?? ''}
-                                            alt="7.jpg"
-                                        />
-                                        <div className="overlay_icon">
-                                            <div className="bb-video-box">
-                                                <button
-                                                    onClick={() => handlePreviewModal(course.previewVideo ?? '')}
-                                                    data-bs-toggle="modal"
-                                                    data-bs-target="#popup-video"
-                                                    className="play-popup-video"
-                                                >
-                                                    <i className="bi bi-play-fill" />
-                                                </button>
-                                            </div>
+                                {course.previewVideo && (
+                                    <div className="courses-video">
+                                        <div className="thumb">
+                                            <img
+                                                className="pro_img img-fluid w100"
+                                                src={course.thumbnail ?? ''}
+                                                alt={course.title}
+                                            />
+                                            
+                                                <div className="overlay_icon">
+                                                    <div className="bb-video-box">
+                                                        <button
+                                                            onClick={() => handlePreviewModal(course.previewVideo ?? '')}
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#popup-video"
+                                                            className="play-popup-video"
+                                                        >
+                                                            <i className="bi bi-play-fill" />
+                                                        </button>
+                                                    </div>
+                                                </div>
                                         </div>
                                     </div>
-                                </div>
+                                )}
+
                                 <div className="author-body py-3">
                                     <div className="ed_view_price">
                                         <span className="badge bg-light-red text-red rounded-pill">

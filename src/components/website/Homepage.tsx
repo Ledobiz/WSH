@@ -47,7 +47,7 @@ const Homepage = () => {
                         <div className="col-lg-8 col-md-10 col-sm-12">
                             <div className="sec-heading center">
                                 <h2>Work &amp; Process</h2>
-                                <p>Working Process for Join And Benifits</p>
+                                <p>Learn high-impact, career-focused courses designed for women — from digital skills to business, crafts, and professional development.</p>
                             </div>
                         </div>
                     </div>
@@ -62,11 +62,9 @@ const Homepage = () => {
                                     </div>
                                 </div>
                                 <div className="prc-caption text-center">
-                                    <h4>Find Course</h4>
+                                    <h4>Explore Skill-Based Courses</h4>
                                     <p className="text-muted-2">
-                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-                                        eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-                                        enim ad minim veniam.
+                                        Browse beginner to advanced classes in cake making, mocktails, paper crafts and more.
                                     </p>
                                 </div>
                             </div>
@@ -82,11 +80,9 @@ const Homepage = () => {
                                     </div>
                                 </div>
                                 <div className="prc-caption text-center">
-                                    <h4>Book Your Scat</h4>
+                                    <h4>Enroll & Learn at Your Pace</h4>
                                     <p className="text-muted-2">
-                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-                                        eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-                                        enim ad minim veniam.
+                                        Start right away — online or in-person options available with flexible schedules.
                                     </p>
                                 </div>
                             </div>
@@ -102,11 +98,9 @@ const Homepage = () => {
                                     </div>
                                 </div>
                                 <div className="prc-caption text-center">
-                                    <h4>Get Certified</h4>
+                                    <h4>Earn a Certification & Build Your Future</h4>
                                     <p className="text-muted-2">
-                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-                                        eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-                                        enim ad minim veniam.
+                                        Receive certificates to showcase your learning and boost your career.
                                     </p>
                                 </div>
                             </div>
@@ -122,7 +116,7 @@ const Homepage = () => {
                             <div className="sec-heading center">
                                 <h2>Explore Our Courses</h2>
                                 <p>
-                                    Learn from Industry Experts and Advance Your Career with Practical
+                                    Learn from Industry Expert and Advance Your Career with Practical
                                     Skills
                                 </p>
                             </div>
@@ -141,7 +135,7 @@ const Homepage = () => {
                                         {categories?.map((category, index) => (
                                             <li key={category.id} className={`nav-item ${index == 0 ? 'ms-0' : ''}`} role="presentation">
                                                 <a
-                                                    className="nav-link active"
+                                                    className={`nav-link ${index == 0 ? 'active' : ''}`}
                                                     id={`${category.id}-tab`}
                                                     data-bs-toggle="pill"
                                                     href={`#${category.id}`}
@@ -236,11 +230,10 @@ const Homepage = () => {
                         <div className="col-lg-6 col-md-6 col-sm-12">
                             <div className="benifit-oflearning">
                                 <div className="d-block mb-4">
-                                    <h2>Benifit of online learning</h2>
+                                    <h2>Benifit of Women Skills Hub</h2>
                                     <p>
-                                        We’re developing an innovative Bootstrap-powered UI Kit tool
-                                        designed specifically for developers, engineers, full-stack
-                                        developers, and digital agencies.
+                                        We’re empowering women with practical, income-generating skills.
+                                        Whether you’re starting a business, switching careers, or earning more income, Women Skills Hub equips you with real skills that pay real results.
                                     </p>
                                 </div>
                                 <div className="benifit-wraps mb-4">
@@ -252,8 +245,8 @@ const Homepage = () => {
                                                 </span>
                                             </div>
                                             <div className="caps">
-                                                <h5>Wide Range of Courses</h5>
-                                                <p className="text-muted-2 m-0">Choose from thousands of subjects and skills.</p>
+                                                <h5>100% online, flexible learning</h5>
+                                                <p className="text-muted-2 m-0">Life-time access to courses and materials and you learn at your own pace.</p>
                                             </div>
                                         </div>
                                         <div className="d-flex align-items-center justify-content-start gap-3">
@@ -263,8 +256,8 @@ const Homepage = () => {
                                                 </span>
                                             </div>
                                             <div className="caps">
-                                                <h5>Cost-Effective</h5>
-                                                <p className="text-muted-2 m-0">Often more affordable than traditional classroom learning.</p>
+                                                <h5>Hands-on, practical lessons</h5>
+                                                <p className="text-muted-2 m-0">We teach you skills you can apply immediately. Things we practice are directly applicable to real-world scenarios.</p>
                                             </div>
                                         </div>
                             
@@ -275,10 +268,9 @@ const Homepage = () => {
                                                 </span>
                                             </div>
                                             <div className="caps">
-                                                <h5>Global Networking</h5>
+                                                <h5>Courses delivered as advertised</h5>
                                                 <p className="text-muted-2 m-0">
-                                                    Connect with learners and instructors from around the
-                                                    world.
+                                                    No hidden fees or surprise charges. What you see is what you get.
                                                 </p>
                                             </div>
                                         </div>
@@ -299,7 +291,7 @@ const Homepage = () => {
                 </div>
             </section>
             
-            <section className="bg-light">
+            {/* <section className="bg-light">
                 <div className="container">
                     <div className="row justify-content-center">
                         <div className="col-lg-8 col-md-10 col-sm-12">
@@ -628,7 +620,7 @@ const Homepage = () => {
                         </div>
                     </div>
                 </div>
-            </section>
+            </section> */}
             
             <section
                 className="bg-cover newsletter bg-main position-relative"
@@ -646,7 +638,7 @@ const Homepage = () => {
                                         </span>
                                     </div>
                                     <h2 className="fs-1 lh-base text-light">
-                                        Advance Your Learning with LearnUp's Quality Certification
+                                        Advance Your Learning with Women Skills Hub
                                     </h2>
                                     <p className="text-light opacity-75">
                                         Subscribe our newsletter &amp; get latest news and updation!
