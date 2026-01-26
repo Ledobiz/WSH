@@ -13,7 +13,7 @@ const CourseDetailsBanner = ({title, description, lectures, totalEnrolled, level
     return (
         <div
             className="image-cover ed_detail_head lg theme-ov"
-            style={{ background: '#f4f4f4 url('+banner+')' }}
+            style={{ background: '#f4f4f4 url('+banner+')', paddingTop: '150px' }}
             data-overlay={7}
         >
             <div className="container">

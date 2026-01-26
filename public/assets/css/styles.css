@@ -3761,8 +3761,8 @@ li.login-attri .account-drop a {
 }
 .home-5{
 	background: #6a1b9a;
-	background: -webkit-linear-gradient(to right, #6a1b9a, #a57cb2);
-	background: linear-gradient(to right, #6a1b9a, #a57cb2);
+	/* background: -webkit-linear-gradient(to right, #6a1b9a, #a57cb2);
+	background: linear-gradient(to right, #6a1b9a, #a57cb2); */
 }
 .half_banner {
     padding:70px 0;
