@@ -216,6 +216,7 @@ const StudentListPage = () => {
                                                                     <button
                                                                         className="btn btn-sm btn-gray me-1 mb-0"
                                                                         onClick={() => handleStudentModal(student.id)}
+                                                                        title="View Details"
                                                                     >
                                                                         <i className="bi bi-eye" />
                                                                     </button>
@@ -224,6 +225,7 @@ const StudentListPage = () => {
                                                                         className="btn btn-sm btn-light-red mb-0"
                                                                         data-bs-toggle="tooltip"
                                                                         data-bs-title="Block"
+                                                                        title="View Courses"
                                                                     >
                                                                         <i className="bi bi-table" />
                                                                     </Link>

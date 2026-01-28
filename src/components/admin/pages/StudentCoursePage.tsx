@@ -10,6 +10,7 @@ import { formatDateAndTime } from "@/src/utils/client_functions";
 import CustomModal from "../CustomModal";
 import ButtonLoader from "../ButtonLoader";
 import { toast } from "react-toastify";
+import ConfirmationModal from "../../ConfirmationModal";
 
 const lecturesCompleted = (course: any): number => {
     if (!course.studentModules) return 0;
@@ -27,6 +28,7 @@ const StudentCoursePage = ({userId}: {userId: string}) => {
     const [showAssignCourseModal, setShowAssignCourseModal] = useState<boolean>(false);
     const [processing, setProcessing] = useState<boolean>(false);
     const [courseId, setCourseId] = useState<string>('');
+    const [showConfirmationModal, setShowConfirmationModal] = useState<boolean>(false);
 
     useEffect(() => {
         const fetchCourses = async () => {
@@ -66,10 +68,39 @@ const StudentCoursePage = ({userId}: {userId: string}) => {
             setCourses(response.courses);
             setOtherCourses(response.otherCourses);
             setShowAssignCourseModal(false);
+            setCourseId('');
         } catch (error) {
             console.error("Error assigning course to student:", error);
         } finally {
             setProcessing(false);
+        }
+    }
+
+    const handleConfirmationModal = (courseId: string) => {
+        setCourseId(courseId);
+        setShowConfirmationModal(true);
+    }
+
+    const handleCourseUpdateForStudent = async () => {
+        try {
+            // Logic to mark the review as reviewed without approval
+            const response = await markAsReviewedWithoutApproval(selectedReview);
+            if (response.success) {
+                toast.success(response.message);
+                // Refresh reviews after successful action
+                const updatedReviews = await courseReviews(currentPage, pageSize);
+                setReviews(updatedReviews.data);
+            } else {
+                toast.error(response.message);
+            }
+        }
+        catch (error) {
+            console.log("Error ignoring review:", error);
+            toast.error("Failed update the lectures for this student. Please try again.");
+        }
+        finally {
+            setShowConfirmationModal(false);
+            setCourseId('');
         }
     }
 
@@ -120,6 +151,9 @@ const StudentCoursePage = ({userId}: {userId: string}) => {
                                                             <th scope="col" className="border-0">
                                                                 Status
                                                             </th>
+                                                            <th scope="col" className="border-0">
+                                                                Action
+                                                            </th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
@@ -142,6 +176,15 @@ const StudentCoursePage = ({userId}: {userId: string}) => {
                                                                     <span className={`badge bg-opacity-10 ${course.lecturesCompleted ? 'bg-success text-success' : 'bg-danger text-danger'}`}>
                                                                         {course.lecturesCompleted ? 'Completed' : 'In Progress'}
                                                                     </span>
+                                                                </td>
+                                                                <td>
+                                                                    <button
+                                                                        className="btn btn-sm btn-gray me-1 mb-0"
+                                                                        onClick={() => handleConfirmationModal(course.course.id)}
+                                                                        title="Update Student Course"
+                                                                    >
+                                                                        <i className="bi bi-arrow-clockwise" />
+                                                                    </button>
                                                                 </td>
                                                             </tr>
                                                         )) }
@@ -186,6 +229,14 @@ const StudentCoursePage = ({userId}: {userId: string}) => {
                     </div>
                 </form>
             </CustomModal>
+
+            <ConfirmationModal 
+                text='Are you sure you want to update the lectures for the student? The student will have the updated content available immediately.'
+                isOpen={showConfirmationModal}
+                isForDelete={false}
+                onClose={() => setShowConfirmationModal(false)}
+                onConfirm={handleCourseUpdateForStudent}
+            />
         </>
     )
 }
