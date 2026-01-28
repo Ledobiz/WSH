@@ -11,6 +11,7 @@ import CustomModal from "../CustomModal";
 import ButtonLoader from "../ButtonLoader";
 import { toast } from "react-toastify";
 import ConfirmationModal from "../../ConfirmationModal";
+import { giveStudentNewlyAvailableLectureContents } from "@/src/services/student/course";
 
 const lecturesCompleted = (course: any): number => {
     if (!course.studentModules) return 0;
@@ -82,14 +83,18 @@ const StudentCoursePage = ({userId}: {userId: string}) => {
     }
 
     const handleCourseUpdateForStudent = async () => {
+        if (!courseId || !userId) return;
+
         try {
-            // Logic to mark the review as reviewed without approval
-            const response = await markAsReviewedWithoutApproval(selectedReview);
+            const response = await giveStudentNewlyAvailableLectureContents(userId, courseId);
             if (response.success) {
                 toast.success(response.message);
-                // Refresh reviews after successful action
-                const updatedReviews = await courseReviews(currentPage, pageSize);
-                setReviews(updatedReviews.data);
+
+                // After successful assignment, you might want to refresh the course list
+                const result = await getStudentCourses(userId);
+                setCourses(result.courses);
+                setOtherCourses(result.otherCourses);
+                setCourseId('');
             } else {
                 toast.error(response.message);
             }
@@ -99,8 +104,8 @@ const StudentCoursePage = ({userId}: {userId: string}) => {
             toast.error("Failed update the lectures for this student. Please try again.");
         }
         finally {
-            setShowConfirmationModal(false);
             setCourseId('');
+            setShowConfirmationModal(false);
         }
     }
 
@@ -231,7 +236,7 @@ const StudentCoursePage = ({userId}: {userId: string}) => {
             </CustomModal>
 
             <ConfirmationModal 
-                text='Are you sure you want to update the lectures for the student? The student will have the updated content available immediately.'
+                text='⚠️ Are you sure you want to update the lectures for the student? The student will get the available updated contents immediately.'
                 isOpen={showConfirmationModal}
                 isForDelete={false}
                 onClose={() => setShowConfirmationModal(false)}

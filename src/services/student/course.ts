@@ -414,9 +414,9 @@ export const populateCourseContentForStudent = async (userId: string, courseId: 
             }
         });
 
-        await prisma.$transaction(async (prisma) => {
+        await prisma.$transaction(async (tx) => {
             for (const currentModule of modules) {
-                const studentModule = await prisma.studentModule.create({
+                const studentModule = await tx.studentModule.create({
                     data: {
                         studentId: student.id,
                         courseModuleId: currentModule.id,
@@ -429,7 +429,7 @@ export const populateCourseContentForStudent = async (userId: string, courseId: 
 
                 // Populate the component of the module to the student.
                 for (const component of currentModule.moduleComponents) {
-                    await prisma.studentModuleComponent.create({
+                    await tx.studentModuleComponent.create({
                         data: {
                             studentId: student.id,
                             studentModuleId: studentModule.id,
@@ -681,7 +681,10 @@ export const giveStudentNewlyAvailableLectureContents = async (userId: string, c
 
         if (!student) {
             console.log(`Student with User ID ${userId} is not enrolled in course with ID ${courseId}.`);
-            return;
+            return {
+                success: false,
+                message: 'Student not found for the given course.'
+            }
         }
 
         const modules = await prisma.courseModule.findMany({
@@ -693,18 +696,19 @@ export const giveStudentNewlyAvailableLectureContents = async (userId: string, c
         });
 
         // We need to give the student any new modules or components that have been added since they enrolled.
-        await prisma.$transaction(async (prisma) => {
+        await prisma.$transaction(async (tx) => {
             for (const currentModule of modules) {
-                let studentModule = await prisma.studentModule.findFirst({
+                let studentModule = await tx.studentModule.findFirst({
                     where: {
                         studentId: student.id,
                         courseModuleId: currentModule.id,
                         deletedAt: null
                     }
                 });
+
+                // New module added after student enrolled
                 if (!studentModule) {
-                    // New module added after student enrolled
-                    studentModule = await prisma.studentModule.create({
+                    studentModule = await tx.studentModule.create({
                         data: {
                             studentId: student.id,
                             courseModuleId: currentModule.id,
@@ -715,15 +719,30 @@ export const giveStudentNewlyAvailableLectureContents = async (userId: string, c
                         }
                     });
                 }
-                const moduleComponents = await prisma.moduleComponent.findMany({
+                else {
+                    // Existing module - Let's update its details in case they have changed
+                    await tx.studentModule.update({
+                        where: { id: studentModule.id },
+                        data: {
+                            name: currentModule.name,
+                            description: currentModule.description,
+                            sorting: currentModule.sorting,
+                            totalDuration: currentModule.totalDuration,
+                        }
+                    });
+                }
+
+                // Check for new components in both new and existing modules
+                const moduleComponents = await tx.moduleComponent.findMany({
                     where: {
                         courseModuleId: currentModule.id,
                         isActive: true,
                         deletedAt: null
                     }
                 });
+
                 for (const component of moduleComponents) {
-                    const studentModuleComponent = await prisma.studentModuleComponent.findFirst({
+                    const studentModuleComponent = await tx.studentModuleComponent.findFirst({
                         where: {
                             studentId: student.id,
                             studentModuleId: studentModule.id,
@@ -731,13 +750,33 @@ export const giveStudentNewlyAvailableLectureContents = async (userId: string, c
                             deletedAt: null
                         }
                     });
+
                     if (!studentModuleComponent) {
                         // New component added after student enrolled
-                        await prisma.studentModuleComponent.create({
+                        await tx.studentModuleComponent.create({
                             data: {
                                 studentId: student.id,
                                 studentModuleId: studentModule.id,
                                 moduleComponentId: component.id,
+                                name: component.name,
+                                description: component.description,
+                                type: component.type,
+                                vimeoVideoUrl: component.vimeoVideoUrl,
+                                embedVideoUrl: component.embedVideoUrl,
+                                fileName: component.fileName,
+                                fileNamePublicId: component.fileNamePublicId,
+                                isPrerequisite: component.isPrerequisite,
+                                isFree: component.isFree,
+                                sorting: component.sorting,
+                                duration: component.duration,
+                            }
+                        });
+                    }
+                    else {
+                        // Existing component - Let's update its details in case they have changed
+                        await tx.studentModuleComponent.update({
+                            where: { id: studentModuleComponent.id },
+                            data: {
                                 name: component.name,
                                 description: component.description,
                                 type: component.type,
@@ -767,9 +806,10 @@ export const giveStudentNewlyAvailableLectureContents = async (userId: string, c
             message: 'Failed to give newly available lecture contents to student. Please try again.'
         }
     }
+}
 
-    const lectureModuleComponent = async (studentModuleId: string) => {
-        return await prisma.$queryRaw(Prisma.sql`
+const lectureModuleComponent = async (studentModuleId: string) => {
+    return await prisma.$queryRaw(Prisma.sql`
         SELECT smc.*, slr."id" AS "lectureRecordId", slr."status" AS "lectureStatus"
         FROM "StudentModuleComponent" smc
         LEFT JOIN "StudentLectureRecord" slr
@@ -780,83 +820,83 @@ export const giveStudentNewlyAvailableLectureContents = async (userId: string, c
             AND smc."deletedAt" IS NULL
         ORDER BY smc."createdAt" ASC
     `);
-    }
+}
 
-    const getNextAndPreviousComponents = async (
-        currentModuleId: string,
-        currentComponentId: string,
-        studentId: string
-    ) => {
-        if (!currentModuleId || !currentComponentId) {
-            return {
-                previousComponent: null,
-                nextComponent: null,
-                previousModule: null,
-                nextModule: null,
-            };
-        }
-
-        // Ensure a deterministic module order (prefer sorting, fallback to createdAt)
-        const allModules = await prisma.studentModule.findMany({
-            where: {
-                studentId,
-                deletedAt: null,
-                isActive: true,
-            },
-            orderBy: [
-                { sorting: 'asc' },
-                { createdAt: 'asc' },
-            ],
-        });
-
-        const currentModuleIndex = allModules.findIndex(m => m.id === currentModuleId);
-        if (currentModuleIndex === -1) {
-            return {
-                previousComponent: null,
-                nextComponent: null,
-                previousModule: null,
-                nextModule: null,
-            };
-        }
-
-        const currentModuleComponents = await lectureModuleComponent(currentModuleId) as any[];
-        const currentComponentIndex = currentModuleComponents.findIndex(c => c.id === currentComponentId);
-
-        let previousComponent = null;
-        let nextComponent = null;
-
-        // Default modules to the current module; switch only when crossing boundaries
-        let previousModule: string | null = currentModuleId;
-        let nextModule: string | null = currentModuleId;
-
-        // Previous component: within current module or tail of previous module
-        if (currentComponentIndex > 0) {
-            // Stay within current module
-            previousComponent = currentModuleComponents[currentComponentIndex - 1]?.id || null;
-            previousModule = currentModuleId;
-        } else if (currentModuleIndex > 0) {
-            // Cross to previous module only if no previous component in current module
-            previousModule = allModules[currentModuleIndex - 1]?.id || currentModuleId;
-            const prevModuleComponents = await lectureModuleComponent(previousModule) as any[];
-            previousComponent = prevModuleComponents[prevModuleComponents.length - 1]?.id || null;
-        }
-
-        // Next component: within current module or head of next module
-        if (currentComponentIndex !== -1 && currentComponentIndex < currentModuleComponents.length - 1) {
-            // Stay within current module
-            nextComponent = currentModuleComponents[currentComponentIndex + 1]?.id || null;
-            nextModule = currentModuleId;
-        } else if (currentModuleIndex < allModules.length - 1) {
-            // Cross to next module only if no next component in current module
-            nextModule = allModules[currentModuleIndex + 1]?.id || currentModuleId;
-            const nextModuleComponents = await lectureModuleComponent(nextModule) as any[];
-            nextComponent = nextModuleComponents[0]?.id || null;
-        }
-
+const getNextAndPreviousComponents = async (
+    currentModuleId: string,
+    currentComponentId: string,
+    studentId: string
+) => {
+    if (!currentModuleId || !currentComponentId) {
         return {
-            previousComponent,
-            nextComponent,
-            previousModule,
-            nextModule,
+            previousComponent: null,
+            nextComponent: null,
+            previousModule: null,
+            nextModule: null,
         };
     }
+
+    // Ensure a deterministic module order (prefer sorting, fallback to createdAt)
+    const allModules = await prisma.studentModule.findMany({
+        where: {
+            studentId,
+            deletedAt: null,
+            isActive: true,
+        },
+        orderBy: [
+            { sorting: 'asc' },
+            { createdAt: 'asc' },
+        ],
+    });
+
+    const currentModuleIndex = allModules.findIndex(m => m.id === currentModuleId);
+    if (currentModuleIndex === -1) {
+        return {
+            previousComponent: null,
+            nextComponent: null,
+            previousModule: null,
+            nextModule: null,
+        };
+    }
+
+    const currentModuleComponents = await lectureModuleComponent(currentModuleId) as any[];
+    const currentComponentIndex = currentModuleComponents.findIndex(c => c.id === currentComponentId);
+
+    let previousComponent = null;
+    let nextComponent = null;
+
+    // Default modules to the current module; switch only when crossing boundaries
+    let previousModule: string | null = currentModuleId;
+    let nextModule: string | null = currentModuleId;
+
+    // Previous component: within current module or tail of previous module
+    if (currentComponentIndex > 0) {
+        // Stay within current module
+        previousComponent = currentModuleComponents[currentComponentIndex - 1]?.id || null;
+        previousModule = currentModuleId;
+    } else if (currentModuleIndex > 0) {
+        // Cross to previous module only if no previous component in current module
+        previousModule = allModules[currentModuleIndex - 1]?.id || currentModuleId;
+        const prevModuleComponents = await lectureModuleComponent(previousModule) as any[];
+        previousComponent = prevModuleComponents[prevModuleComponents.length - 1]?.id || null;
+    }
+
+    // Next component: within current module or head of next module
+    if (currentComponentIndex !== -1 && currentComponentIndex < currentModuleComponents.length - 1) {
+        // Stay within current module
+        nextComponent = currentModuleComponents[currentComponentIndex + 1]?.id || null;
+        nextModule = currentModuleId;
+    } else if (currentModuleIndex < allModules.length - 1) {
+        // Cross to next module only if no next component in current module
+        nextModule = allModules[currentModuleIndex + 1]?.id || currentModuleId;
+        const nextModuleComponents = await lectureModuleComponent(nextModule) as any[];
+        nextComponent = nextModuleComponents[0]?.id || null;
+    }
+
+    return {
+        previousComponent,
+        nextComponent,
+        previousModule,
+        nextModule,
+    };
+}

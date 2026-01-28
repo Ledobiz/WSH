@@ -42,11 +42,24 @@ const ConfirmationModal = ({
             onClose={onClose}
             size={size}
         >
-            <p className="text-muted mb-3 text-center">
-                {text}
-                <br />
-                This action cannot be undone.
-            </p>
+            {isForDelete && (
+                <p className="text-muted mb-3 text-center">
+                    {text}
+                    <br />
+                    This action cannot be undone.
+                </p>
+            )}
+
+            {!isForDelete && (
+                <>
+                    <p className="text-muted mb-3 text-center">
+                        {text}
+                    </p>
+                    <div className="alert alert-danger py-2 small mb-4 text-center">
+                        This action cannot be undone.
+                    </div>
+                </>
+            )}
 
             {isForDelete && <div className="alert alert-danger py-2 small mb-4">
                 All related data will be permanently removed.
