@@ -213,3 +213,31 @@ export async function resetPassword(email: string) {
         }
     }
 }
+
+export async function changePassword(email: string, token: string, newPassword: string) {
+    const user = await prisma.user.findUnique({
+        where: { email }
+    });
+
+    if (!user || user.token !== token) {
+        return {
+            success: false,
+            message: 'Invalid token or email. Please try the password reset process again.',
+        }
+    }
+
+    const hashedPassword = await hashPassword(newPassword);
+
+    await prisma.user.update({
+        where: { email },
+        data: {
+            password: hashedPassword,
+            token: null,
+        }
+    });
+
+    return {
+        success: true,
+        message: 'Password changed successfully. You can now log in with your new password.',
+    }
+}

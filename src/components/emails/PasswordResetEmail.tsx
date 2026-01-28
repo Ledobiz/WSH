@@ -18,9 +18,7 @@ interface PasswordResetEmailProps {
     email: string;
 }
 
-const baseUrl = process.env.NEXT_PUBLIC_APP_URL
-  ? process.env.NEXT_PUBLIC_APP_URL
-  : '';
+const baseUrl = process.env.NEXT_PUBLIC_APP_URL!;
 
 export const PasswordResetEmail = ({
   userName,
