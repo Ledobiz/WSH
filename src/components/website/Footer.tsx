@@ -87,8 +87,8 @@ const Footer = () => {
                             <div className="col-lg-6 col-md-6">
                                 <p className="mb-0">
                                     © {new Date().getFullYear()} Women Skills Hub Limited. All Rights Reserved. <br />
-                                    RC 7108779
-                                    {/* Developed By{" "} <a href="https://ledobiz.com/" style={{color: '#ffc107'}}>Ledobiz Technologies Ltd</a>. */}
+                                    RC 7108779 <br />
+                                    Developed By{" "} <a href="https://ledobiz.com/" target="_blank" style={{color: '#ffc107'}}>Ledobiz Technologies Ltd</a>.
                                 </p>
                             </div>
                             <div className="col-lg-6 col-md-6 text-md-end">

@@ -491,7 +491,7 @@ export const sendCourseConfirmationEmail = async (userId: string, courseId: stri
             );
 
             const { error } = await resend.emails.send({
-                from: 'WSH Academy <academy@wsh.com>',
+                from: 'Women Skills Hub <support@womenskillshub.com>',
                 to: user.email,
                 subject: 'Welcome Aboard! Your Course Enrolment is Confirmed',
                 html: emailHtml,

@@ -7,6 +7,9 @@ import { getUserByEmail } from "./user";
 import { hashPassword, verifyPassword } from "@/src/utils/server_functions";
 import { getFirstErrorFromFieldSubmission } from "@/src/utils/client_functions";
 import { createUserSession, removeUserFromSession, SESSION_TTL } from "@/src/utils/jwt";
+import { Resend } from "resend";
+import { render } from "@react-email/render";
+import PasswordResetEmail from "../components/emails/PasswordResetEmail";
 
 export async function signIn(unsafeData: z.infer<typeof signInSchema>) {
     const { success, data, error } = signInSchema.safeParse(unsafeData)
@@ -153,4 +156,60 @@ export async function signUp(unsafeData: z.infer<typeof signUpSchema>) {
 
 export async function logOut() {
     await removeUserFromSession();
+}
+
+export async function resetPassword(email: string) {
+    const user = await getUserByEmail(email);
+
+    if (!user) {
+        return {
+            success: false,
+            message: 'It seems like you do not have an account with us. No record of this email was found.',
+        }
+    }
+
+    try {
+        const resend = new Resend(process.env.RESEND_API_KEY!);
+
+        const token = crypto.randomUUID();
+        await prisma.user.update({
+            where: { email: user.email },
+            data: { token }
+        });
+
+        const emailHtml = await render(
+            PasswordResetEmail({
+                userName: user.name!,
+                email: user.email,
+                token,
+            })
+        );
+
+        const { error } = await resend.emails.send({
+            from: 'Women Skills Hub <support@womenskillshub.com>',
+            to: user.email,
+            subject: 'Reset Your Password',
+            html: emailHtml,
+        });
+
+        if (error) {
+            console.log('Error sending password reset email:', error);
+            return {
+                success: false,
+                message: 'Failed to send password reset email. Please try again later.',
+            }
+        }
+
+        return {
+            success: true,
+            message: 'Password reset email sent successfully. Please check your inbox.',
+        }
+    }
+    catch (error) {
+        console.log('Error in resetPassword function:', error);
+        return {
+            success: false,
+            message: 'Failed to send course confirmation email.'
+        }
+    }
 }

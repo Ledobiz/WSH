@@ -1,9 +1,8 @@
 import Footer from "@/src/components/website/Footer";
+import ForgotPasswordForm from "@/src/components/website/ForgotPasswordForm";
 import Loading from "@/src/components/website/loading"
 import Navbar from "@/src/components/website/Navbar"
-import { loginUrl } from "@/src/utils/url";
 import { Metadata } from "next";
-import Link from "next/link";
 import { Suspense } from "react"
 
 export const metadata: Metadata = {
@@ -13,7 +12,6 @@ export const metadata: Metadata = {
 
 const ForgotPassword = () => {
     const appUrl = process.env.NEXT_PUBLIC_APP_URL;
-    const appName = process.env.NEXT_PUBLIC_APP_NAME;
 
     return (
         <Suspense fallback={<Loading />}>
@@ -69,31 +67,7 @@ const ForgotPassword = () => {
                                         </div>
                                     </div>
                                     
-                                    <div className="login-form">
-                                        <form>
-                                            <div className="form-group mb-4">
-                                                <input
-                                                    type="email"
-                                                    className="form-control"
-                                                    placeholder="Enter your email.."
-                                                />
-                                            </div>
-                                            <div className="form-group mb-3">
-                                                <button type="button" className="btn btn-main w-100">
-                                                    Reset Password
-                                                </button>
-                                            </div>
-                                            
-                                            <div className="form-group">
-                                                <div className="text-center text-muted">
-                                                    I have remembered my password{" "}
-                                                    <Link href={loginUrl}>
-                                                        Sign In
-                                                    </Link>
-                                                </div>
-                                            </div>
-                                        </form>
-                                    </div>
+                                    <ForgotPasswordForm />
                                 </div>
                             </div>
                         </div>
