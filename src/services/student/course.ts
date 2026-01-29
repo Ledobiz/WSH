@@ -793,7 +793,7 @@ export const giveStudentNewlyAvailableLectureContents = async (userId: string, c
                     }
                 }
             }
-        }, { timeout: 1200000 });
+        }, { timeout: 180000, maxWait: 180000 }); // 3 minutes timeout, 3 minutes max wait
 
         return {
             success: true,

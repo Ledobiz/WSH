@@ -197,9 +197,9 @@ const CartPage = () => {
                                             <div className="flex_cart_1">Total Cost</div>
                                             <div className="flex_cart_2">{ formatAmount(totalFees) }</div>
                                         </div>
-                                        <button onClick={makePayment} disabled={paymentInProcess} type="button" className="btn btn-main w-100">
+                                        {/* <button onClick={makePayment} disabled={paymentInProcess} type="button" className="btn btn-main w-100">
                                             {paymentInProcess ? <ButtonLoader /> : 'Proceed To Checkout'}
-                                        </button>
+                                        </button> */}
                                     </div>
                                 </div>
                             </div>
