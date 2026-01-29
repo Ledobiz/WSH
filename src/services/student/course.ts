@@ -793,7 +793,7 @@ export const giveStudentNewlyAvailableLectureContents = async (userId: string, c
                     }
                 }
             }
-        });
+        }, { timeout: 1200000 });
 
         return {
             success: true,
