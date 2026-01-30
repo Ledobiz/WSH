@@ -1,4 +1,4 @@
-import winston from "winston";
+/*import winston from "winston";
 import SlackHook from "winston-slack-webhook-transport";
 const { combine, timestamp, errors, json } = winston.format;
 
@@ -27,4 +27,4 @@ const logger = winston.createLogger({
     ],
 });
 
-export default logger;
+export default logger;*/
