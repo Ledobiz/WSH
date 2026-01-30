@@ -232,11 +232,11 @@ const CartPage = () => {
                                                 </Link>
                                             ) : (
                                                 <>
-                                                    {/* <PaystackButton {...paystackConfig} className="p-0">
+                                                    <PaystackButton {...paystackConfig} className="p-0">
                                                         <img src={`${appUrl}/assets/img/paystack.png`} alt="Pay With Paystack" width={170} height={60} />
                                                     </PaystackButton>
 
-                                                    <button onClick={makePaymentWithFlutterwave} disabled={paymentInProcess} type="button" style={{padding: '0', background: 'none'}}>
+                                                    {/* <button onClick={makePaymentWithFlutterwave} disabled={paymentInProcess} type="button" style={{padding: '0', background: 'none'}}>
                                                         {paymentInProcess ? <ButtonLoader color="#6a1b9a" /> : (
                                                             <img src={`${appUrl}/assets/img/flutterwave.png`} alt="Pay With Flutterwave" width={170} height={60} />
                                                         )}
