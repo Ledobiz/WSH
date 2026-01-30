@@ -237,6 +237,7 @@ model Transaction {
   status           PaymentStatus @default(pending)
   confirmationSent DateTime?
   paymentSource    PaymentSource @default(website)
+  ipAddress        String?       @db.VarChar(60)
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @updatedAt
   deletedAt        DateTime?

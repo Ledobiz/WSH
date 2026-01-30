@@ -172,7 +172,7 @@ export const addToCartServer = async (userId: string, courseId: string) => {
     }
 };
 
-export const verifyTransaction = async (paymentId: string, userId: string) => {
+export const verifyFlutterwaveTransaction = async (paymentId: string, userId: string) => {
     try {
         const secretKey = process.env.FLUTTERWAVE_SECRET_KEY!;
         const response = await fetch('https://api.flutterwave.com/v3/transactions/' + paymentId + '/verify', {
@@ -210,50 +210,11 @@ export const verifyTransaction = async (paymentId: string, userId: string) => {
                     last4Digits: data.data.card?.last_4digits || '',
                     cardBrand: data.data.card?.type || '',
                     status: 'success',
+                    ipAddress: data.data.ip || '',
                 }
             });
 
-            // Mark the cart as paid
-            const cart = await prisma.cart.findFirst({
-                where: { userId, isPaid: false },
-                include: { cartItems: true }
-            });
-
-            if (cart) {
-                await prisma.cart.update({
-                    where: { id: cart.id },
-                    data: {
-                        isPaid: true,
-                        transactionReference: data.data.tx_ref,
-                    }
-                });
-            }
-
-            const courseIds: string[] = [];
-
-            // Enroll the user in the purchased courses
-            await Promise.all(
-                (cart?.cartItems || []).map((item) => {
-                    courseIds.push(item.courseId);
-                    return prisma.student.upsert({
-                        where: {
-                            userId_courseId: { userId, courseId: item.courseId }
-                        },
-                        update: {},
-                        create: { userId, courseId: item.courseId }
-                    });
-                })
-            );
-
-            if (courseIds.length > 0) { // Send event to Inngest for further processing
-                await inngest.send({
-                    name: 'course-content.requested',
-                    data: {
-                        userId,
-                        courseIds,
-                    }
-                });
-            }
+            await queueCourseForAutoAssigning(userId, data.data.tx_ref);
 
             return { success: true, message: "Transaction verified successfully" };
         }
@@ -262,5 +223,103 @@ export const verifyTransaction = async (paymentId: string, userId: string) => {
     } catch (error) {
         console.error("Transaction verification error:", error);
         return { success: false, message: "Transaction verification failed" };
+    }
+}
+
+export const verifyPaystackTransaction = async (reference: string, userId: string) => {
+    try {
+        const secretKey = process.env.PAYSTACK_SECRET_KEY!;
+        const response = await fetch('https://api.paystack.co/transaction/verify/' + reference, {
+            method: 'GET',
+            headers: {
+                accept: 'application/json',
+                Authorization: `Bearer ${secretKey}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            return { success: false, message: "Transaction verification failed" };
+        }
+
+        const data = await response.json();
+
+        if (data.status === true && data.data.status === 'success') {
+            const user = await prisma.user.findUnique({
+                where: { id: userId },
+            });
+
+            // Record the payment
+            await prisma.transaction.create({
+                data: {
+                    userId: userId,
+                    reference: data.data.reference,
+                    gateway: 'Paystack',
+                    name: user ? user.name : 'Unknown',
+                    email: user ? user.email : '',
+                    phone: user ? user.phone : '',
+                    currency: data.data.currency,
+                    amount: data.data.amount,
+                    first4Digits: data.data.authorization?.bin || '',
+                    last4Digits: data.data.authorization?.last4 || '',
+                    cardBrand: data.data.authorization?.brand || '',
+                    status: 'success',
+                    ipAddress: data.data.ip_address || '',
+                }
+            });
+
+            await queueCourseForAutoAssigning(userId, data.data.tx_ref);
+
+            return { success: true, message: "Transaction verified successfully" };
+        }
+
+        return { success: false, message: "Payment verification failed. Please contact WSH support if you have been charged" };
+    } catch (error) {
+        console.error("Transaction verification error:", error);
+        return { success: false, message: "Transaction verification failed" };
+    }
+}
+
+const queueCourseForAutoAssigning = async (userId: string, reference: string) => {
+    // Mark the cart as paid
+    const cart = await prisma.cart.findFirst({
+        where: { userId, isPaid: false },
+        include: { cartItems: true }
+    });
+
+    if (cart) {
+        await prisma.cart.update({
+            where: { id: cart.id },
+            data: {
+                isPaid: true,
+                transactionReference: reference,
+            }
+        });
+    }
+
+    const courseIds: string[] = [];
+
+    // Enroll the user in the purchased courses
+    await Promise.all(
+        (cart?.cartItems || []).map((item) => {
+            courseIds.push(item.courseId);
+            return prisma.student.upsert({
+                where: {
+                    userId_courseId: { userId, courseId: item.courseId }
+                },
+                update: {},
+                create: { userId, courseId: item.courseId }
+            });
+        })
+    );
+
+    if (courseIds.length > 0) { // Send event to Inngest for further processing
+        await inngest.send({
+            name: 'course-content.requested',
+            data: {
+                userId,
+                courseIds,
+            }
+        });
     }
 }

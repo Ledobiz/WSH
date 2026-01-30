@@ -11,7 +11,9 @@ import { useAuth } from "@/src/providers/AuthProvider";
 import { cartUrl, loginUrl, thankYouUrl } from "@/src/utils/url";
 import { toast } from "react-toastify";
 import ButtonLoader from "../admin/ButtonLoader";
-import { verifyTransaction } from "@/src/services/website/cart";
+import { verifyFlutterwaveTransaction, verifyPaystackTransaction } from "@/src/services/website/cart";
+import { PaystackButton } from 'react-paystack';
+import Link from "next/link";
 
 const CartPage = () => {
     const appUrl = process.env.NEXT_PUBLIC_APP_URL!;
@@ -29,9 +31,9 @@ const CartPage = () => {
         return () => {
             document.head.removeChild(script);
         }
-    });
+    }, []);
 
-    const makePayment = async () => {
+    const makePaymentWithFlutterwave = async () => {
         if (!user || user.role != 'student') {
             toast.info('Please log in to proceed to checkout');
             router.push(`${loginUrl}?return=${cartUrl}`);
@@ -64,7 +66,7 @@ const CartPage = () => {
                     logo: 'https://res.cloudinary.com/asifatkazeem/image/upload/v1766900704/mkk11iymqwpcrkvcmq7o.jpg',
                 },
                 callback: async function (payment: any) {
-                    const response = await verifyTransaction(payment.transaction_id, user.id);
+                    const response = await verifyFlutterwaveTransaction(payment.transaction_id, user.id);
 
                     modal.close();
                     setPaymentInProcess(false);
@@ -87,15 +89,38 @@ const CartPage = () => {
                     modal.close();
                 },
             });
-
-            // setTimeout(() => {
-            //     router.push(`/checkout/payment-successful?ref=${txRef}`);
-            // }, 2000);
         } else {
             toast.error('Payment gateway is not available. Please try again later.');
             setPaymentInProcess(false);
         }
     }
+
+    const paystackReference = `wsh_${new Date().getTime()}${Math.floor(Math.random() * 1000000)}`;
+    const paystackConfig = {
+        reference: paystackReference,
+        email: user?.email,
+        amount: totalFees * 100, //Amount is in the country's lowest currency. E.g Kobo, so 20000 kobo = N200
+        publicKey: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY!,
+        currency: 'NGN',
+        onSuccess: async () => {
+            const response = await verifyPaystackTransaction(paystackReference, (user?.id || ''));
+
+            if (response.success) {
+                localStorage.setItem('payments-done', 'yes');
+                toast.success('Payment successful! You have been enrolled in the course(s).');
+                router.push(thankYouUrl);
+            }
+            else {
+                toast.error(response.message || 'Payment verification failed. Please contact support.');
+            }
+        },
+        onClose: () => {
+            toast.error('Payment process was not completed. You can try again.');
+        },
+        onError: () => {
+            toast.error('Something went wrong. Payment process was not completed, you may try again.');
+        }
+    };
 
     return (
         <section>
@@ -190,16 +215,35 @@ const CartPage = () => {
                                                 Sub Total<strong>{ formatAmount(totalFees) }</strong>
                                             </li>
                                             <li>
-                                                Discount<strong>- { formatAmount(0) }</strong>
+                                                Discount<strong> { formatAmount(0) }</strong>
                                             </li>
                                         </ul>
                                         <div className="flex_cart">
                                             <div className="flex_cart_1">Total Cost</div>
                                             <div className="flex_cart_2">{ formatAmount(totalFees) }</div>
                                         </div>
-                                        {/* <button onClick={makePayment} disabled={paymentInProcess} type="button" className="btn btn-main w-100">
-                                            {paymentInProcess ? <ButtonLoader /> : 'Proceed To Checkout'}
-                                        </button> */}
+
+                                        <p className="mt-3 mb-0">Please select any of the options below to complete your payment</p>
+
+                                        <div className="d-flex gap-3 flex-wrap mt-4">
+                                            {!user || user.role != 'student' ? (
+                                                <Link href={`${loginUrl}?return=${cartUrl}`} className="btn btn-main w-100">
+                                                    {paymentInProcess ? <ButtonLoader color="#fff" /> : 'Please Login to Pay'}
+                                                </Link>
+                                            ) : (
+                                                <>
+                                                    {/* <PaystackButton {...paystackConfig} className="p-0">
+                                                        <img src={`${appUrl}/assets/img/paystack.png`} alt="Pay With Paystack" width={170} height={60} />
+                                                    </PaystackButton>
+
+                                                    <button onClick={makePaymentWithFlutterwave} disabled={paymentInProcess} type="button" style={{padding: '0', background: 'none'}}>
+                                                        {paymentInProcess ? <ButtonLoader color="#6a1b9a" /> : (
+                                                            <img src={`${appUrl}/assets/img/flutterwave.png`} alt="Pay With Flutterwave" width={170} height={60} />
+                                                        )}
+                                                    </button> */}
+                                                </>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
