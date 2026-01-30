@@ -1,6 +1,6 @@
 'use client'
 
-//import CartPage from "@/src/components/website/CartPage"
+// import CartPage from "@/src/components/website/CartPage"
 import Footer from "@/src/components/website/Footer"
 import HeroBanner from "@/src/components/website/HeroBanner"
 import Loading from "@/src/components/website/loading"

@@ -13,6 +13,7 @@
   "dependencies": {
     "@neondatabase/serverless": "^1.0.2",
     "@next/env": "^16.0.7",
+    "@paystack/inline-js": "^2.22.7",
     "@pdftron/webviewer": "^11.9.1",
     "@prisma/adapter-neon": "^7.1.0",
     "@prisma/adapter-pg": "^7.0.1",
@@ -35,7 +36,6 @@
     "react": "19.2.0",
     "react-dom": "19.2.0",
     "react-email": "^5.1.0",
-    "react-paystack": "^6.0.0",
     "react-player": "^3.4.0",
     "react-toastify": "^11.0.5",
     "resend": "^6.6.0",
@@ -47,6 +47,7 @@
     "@tailwindcss/postcss": "^4",
     "@types/bcrypt": "^6.0.0",
     "@types/node": "^20.19.25",
+    "@types/paystack__inline-js": "^1.0.2",
     "@types/pg": "^8.15.6",
     "@types/react": "^19",
     "@types/react-dom": "^19",

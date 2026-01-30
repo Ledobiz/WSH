@@ -12,14 +12,14 @@ import { cartUrl, loginUrl, thankYouUrl } from "@/src/utils/url";
 import { toast } from "react-toastify";
 import ButtonLoader from "../admin/ButtonLoader";
 import { verifyFlutterwaveTransaction, verifyPaystackTransaction } from "@/src/services/website/cart";
-import { PaystackButton } from 'react-paystack';
-import Link from "next/link";
+import Paystack from '@paystack/inline-js';
 
 const CartPage = () => {
     const appUrl = process.env.NEXT_PUBLIC_APP_URL!;
     const { cartCourses, totalFees, removeFromCart, isLoaded, clearCart } = useCart();
     const { user } = useAuth();
-    const [paymentInProcess, setPaymentInProcess] = useState(false);
+    const [flutterwavePaymentInProcess, setFlutterwavePaymentInProcess] = useState(false);
+    const [paystackPaymentInProcess, setPaystackPaymentInProcess] = useState(false);
     const router = useRouter();
 
     useEffect(() => {
@@ -40,7 +40,7 @@ const CartPage = () => {
             return;
         }
 
-        setPaymentInProcess(true);
+        setFlutterwavePaymentInProcess(true);
 
         const txRef = `wsh_${new Date().getTime()}${Math.floor(Math.random() * 1000000)}`;
 
@@ -69,7 +69,7 @@ const CartPage = () => {
                     const response = await verifyFlutterwaveTransaction(payment.transaction_id, user.id);
 
                     modal.close();
-                    setPaymentInProcess(false);
+                    setFlutterwavePaymentInProcess(false);
 
                     if (response.success) {
                         localStorage.setItem('payments-done', 'yes');
@@ -83,44 +83,60 @@ const CartPage = () => {
                 onclose: function (incomplete: boolean) {
                     if (incomplete === true) {
                         // Record event in analytics
-                        setPaymentInProcess(false);
-                        toast.error('Payment process was not completed. You can try again.');
+                        setFlutterwavePaymentInProcess(false);
+                        toast.error('Payment process was not completed. You may try again.');
                     }
                     modal.close();
                 },
             });
         } else {
             toast.error('Payment gateway is not available. Please try again later.');
-            setPaymentInProcess(false);
+            setFlutterwavePaymentInProcess(false);
         }
     }
 
-    const paystackReference = `wsh_${new Date().getTime()}${Math.floor(Math.random() * 1000000)}`;
-    const paystackConfig = {
-        reference: paystackReference,
-        email: user?.email || '',
-        amount: totalFees * 100, //Amount is in the country's lowest currency. E.g Kobo, so 20000 kobo = N200
-        publicKey: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY!,
-        currency: 'NGN',
-        onSuccess: async () => {
-            const response = await verifyPaystackTransaction(paystackReference, (user?.id || ''));
-
-            if (response.success) {
-                localStorage.setItem('payments-done', 'yes');
-                toast.success('Payment successful! You have been enrolled in the course(s).');
-                router.push(thankYouUrl);
-            }
-            else {
-                toast.error(response.message || 'Payment verification failed. Please contact support.');
-            }
-        },
-        onClose: () => {
-            toast.error('Payment process was not completed. You can try again.');
-        },
-        onError: () => {
-            toast.error('Something went wrong. Payment process was not completed, you may try again.');
+    const makePaymentWithPaystack = async () => {
+        if (!user || user.role != 'student') {
+            toast.info('Please log in to proceed to checkout');
+            router.push(`${loginUrl}?return=${cartUrl}`);
+            return;
         }
-    };
+
+        setPaystackPaymentInProcess(true);
+
+        const paystackReference = `wsh_${new Date().getTime()}${Math.floor(Math.random() * 1000000)}`;
+        
+        const paystack = new Paystack();
+        paystack.checkout({
+            key: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY!,
+            email: user.email,
+            amount: totalFees * 100,
+            onSuccess: async (transaction: any) => {
+                setPaystackPaymentInProcess(false);
+
+                const response = await verifyPaystackTransaction(paystackReference, user.id);
+                if (response.success) {
+                    localStorage.setItem('payments-done', 'yes');
+                    toast.success('Payment successful! You have been enrolled in the course(s).');
+                    router.push(thankYouUrl);
+                } else {
+                    toast.error(response.message || 'Payment verification failed. Please contact support.');
+                }
+            },
+            onLoad: (response: any) => {
+                console.log("onLoad: ", response);
+            },
+            onCancel: () => {
+                toast.error('Payment process was not completed. You may try again.');
+                setPaystackPaymentInProcess(false);
+            },
+            onError: (error: any) => {
+                console.log("Error: ", error.message);
+                toast.error('Something went wrong. Payment process was not completed, you may try again.');
+                setPaystackPaymentInProcess(false);
+            }
+        });
+    }
 
     return (
         <section>
@@ -169,7 +185,7 @@ const CartPage = () => {
                                                         {course.title}
                                                     </th>
                                                     <td>
-                                                        <span className="wish_price theme-cl">{ formatAmount(course.originalFee) }</span>
+                                                        <span className="wish_price theme-cl">{ formatAmount(course.discountedFee) }</span>
                                                     </td>
                                                     <td>
                                                         <button onClick={() => removeFromCart(course.id)} className="btn btn-remove">
@@ -226,23 +242,29 @@ const CartPage = () => {
                                         <p className="mt-3 mb-0">Please select any of the options below to complete your payment</p>
 
                                         <div className="d-flex gap-3 flex-wrap mt-4">
-                                            {!user || user.role != 'student' ? (
-                                                <Link href={`${loginUrl}?return=${cartUrl}`} className="btn btn-main w-100">
-                                                    {paymentInProcess ? <ButtonLoader color="#fff" /> : 'Please Login to Pay'}
-                                                </Link>
-                                            ) : (
-                                                <>
-                                                    {/* <PaystackButton {...paystackConfig} className="p-0">
-                                                        <img src={`${appUrl}/assets/img/paystack.png`} alt="Pay With Paystack" width={170} height={60} />
-                                                    </PaystackButton>
+                                            {/* <button 
+                                                onClick={makePaymentWithPaystack} 
+                                                disabled={paystackPaymentInProcess} 
+                                                type="button" 
+                                                className={paystackPaymentInProcess ? 'btn btn-main' : ''}
+                                                style={paystackPaymentInProcess ? {} : { padding: '0', background: 'none' }}
+                                            >
+                                                {paystackPaymentInProcess ? <ButtonLoader color="#6a1b9a" /> : (
+                                                    <img src={`${appUrl}/assets/img/paystack.png`} alt="Pay With Paystack" width={170} height={60} />
+                                                )}
+                                            </button>
 
-                                                    <button onClick={makePaymentWithFlutterwave} disabled={paymentInProcess} type="button" style={{padding: '0', background: 'none'}}>
-                                                        {paymentInProcess ? <ButtonLoader color="#6a1b9a" /> : (
-                                                            <img src={`${appUrl}/assets/img/flutterwave.png`} alt="Pay With Flutterwave" width={170} height={60} />
-                                                        )}
-                                                    </button> */}
-                                                </>
-                                            )}
+                                            <button 
+                                                onClick={makePaymentWithFlutterwave} 
+                                                disabled={flutterwavePaymentInProcess} 
+                                                type="button" 
+                                                className={flutterwavePaymentInProcess ? 'btn btn-main' : ''}
+                                                style={flutterwavePaymentInProcess ? {} : { padding: '0', background: 'none' }}
+                                            >
+                                                {flutterwavePaymentInProcess ? <ButtonLoader color="#6a1b9a" /> : (
+                                                    <img src={`${appUrl}/assets/img/flutterwave.png`} alt="Pay With Flutterwave" width={170} height={60} />
+                                                )}
+                                            </button> */}
                                         </div>
                                     </div>
                                 </div>
