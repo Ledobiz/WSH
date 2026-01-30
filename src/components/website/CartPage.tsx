@@ -98,7 +98,7 @@ const CartPage = () => {
     const paystackReference = `wsh_${new Date().getTime()}${Math.floor(Math.random() * 1000000)}`;
     const paystackConfig = {
         reference: paystackReference,
-        email: user?.email,
+        email: user?.email || '',
         amount: totalFees * 100, //Amount is in the country's lowest currency. E.g Kobo, so 20000 kobo = N200
         publicKey: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY!,
         currency: 'NGN',
@@ -232,11 +232,11 @@ const CartPage = () => {
                                                 </Link>
                                             ) : (
                                                 <>
-                                                    <PaystackButton {...paystackConfig} className="p-0">
+                                                    {/* <PaystackButton {...paystackConfig} className="p-0">
                                                         <img src={`${appUrl}/assets/img/paystack.png`} alt="Pay With Paystack" width={170} height={60} />
                                                     </PaystackButton>
 
-                                                    {/* <button onClick={makePaymentWithFlutterwave} disabled={paymentInProcess} type="button" style={{padding: '0', background: 'none'}}>
+                                                    <button onClick={makePaymentWithFlutterwave} disabled={paymentInProcess} type="button" style={{padding: '0', background: 'none'}}>
                                                         {paymentInProcess ? <ButtonLoader color="#6a1b9a" /> : (
                                                             <img src={`${appUrl}/assets/img/flutterwave.png`} alt="Pay With Flutterwave" width={170} height={60} />
                                                         )}

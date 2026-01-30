@@ -62,7 +62,10 @@ const LectureContentSidebar = ({
                                             className={`lesson-item p-3 mb-2 rounded-3 ${activeModuleId && activeComponentId && module.id === activeModuleId && component.id === activeComponentId ? styles.activeLesson : ''}`}
                                             role="button"
                                             tabIndex={0}
-                                            onClick={() => onSelectLecture?.(module.id, component.id)}
+                                            onClick={() => {
+                                                onSelectLecture?.(module.id, component.id);
+                                                window.scrollTo({ top: 0, behavior: 'smooth' });
+                                            }}
                                             onKeyDown={(e) => {
                                                 if (e.key === 'Enter' || e.key === ' ') {
                                                     e.preventDefault();

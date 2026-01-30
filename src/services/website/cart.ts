@@ -1,5 +1,6 @@
 'use server'
 
+import error from "@/src/app/error";
 import { inngest } from "@/src/inngest/client";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -227,6 +228,10 @@ export const verifyFlutterwaveTransaction = async (paymentId: string, userId: st
 }
 
 export const verifyPaystackTransaction = async (reference: string, userId: string) => {
+    if (!reference || !userId) {
+        return { success: false, message: "Transaction verification failed" };
+    }
+
     try {
         const secretKey = process.env.PAYSTACK_SECRET_KEY!;
         const response = await fetch('https://api.paystack.co/transaction/verify/' + reference, {

@@ -557,12 +557,12 @@ const CourseLecturePage = ({ courseId }: { courseId: string }) => {
                         </div>
                     </div>
                     
-                    <div className="card shadow-sm border rounded-4 p-4 mt-4">
+                     {/* <div className="card shadow-sm border rounded-4 p-4 mt-4">
                         <h3 className="fw-bold mb-3">About This Course</h3>
                         <div dangerouslySetInnerHTML={{ __html: course?.description ?? '' }}
                             className="text-secondary mb-4"
                         />
-                    </div>
+                    </div> */}
                 </div>
 
                 <LectureContentSidebar

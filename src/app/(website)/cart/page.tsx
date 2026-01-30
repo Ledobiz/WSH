@@ -1,15 +1,20 @@
-import CartPage from "@/src/components/website/CartPage"
+'use client'
+
+//import CartPage from "@/src/components/website/CartPage"
 import Footer from "@/src/components/website/Footer"
 import HeroBanner from "@/src/components/website/HeroBanner"
 import Loading from "@/src/components/website/loading"
 import Navbar from "@/src/components/website/Navbar"
-import { Metadata } from "next"
+// import { Metadata } from "next"
 import { Suspense } from "react"
+import dynamic from 'next/dynamic';
 
-export const metadata: Metadata = {
+const CartPage = dynamic(() => import('@/src/components/website/CartPage'), { ssr: false });
+
+/*export const metadata: Metadata = {
     title: "Cart - Women Skills Hub",
     description: "The home for upskilling for financial independence"
-};
+};*/
 
 const Cart = () => {
     return (
@@ -25,4 +30,5 @@ const Cart = () => {
         </Suspense>
     )
 }
+
 export default Cart

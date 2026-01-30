@@ -12,6 +12,7 @@ import ButtonLoader from "../ButtonLoader";
 import { toast } from "react-toastify";
 import ConfirmationModal from "../../ConfirmationModal";
 import { giveStudentNewlyAvailableLectureContents } from "@/src/services/student/course";
+import { adminStudentsUrl } from "@/src/utils/url";
 
 const lecturesCompleted = (course: any): number => {
     if (!course.studentModules) return 0;
@@ -112,7 +113,10 @@ const StudentCoursePage = ({userId}: {userId: string}) => {
     return (
         <>
             <div className="col-lg-9 col-md-12 col-sm-12">
-                <NavBreadcrumb page="Student Courses" />
+                <NavBreadcrumb 
+                    page="Student Courses"
+                    back={adminStudentsUrl}
+                />
                 
                 <div className="row">
                     <div className="col-lg-12 col-md-12 col-sm-12">
