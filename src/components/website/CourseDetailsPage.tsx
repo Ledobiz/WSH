@@ -7,6 +7,7 @@ import { useState } from "react";
 import CustomModal from "@/src/components/admin/CustomModal";
 import { useCart } from "@/src/providers/CartProvider";
 import { cartUrl } from "@/src/utils/url";
+import Link from "next/link";
 
 const CourseDetailsPage = ({course}: {course: DBCourseInterface}) => {
     const [showPreviewModal, setShowPreviewModal] = useState(false);
@@ -352,10 +353,10 @@ const CourseDetailsPage = ({course}: {course: DBCourseInterface}) => {
                                                     <i className="bi bi-trash me-2" />
                                                     Remove From Cart
                                                 </button>
-                                                <a href={cartUrl} className="btn btn-gray w-100 rounded-pill">
+                                                <Link href={cartUrl} className="btn btn-gray w-100 rounded-pill">
                                                     <i className="bi bi-basket2 me-2" />
                                                     Go To Cart
-                                                </a>
+                                                </Link>
                                             </>
                                         ) : (
                                             <button onClick={() => addToCart(course)} className="btn btn-gray rounded-pill w-100">

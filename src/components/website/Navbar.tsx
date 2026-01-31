@@ -30,6 +30,14 @@ const links = [
         uri: "/cart",
         label: "Cart"
     },
+    {
+        uri: loginUrl,
+        label: "Login"
+    },
+    {
+        uri: registerUrl,
+        label: "Register"
+    },
 ];
 
 const Navbar = () => {
@@ -64,13 +72,15 @@ const Navbar = () => {
                             <ul className="nav-menu">
                                 {
                                     links.map((link) => (
-                                        <li key={link.label} className={pathName === link.uri ? 'active' : ''}>
-                                            <Link href={ link.uri }>{ link.label }</Link>
+                                        <li key={link.label}>
+                                            <Link href={ link.uri }
+                                                className={[loginUrl, registerUrl].includes(link.uri) ? 'd-inline-block d-lg-none' : ''}
+                                            >{ link.label }</Link>
                                         </li>
                                     ))
                                 }
                             </ul>
-                            <ul className="nav-menu nav-menu-social align-to-right">
+                            <ul className="nav-menu nav-menu-social align-to-right d-none d-lg-block">
                                 <li className="become-tutor light">
                                     <Link href={registerUrl}>
                                         <i className="bi bi-person-circle" />

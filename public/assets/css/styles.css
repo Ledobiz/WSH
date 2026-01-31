@@ -5882,7 +5882,7 @@ ul.lectures_lists li:last-child{
     margin-right:5px;
 }
 ul.lectures_lists li:before {
-    content:"\f33e";
+    /*content:"\f33e";
     width: 30px;
     height: 30px;
 	font-weight:400;
@@ -5894,7 +5894,7 @@ ul.lectures_lists li:before {
     display: flex;
     align-items: center;
     justify-content: center;
-    color:var(--greencolor);
+    color:var(--greencolor);*/
 }
 ul.lectures_lists li.unview:before {
     content:"\f537";

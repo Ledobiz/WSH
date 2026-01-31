@@ -44,6 +44,9 @@ const Footer = () => {
                                     <h4 className="widget-title">Navigations</h4>
                                     <ul className="footer-menu">
                                         <li>
+                                            <Link href="/">Home</Link>
+                                        </li>
+                                        <li>
                                             <Link href={aboutUsUrl}>About Us</Link>
                                         </li>
                                         <li>
