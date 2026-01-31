@@ -252,7 +252,7 @@ const CartPage = () => {
                                                 {paystackPaymentInProcess ? <ButtonLoader color="#6a1b9a" /> : (
                                                     <img src={`${appUrl}/assets/img/paystack.png`} alt="Pay With Paystack" width={170} height={60} />
                                                 )}
-                                            </button>
+                                            </button> */}
 
                                             <button 
                                                 onClick={makePaymentWithFlutterwave} 
@@ -264,7 +264,7 @@ const CartPage = () => {
                                                 {flutterwavePaymentInProcess ? <ButtonLoader color="#6a1b9a" /> : (
                                                     <img src={`${appUrl}/assets/img/flutterwave.png`} alt="Pay With Flutterwave" width={170} height={60} />
                                                 )}
-                                            </button> */}
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
