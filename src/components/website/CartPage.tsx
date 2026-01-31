@@ -50,7 +50,7 @@ const CartPage = () => {
                 tx_ref: txRef,
                 amount: totalFees,
                 currency: 'NGN',
-                payment_options: 'card, ussd, banktransfer, opay, applepay, googlepay',
+                payment_options: 'card, ussd, banktransfer, opay, mobilemoneyghana, mobilemoneyuganda, mobilemoneyrwanda, mobilemoneyzambia',
                 meta: {
                     consumer_id: user.id,
                     consumer_email: user.email,
