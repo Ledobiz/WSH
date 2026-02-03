@@ -13,8 +13,9 @@ import { toast } from "react-toastify";
 import ConfirmationModal from "../../ConfirmationModal";
 import { giveStudentNewlyAvailableLectureContents } from "@/src/services/student/course";
 import { adminStudentsUrl } from "@/src/utils/url";
+import { courseProgress } from "@/src/utils/server_functions";
 
-const lecturesCompleted = (course: any): number => {
+const totalLectures = (course: any): number => {
     if (!course.studentModules) return 0;
     return course.studentModules.reduce((total: number, module: any) => {
         return total + (module.studentModuleComponents?.length || 0);
@@ -31,6 +32,7 @@ const StudentCoursePage = ({userId}: {userId: string}) => {
     const [processing, setProcessing] = useState<boolean>(false);
     const [courseId, setCourseId] = useState<string>('');
     const [showConfirmationModal, setShowConfirmationModal] = useState<boolean>(false);
+    const [lectureProgressData, setLectureProgressData] = useState<Record<string, number>>({});
 
     useEffect(() => {
         const fetchCourses = async () => {
@@ -40,6 +42,15 @@ const StudentCoursePage = ({userId}: {userId: string}) => {
                 const response = await getStudentCourses(userId);
                 setCourses(response.courses);
                 setOtherCourses(response.otherCourses);
+
+                const progress: Record<string, number> = {};
+
+                for (const course of response.courses ?? []) {
+                    const lectureProgress = await courseProgress(userId, course.course.id);
+                    
+                    progress[course.course.id] = lectureProgress.lecturesCompleted;
+                }
+                setLectureProgressData(progress);
             } catch (error) {
                 console.error("Error fetching student courses:", error);
             } finally {
@@ -49,6 +60,17 @@ const StudentCoursePage = ({userId}: {userId: string}) => {
 
         fetchCourses();
     }, [userId])
+
+    const processCourseProgress = async (courses: any[]) => {
+        const progress: Record<string, number> = {};
+
+        for (const course of courses ?? []) {
+            const lectureProgress = await courseProgress(userId, course.course.id);
+            
+            progress[course.course.id] = lectureProgress.lecturesCompleted;
+        }
+        setLectureProgressData(progress);
+    }
 
     const handleCourseAssigning = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -71,6 +93,8 @@ const StudentCoursePage = ({userId}: {userId: string}) => {
             setOtherCourses(response.otherCourses);
             setShowAssignCourseModal(false);
             setCourseId('');
+
+            await processCourseProgress(response.courses);
         } catch (error) {
             console.error("Error assigning course to student:", error);
         } finally {
@@ -96,6 +120,8 @@ const StudentCoursePage = ({userId}: {userId: string}) => {
                 setCourses(result.courses);
                 setOtherCourses(result.otherCourses);
                 setCourseId('');
+                
+                await processCourseProgress(result.courses);
             } else {
                 toast.error(response.message);
             }
@@ -155,6 +181,9 @@ const StudentCoursePage = ({userId}: {userId: string}) => {
                                                                 Total Lectures
                                                             </th>
                                                             <th scope="col" className="border-0">
+                                                                Lectures Completed
+                                                            </th>
+                                                            <th scope="col" className="border-0">
                                                                 Enrolment Date
                                                             </th>
                                                             <th scope="col" className="border-0">
@@ -176,14 +205,17 @@ const StudentCoursePage = ({userId}: {userId: string}) => {
                                                                     </div>
                                                                 </td>
                                                                 <td>
-                                                                    <span className="ms-2">{ lecturesCompleted(course) }</span>
+                                                                    <span className="ms-2">{ totalLectures(course) }</span>
+                                                                </td>
+                                                                <td>
+                                                                    <span className="ms-2">{ lectureProgressData[course.course.id] }</span>
                                                                 </td>
                                                                 <td>
                                                                     <span className="ms-2">{ formatDateAndTime(course.createdAt) }</span>
                                                                 </td>
                                                                 <td>
-                                                                    <span className={`badge bg-opacity-10 ${course.lecturesCompleted ? 'bg-success text-success' : 'bg-danger text-danger'}`}>
-                                                                        {course.lecturesCompleted ? 'Completed' : 'In Progress'}
+                                                                    <span className={`badge bg-opacity-10 ${totalLectures(course) > 0 && lectureProgressData[course.course.id] == totalLectures(course) ? 'bg-success text-success' : 'bg-danger text-danger'}`}>
+                                                                        {totalLectures(course) > 0 && lectureProgressData[course.course.id] == totalLectures(course) ? 'Completed' : 'In Progress'}
                                                                     </span>
                                                                 </td>
                                                                 <td>
