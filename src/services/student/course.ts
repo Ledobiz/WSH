@@ -808,6 +808,80 @@ export const giveStudentNewlyAvailableLectureContents = async (userId: string, c
     }
 }
 
+export const removeStudentFromCourse = async (userId: string, courseId: string) => {
+    try {
+        const student = await prisma.student.findFirst({
+            where: {
+                userId,
+                courseId,
+                deletedAt: null
+            }
+        });
+
+        if (!student) {
+            console.log(`Student with User ID ${userId} is not enrolled in course with ID ${courseId}.`);
+            return {
+                success: false,
+                message: 'Student not found for the given course.'
+            };
+        }
+
+        await prisma.$transaction(async (tx) => {
+            // Delete the student modules and their associated module components and lecture records
+            const studentModules = await tx.studentModule.findMany({
+                where: {
+                    studentId: student.id,
+                    deletedAt: null
+                }
+            });
+
+            for (const courseModule of studentModules) {
+                // Delete associated lecture records
+                await tx.studentLectureRecord.deleteMany({
+                    where: {
+                        studentModuleId: courseModule.id
+                    }
+                });
+
+                // Delete associated student module components
+                await tx.studentModuleComponent.deleteMany({
+                    where: {
+                        studentModuleId: courseModule.id
+                    }
+                });
+            }
+
+            // Delete student modules
+            await tx.studentModule.deleteMany({
+                where: {
+                    studentId: student.id
+                }
+            });
+
+            await tx.studentReview.deleteMany({
+                where: {
+                    studentId: student.id
+                }
+            });
+
+            await tx.student.delete({
+                where: { id: student.id }
+            });
+        }, { timeout: 180000, maxWait: 180000 }); // 3 minutes timeout, 3 minutes max wait
+
+        return {
+            success: true,
+            message: 'Student has been removed from the course successfully.'
+        };
+    } catch (error) {
+        console.log('Error removing student from course:', error);
+        return {
+            success: false,
+            message: 'Failed to remove student from the course. Please try again.'
+        };
+    }
+}
+
 const lectureModuleComponent = async (studentModuleId: string) => {
     return await prisma.$queryRaw(Prisma.sql`
         SELECT smc.*, slr."id" AS "lectureRecordId", slr."status" AS "lectureStatus"

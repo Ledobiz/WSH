@@ -61,7 +61,7 @@ const ConfirmationModal = ({
                 </>
             )}
 
-            {isForDelete && <div className="alert alert-danger py-2 small mb-4">
+            {isForDelete && <div className="alert alert-danger py-2 small mb-4 text-center">
                 All related data will be permanently removed.
             </div>}
 

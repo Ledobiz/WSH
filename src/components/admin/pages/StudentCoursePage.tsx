@@ -11,16 +11,9 @@ import CustomModal from "../CustomModal";
 import ButtonLoader from "../ButtonLoader";
 import { toast } from "react-toastify";
 import ConfirmationModal from "../../ConfirmationModal";
-import { giveStudentNewlyAvailableLectureContents } from "@/src/services/student/course";
+import { giveStudentNewlyAvailableLectureContents, removeStudentFromCourse } from "@/src/services/student/course";
 import { adminStudentsUrl } from "@/src/utils/url";
 import { courseProgress } from "@/src/utils/server_functions";
-
-const totalLectures = (course: any): number => {
-    if (!course.studentModules) return 0;
-    return course.studentModules.reduce((total: number, module: any) => {
-        return total + (module.studentModuleComponents?.length || 0);
-    }, 0);
-};
 
 const StudentCoursePage = ({userId}: {userId: string}) => {
     const appUrl = process.env.NEXT_PUBLIC_APP_URL;
@@ -33,6 +26,8 @@ const StudentCoursePage = ({userId}: {userId: string}) => {
     const [courseId, setCourseId] = useState<string>('');
     const [showConfirmationModal, setShowConfirmationModal] = useState<boolean>(false);
     const [lectureProgressData, setLectureProgressData] = useState<Record<string, number>>({});
+    const [lectureCountData, setLectureCountData] = useState<Record<string, number>>({});
+    const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
 
     useEffect(() => {
         const fetchCourses = async () => {
@@ -44,13 +39,16 @@ const StudentCoursePage = ({userId}: {userId: string}) => {
                 setOtherCourses(response.otherCourses);
 
                 const progress: Record<string, number> = {};
+                const lectureCounts: Record<string, number> = {};
 
                 for (const course of response.courses ?? []) {
                     const lectureProgress = await courseProgress(userId, course.course.id);
                     
                     progress[course.course.id] = lectureProgress.lecturesCompleted;
+                    lectureCounts[course.course.id] = lectureProgress.totalLectures;
                 }
                 setLectureProgressData(progress);
+                setLectureCountData(lectureCounts);
             } catch (error) {
                 console.error("Error fetching student courses:", error);
             } finally {
@@ -63,13 +61,16 @@ const StudentCoursePage = ({userId}: {userId: string}) => {
 
     const processCourseProgress = async (courses: any[]) => {
         const progress: Record<string, number> = {};
+        const lectureCounts: Record<string, number> = {};
 
         for (const course of courses ?? []) {
             const lectureProgress = await courseProgress(userId, course.course.id);
             
             progress[course.course.id] = lectureProgress.lecturesCompleted;
+            lectureCounts[course.course.id] = lectureProgress.totalLectures;
         }
         setLectureProgressData(progress);
+        setLectureCountData(lectureCounts);
     }
 
     const handleCourseAssigning = async (e: React.FormEvent) => {
@@ -107,6 +108,11 @@ const StudentCoursePage = ({userId}: {userId: string}) => {
         setShowConfirmationModal(true);
     }
 
+    const handleDeleteModal = (courseId: string) => {
+        setCourseId(courseId);
+        setShowDeleteModal(true);
+    }
+
     const handleCourseUpdateForStudent = async () => {
         if (!courseId || !userId) return;
 
@@ -133,6 +139,35 @@ const StudentCoursePage = ({userId}: {userId: string}) => {
         finally {
             setCourseId('');
             setShowConfirmationModal(false);
+        }
+    }
+
+    const handleStudentRemovalFromCourse = async () => {
+        if (!courseId || !userId) return;
+
+        try {
+            const response = await removeStudentFromCourse(userId, courseId);
+            if (response.success) {
+                toast.success(response.message);
+
+                // After successful assignment, you might want to refresh the course list
+                const result = await getStudentCourses(userId);
+                setCourses(result.courses);
+                setOtherCourses(result.otherCourses);
+                setCourseId('');
+                
+                await processCourseProgress(result.courses);
+            } else {
+                toast.error(response.message);
+            }
+        }
+        catch (error) {
+            console.log("Error removing student from course:", error);
+            toast.error("Failed to remove the student from this course. Please try again.");
+        }
+        finally {
+            setCourseId('');
+            setShowDeleteModal(false);
         }
     }
 
@@ -205,7 +240,7 @@ const StudentCoursePage = ({userId}: {userId: string}) => {
                                                                     </div>
                                                                 </td>
                                                                 <td>
-                                                                    <span className="ms-2">{ totalLectures(course) }</span>
+                                                                    <span className="ms-2">{ lectureCountData[course.course.id] }</span>
                                                                 </td>
                                                                 <td>
                                                                     <span className="ms-2">{ lectureProgressData[course.course.id] }</span>
@@ -214,8 +249,8 @@ const StudentCoursePage = ({userId}: {userId: string}) => {
                                                                     <span className="ms-2">{ formatDateAndTime(course.createdAt) }</span>
                                                                 </td>
                                                                 <td>
-                                                                    <span className={`badge bg-opacity-10 ${totalLectures(course) > 0 && lectureProgressData[course.course.id] == totalLectures(course) ? 'bg-success text-success' : 'bg-danger text-danger'}`}>
-                                                                        {totalLectures(course) > 0 && lectureProgressData[course.course.id] == totalLectures(course) ? 'Completed' : 'In Progress'}
+                                                                    <span className={`badge bg-opacity-10 ${lectureCountData[course.course.id] > 0 && lectureProgressData[course.course.id] == lectureCountData[course.course.id] ? 'bg-success text-success' : 'bg-danger text-danger'}`}>
+                                                                        {lectureCountData[course.course.id] > 0 && lectureProgressData[course.course.id] == lectureCountData[course.course.id] ? 'Completed' : 'In Progress'}
                                                                     </span>
                                                                 </td>
                                                                 <td>
@@ -225,6 +260,13 @@ const StudentCoursePage = ({userId}: {userId: string}) => {
                                                                         title="Update Student Course"
                                                                     >
                                                                         <i className="bi bi-arrow-clockwise" />
+                                                                    </button>
+                                                                    <button
+                                                                        className="btn btn-sm btn-danger me-1 mb-0"
+                                                                        onClick={() => handleDeleteModal(course.course.id)}
+                                                                        title="Remove Student from Course"
+                                                                    >
+                                                                        <i className="bi bi-trash" />
                                                                     </button>
                                                                 </td>
                                                             </tr>
@@ -277,6 +319,14 @@ const StudentCoursePage = ({userId}: {userId: string}) => {
                 isForDelete={false}
                 onClose={() => setShowConfirmationModal(false)}
                 onConfirm={handleCourseUpdateForStudent}
+            />
+
+            <ConfirmationModal 
+                text='⚠️ Are you sure you want to remove this student from this course?'
+                isOpen={showDeleteModal}
+                isForDelete={true}
+                onClose={() => setShowDeleteModal(false)}
+                onConfirm={handleStudentRemovalFromCourse}
             />
         </>
     )
