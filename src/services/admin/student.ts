@@ -5,6 +5,8 @@
 import prisma from "@/src/lib/prisma";
 import { paginateQuery } from "@/src/utils/pagination";
 import { inngest } from "@/src/inngest/client";
+import { removeStudentFromCourse, giveStudentNewlyAvailableLectureContents } from "@/src/services/student/course";
+import { courseProgress } from "@/src/utils/server_functions";
 
 export const getAllStudents = async (page: number = 1, pageSize: number = 20, searchTerm?: string) => {
     try {
@@ -287,5 +289,214 @@ export const markAsReviewedWithoutApproval = async (reviewId: string) => {
             success: false,
             message: "Failed to mark review as reviewed. Please try again",
         }
+    }
+}
+
+export const getCourseStudents = async (courseId: string, page: number = 1, pageSize: number = 20, searchTerm?: string) => {
+    try {
+        const search = searchTerm?.trim();
+
+        const result = await paginateQuery<any>({
+            page,
+            pageSize,
+            dataQuery: ({ skip, take }) => prisma.student.findMany({
+                where: {
+                    courseId,
+                    deletedAt: null,
+                    ...(search
+                        ? {
+                            user: {
+                                OR: [
+                                    { name: { contains: search, mode: 'insensitive' } },
+                                    { email: { contains: search, mode: 'insensitive' } },
+                                ]
+                            }
+                        }
+                        : {}
+                    ),
+                },
+                orderBy: {
+                    createdAt: 'desc'
+                },
+                skip,
+                take,
+                include: {
+                    user: {
+                        select: {
+                            id: true,
+                            name: true,
+                            email: true,
+                            gender: true,
+                            country: true,
+                            city: true,
+                            state: true,
+                            phone: true,
+                            createdAt: true,
+                        }
+                    },
+                    course: {
+                        select: {
+                            id: true,
+                            title: true,
+                        }
+                    }
+                }
+            }),
+            countQuery: () => prisma.student.count({
+                where: {
+                    courseId,
+                    deletedAt: null,
+                    ...(search
+                        ? {
+                            user: {
+                                OR: [
+                                    { name: { contains: search, mode: 'insensitive' } },
+                                    { email: { contains: search, mode: 'insensitive' } },
+                                ]
+                            }
+                        }
+                        : {}
+                    ),
+                }
+            })
+        });
+
+        // Add lecture progress for each student
+        if (result.success && result.data) {
+            const studentsWithProgress = await Promise.all(
+                (result.data as any[]).map(async (student) => {
+                    const progress = await courseProgress(student.userId, courseId);
+                    return {
+                        ...student,
+                        lecturesCompleted: progress.lecturesCompleted,
+                        totalLectures: progress.totalLectures,
+                    };
+                })
+            );
+
+            return {
+                ...result,
+                data: studentsWithProgress,
+            };
+        }
+
+        return result;
+    } catch (error) {
+        console.log("Error fetching course students:", error);
+        return {
+            success: false,
+            message: 'Failed to fetch students',
+            data: [],
+            pagination: {
+                totalCount: 0,
+                totalPages: 0,
+                currentPage: page,
+                pageSize: pageSize,
+            },
+        };
+    }
+}
+
+export const bulkRemoveStudentsFromCourse = async (courseId: string, studentIds: string[]) => {
+    try {
+        if (!studentIds || studentIds.length === 0) {
+            return {
+                success: false,
+                message: "No students selected",
+            };
+        }
+
+        // Verify all students belong to this course
+        const students = await prisma.student.findMany({
+            where: {
+                id: { in: studentIds },
+                courseId,
+                deletedAt: null
+            }
+        });
+
+        if (students.length !== studentIds.length) {
+            return {
+                success: false,
+                message: "Some selected students are not enrolled in this course",
+            };
+        }
+
+        // Use the existing removeStudentFromCourse logic for each student
+        const results = await Promise.allSettled(
+            students.map(student => removeStudentFromCourse(student.userId, courseId))
+        );
+
+        const failed = results.filter(r => r.status === 'rejected' || (r.status === 'fulfilled' && !r.value.success));
+        
+        if (failed.length > 0) {
+            return {
+                success: false,
+                message: `Failed to remove ${failed.length} student(s) from the course`,
+            };
+        }
+
+        return {
+            success: true,
+            message: `Successfully removed ${students.length} student(s) from the course`,
+        };
+    } catch (error) {
+        console.log("Error bulk removing students from course:", error);
+        return {
+            success: false,
+            message: "Failed to remove students from course. Please try again",
+        };
+    }
+}
+
+export const bulkUpdateStudentLectures = async (courseId: string, studentIds: string[]) => {
+    try {
+        if (!studentIds || studentIds.length === 0) {
+            return {
+                success: false,
+                message: "No students selected",
+            };
+        }
+
+        // Verify all students belong to this course
+        const students = await prisma.student.findMany({
+            where: {
+                id: { in: studentIds },
+                courseId,
+                deletedAt: null
+            }
+        });
+
+        if (students.length !== studentIds.length) {
+            return {
+                success: false,
+                message: "Some selected students are not enrolled in this course",
+            };
+        }
+
+        // Update lecture contents for each student
+        const results = await Promise.allSettled(
+            students.map(student => giveStudentNewlyAvailableLectureContents(student.userId, courseId))
+        );
+
+        const failed = results.filter(r => r.status === 'rejected' || (r.status === 'fulfilled' && !r.value.success));
+        
+        if (failed.length > 0) {
+            return {
+                success: false,
+                message: `Failed to update lectures for ${failed.length} student(s)`,
+            };
+        }
+
+        return {
+            success: true,
+            message: `Successfully updated lectures for ${students.length} student(s)`,
+        };
+    } catch (error) {
+        console.log("Error bulk updating student lectures:", error);
+        return {
+            success: false,
+            message: "Failed to update student lectures. Please try again",
+        };
     }
 }

@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 import { Prisma } from "@prisma/client";
 import PageLoader from "@/src/components/website/PageLoader";
 import Link from "next/link";
-import { courseModules, coursesUrl } from "@/src/utils/url";
+import { courseModules, coursesUrl, courseStudentsUrl } from "@/src/utils/url";
 import { formatAmount } from "@/src/utils/client_functions";
 import CustomModal from "../CustomModal";
 import CourseCreationForm from "../CourseCreationForm";
@@ -190,6 +190,7 @@ const CoursesPage = () => {
 
             if (!deleted.success) {
                 toast.error(deleted.message);
+                return;
             }
 
             setShowDeleteModal(false);
@@ -332,6 +333,13 @@ const CoursesPage = () => {
                                                                         title="Manage Modules"
                                                                     >
                                                                         <i className="bi bi-table" />
+                                                                    </Link>
+                                                                    <Link 
+                                                                        href={`${courseStudentsUrl}/${course.id}`} 
+                                                                        className="btn btn-sm btn-primary me-1 mb-0"
+                                                                        title="View Students"
+                                                                    >
+                                                                        <i className="bi bi-people" />
                                                                     </Link>
                                                                     <button onClick={() => handleDeleteModal(course.id)} className="btn btn-sm btn-light-red mb-0">
                                                                         <i className="bi bi-trash3" />

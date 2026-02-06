@@ -27,6 +27,7 @@ export const adminStudentsUrl = '/admin/students'
 export const adminReviewssUrl = '/admin/reviews'
 export const moduleComponentUrl = '/admin/module-components'
 export const componentPreviewUrl = '/admin/courses/component/preview'
+export const courseStudentsUrl = '/admin/courses/students'
 
 // Authentication Routes
 export const loginUrl = '/sign-in'

@@ -287,6 +287,21 @@ export const deleteCourse = async (id: string) => {
             }
         }
 
+        // Check if course has any enrolled students
+        const studentCount = await prisma.student.count({
+            where: {
+                courseId: id,
+                deletedAt: null
+            }
+        });
+
+        if (studentCount > 0) {
+            return {
+                success: false,
+                message: `Cannot delete course. There are ${studentCount} student(s) enrolled in this course. Please remove all students before deleting the course.`,
+            }
+        }
+
         /*const thumbnailPublicId = course.thumbnailPublicId;
         const bannerPublicId = course.bannerPublicId;*/
 
