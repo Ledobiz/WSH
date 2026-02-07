@@ -4,6 +4,8 @@ import { AuthProvider } from "@/src/providers/AuthProvider";
 import { ToastContainer } from 'react-toastify';
 import { SidebarProvider } from "@/src/providers/StudentSidebarProvider";
 import { CartProvider } from "../providers/CartProvider";
+import FacebookPixel from "../components/Metadata/FacebookPixel";
+import TiktokPixel from "../components/Metadata/TiktokPixel";
 
 export default function RootLayout({
   children,
@@ -20,7 +22,7 @@ export default function RootLayout({
         <link href={`${appUrl}/assets/css/styles.css`} rel="stylesheet" />
         <link href={`${appUrl}/assets/css/colors.css`} rel="stylesheet" />
         <link rel="icon" type="image/svg+xml" href={`${appUrl}/assets/img/wsh-logo-light.jpeg`}></link>
-        <title>Student Dashboard - Women Skills Hub</title>
+        <title>Women Skills Hub</title>
       </head>
       <body className="red-skin">
         <AuthProvider>
@@ -31,6 +33,9 @@ export default function RootLayout({
           </CartProvider>
         </AuthProvider>
         <ToastContainer style={{padding: 0}} className="p-0 m-0" />
+
+        <FacebookPixel />
+        <TiktokPixel />
 
         <Script src={`${appUrl}/assets/js/jquery.min.js`}></Script>
         <Script src={`${appUrl}/assets/js/popper.min.js`}></Script>
