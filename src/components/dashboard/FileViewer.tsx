@@ -4,8 +4,8 @@ const FileViewer = ({fileUrl}: {fileUrl: string}) => {
     return (
         <RPConfig>
             <RPProvider src={fileUrl}>
-                <RPDefaultLayout style={{ height: '600px' }}>
-                <RPPages />
+                <RPDefaultLayout style={{ height: '600px', width: '100%' }}>
+                    <RPPages />
                 </RPDefaultLayout>
             </RPProvider>
         </RPConfig>
