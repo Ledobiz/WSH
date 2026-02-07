@@ -9,7 +9,7 @@ import { paginate } from "@/src/utils/pagination";
 import { Course } from "@prisma/client";
 
 export const fetchAllCourses = async (page: number = 1, pageSize: number = 20, searchTerm?: string) => {
-    return await paginate<Course>(prisma.course, {
+    const result = await paginate<Course>(prisma.course, {
         page,
         pageSize,
         search: searchTerm,
@@ -31,6 +31,34 @@ export const fetchAllCourses = async (page: number = 1, pageSize: number = 20, s
             }
         },
     });
+
+    if (!result.success || !result.data?.length) {
+        return result;
+    }
+
+    const courseIds = result.data.map((c) => c.id);
+    const enrolledCounts = await prisma.student.groupBy({
+        by: ['courseId'],
+        where: {
+            courseId: { in: courseIds },
+            deletedAt: null,
+        },
+        _count: { id: true },
+    });
+
+    const countByCourseId = Object.fromEntries(
+        enrolledCounts.map((row) => [row.courseId, row._count.id])
+    );
+
+    const dataWithEnrolled = result.data.map((course) => ({
+        ...course,
+        enrolledCount: countByCourseId[course.id] ?? 0,
+    }));
+
+    return {
+        ...result,
+        data: dataWithEnrolled,
+    };
 }
 
 export const fetchActiveCourses = async () => {

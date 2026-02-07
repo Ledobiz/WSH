@@ -4,7 +4,9 @@ const FileViewer = ({fileUrl}: {fileUrl: string}) => {
     return (
         <RPConfig>
             <RPProvider src={fileUrl}>
-                <RPDefaultLayout style={{ height: '600px', width: '100%' }}>
+                <RPDefaultLayout style={{ height: '600px', width: '100%' }}
+                    //slots={{ downloadTool: false, printTool: false }}
+                >
                     <RPPages />
                 </RPDefaultLayout>
             </RPProvider>

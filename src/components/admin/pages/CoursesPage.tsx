@@ -25,7 +25,7 @@ type DBCourseInterface = Prisma.CourseGetPayload<{
             };
         };
     };
-}>;
+}> & { enrolledCount?: number };
 
 const CoursesPage = () => {
     const appUrl = process.env.NEXT_PUBLIC_APP_URL;
@@ -313,7 +313,7 @@ const CoursesPage = () => {
                                                                 </td>
                                                                 
                                                                 <td>
-                                                                    <span className="text-muted-2">625</span>
+                                                                    <span className="text-muted-2">{course.enrolledCount ?? 0}</span>
                                                                 </td>
                                                                 <td>
                                                                     <span className={ course.isActive ? 'badge bg-light-green text-green' : 'badge bg-light-red text-red'}>

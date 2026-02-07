@@ -250,7 +250,7 @@ const CartPage = () => {
                                                 style={paystackPaymentInProcess ? {} : { padding: '0', background: 'none' }}
                                             >
                                                 {paystackPaymentInProcess ? <ButtonLoader color="#6a1b9a" /> : (
-                                                    <img src={`${appUrl}/assets/img/paystack.png`} alt="Pay With Paystack" width={170} height={60} />
+                                                    <img src={`${appUrl}/assets/img/Paystack.png`} alt="Pay With Paystack" width={170} height={60} />
                                                 )}
                                             </button>
 
