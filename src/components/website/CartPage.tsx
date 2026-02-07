@@ -242,7 +242,7 @@ const CartPage = () => {
                                         <p className="mt-3 mb-0">Please select any of the options below to complete your payment</p>
 
                                         <div className="d-flex gap-3 flex-wrap mt-4">
-                                            {/* <button 
+                                            <button 
                                                 onClick={makePaymentWithPaystack} 
                                                 disabled={paystackPaymentInProcess} 
                                                 type="button" 
@@ -252,7 +252,7 @@ const CartPage = () => {
                                                 {paystackPaymentInProcess ? <ButtonLoader color="#6a1b9a" /> : (
                                                     <img src={`${appUrl}/assets/img/paystack.png`} alt="Pay With Paystack" width={170} height={60} />
                                                 )}
-                                            </button> */}
+                                            </button>
 
                                             <button 
                                                 onClick={makePaymentWithFlutterwave} 
