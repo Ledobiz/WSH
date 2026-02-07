@@ -1,7 +1,8 @@
-import { useEffect, useRef } from "react"
+// import { useEffect, useRef } from "react"
 
 const FileViewer = ({fileUrl}: {fileUrl: string}) => {
-    const viewer = useRef<any>(null);
+    console.log("fileUrl", fileUrl);
+    /*const viewer = useRef<any>(null);
 
     useEffect(() => {
         import('@pdftron/webviewer').then((module) => {
@@ -16,32 +17,23 @@ const FileViewer = ({fileUrl}: {fileUrl: string}) => {
             ).then((instance) => {
                 const { documentViewer } = instance.Core;
                 instance.UI.disableElements(['printButton', 'downloadButton', 'saveAsButton']);
-                /*let keydownHandler: ((e: KeyboardEvent) => void) | null = null;
-
-                // Disable browser print shortcut (Ctrl/Cmd+P)
-                keydownHandler = (e: KeyboardEvent) => {
-                    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'p') {
-                        e.preventDefault();
-                        e.stopPropagation();
-                    }
-                };
-                window.addEventListener('keydown', keydownHandler, true);*/
             });
         });
-
-        /*return () => {
-            if (keydownHandler) {
-                window.removeEventListener('keydown', keydownHandler, true);
-            }
-        };*/
-    }, [fileUrl]);
+    }, [fileUrl]);*/
 
 
     return (
-        <div className="video-box webviewer" 
+        /*<div className="video-box webviewer" 
             ref={viewer}
             style={{width: "100%", height: "600px"}}
-        />
+        />*/
+
+        <div className="w-full h-[600px]">
+            <iframe 
+                src={fileUrl}
+                className="w-full h-full"
+            />
+        </div>
     )
 }
 export default FileViewer
