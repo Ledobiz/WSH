@@ -14,7 +14,7 @@
     "@neondatabase/serverless": "^1.0.2",
     "@next/env": "^16.0.7",
     "@paystack/inline-js": "^2.22.7",
-    "@pdftron/webviewer": "^11.9.1",
+    "@pdf-viewer/react": "^1.17.0",
     "@prisma/adapter-neon": "^7.1.0",
     "@prisma/adapter-pg": "^7.0.1",
     "@prisma/client": "^7.2.0",
