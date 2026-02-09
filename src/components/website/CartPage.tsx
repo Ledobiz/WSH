@@ -241,29 +241,23 @@ const CartPage = () => {
 
                                         <p className="mt-3 mb-0">Please select any of the options below to complete your payment</p>
 
-                                        <div className="d-flex gap-3 flex-wrap mt-4">
+                                        <div className="d-flex gap-2 flex-wrap mt-4">
                                             <button 
                                                 onClick={makePaymentWithPaystack} 
                                                 disabled={paystackPaymentInProcess} 
                                                 type="button" 
-                                                className={paystackPaymentInProcess ? 'btn btn-main' : ''}
-                                                style={paystackPaymentInProcess ? {} : { padding: '0', background: 'none' }}
+                                                className="btn btn-main p-3"
                                             >
-                                                {paystackPaymentInProcess ? <ButtonLoader color="#6a1b9a" /> : (
-                                                    <img src={`${appUrl}/assets/img/Paystack.png`} alt="Pay With Paystack" width={170} height={60} />
-                                                )}
+                                                {paystackPaymentInProcess ? <ButtonLoader color="#6a1b9a" /> : 'Pay With Paystack'}
                                             </button>
 
                                             <button 
                                                 onClick={makePaymentWithFlutterwave} 
                                                 disabled={flutterwavePaymentInProcess} 
                                                 type="button" 
-                                                className={flutterwavePaymentInProcess ? 'btn btn-main' : ''}
-                                                style={flutterwavePaymentInProcess ? {} : { padding: '0', background: 'none' }}
+                                                className="btn btn-main p-3"
                                             >
-                                                {flutterwavePaymentInProcess ? <ButtonLoader color="#6a1b9a" /> : (
-                                                    <img src={`${appUrl}/assets/img/flutterwave.png`} alt="Pay With Flutterwave" width={170} height={60} />
-                                                )}
+                                                {flutterwavePaymentInProcess ? <ButtonLoader color="#6a1b9a" /> : 'Pay With Flutterwave'}
                                             </button>
                                         </div>
                                     </div>

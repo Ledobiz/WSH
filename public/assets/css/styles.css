@@ -1297,7 +1297,8 @@ div[data-overlay] p{
 }
 /*-------------- Global Settings: Background Colors ----------------*/
 .bg-gredient{
-	background-image: linear-gradient(to right, #6a1b9a 0%, #a57cb2 100%);
+	/* background-image: linear-gradient(to right, #6a1b9a 0%, #a57cb2 100%); */
+    background-color: var(--maincolor);
 }
 .bg-main {
   background-color:var(--maincolor) !important;

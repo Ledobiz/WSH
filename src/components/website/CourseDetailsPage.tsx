@@ -52,7 +52,7 @@ const CourseDetailsPage = ({course}: {course: DBCourseInterface}) => {
                                 />
                             </div>
                             <div className="edu_wraper border">
-                                <h4 className="edu_title">Course Circullum</h4>
+                                <h4 className="edu_title">Course Curriculum</h4>
                                 <div id="accordionExample" className="accordion circullum">
                                     {course.courseModules.map((module, index) => (
                                         <div key={module.id} className="card border shadow-0 mb-3">
