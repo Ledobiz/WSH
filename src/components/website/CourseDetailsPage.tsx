@@ -1,18 +1,68 @@
 'use client';
 
-import { formatAmount, getTotalLectures } from "@/src/utils/client_functions";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+import { formatAmount, formatDateAndTime, getTotalLectures } from "@/src/utils/client_functions";
 import CourseDetailsBanner from "./CourseDetailsBanner";
 import { DBCourseInterface } from "@/src/types";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CustomModal from "@/src/components/admin/CustomModal";
 import { useCart } from "@/src/providers/CartProvider";
 import { cartUrl } from "@/src/utils/url";
 import Link from "next/link";
+import { courseReviews } from "@/src/services/website/course";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import WebsitePagination from "./WebsitePagination";
 
 const CourseDetailsPage = ({course}: {course: DBCourseInterface}) => {
     const [showPreviewModal, setShowPreviewModal] = useState(false);
     const [previewVideo, setPreviewVideo] = useState('');
+    const [reviews, setReviews] = useState<any[]>([]);
+    const [totalPages, setTotalPages] = useState(0);
+    const [totalEntries, setTotalEntries] = useState(0);
     const { addToCart, cartCourses, loadingId, removeFromCart } = useCart();
+
+    const searchParams = useSearchParams();
+    const pathName = usePathname();
+    const { replace } = useRouter();
+
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL;
+
+    // 1. Get initial values from URL or defaults
+    const currentPage = Number(searchParams.get('page')) || 1;
+
+    // 2. Function to update the URL
+    const handleUrlChange = (name: string, value: string | number) => {
+        const params = new URLSearchParams(searchParams);
+        
+        if (value) {
+            params.set(name, value.toString().trim());
+        } else {
+            params.delete(name);
+        }
+
+        // Reset to page 1 if searching
+        if (name === 'q') params.set('page', '1');
+
+        replace(`${pathName}?${params.toString()}`);
+    };
+
+    const pageSize = 20;
+
+    useEffect(() => {
+        const fetchReviews = async () => {
+            try {
+                const response = await courseReviews(course.id, currentPage, pageSize);
+                setReviews(response.data);
+                setTotalPages(response.pagination.totalPages);
+                setTotalEntries(response.pagination.totalCount);
+            } catch (error) {
+                console.log("Error fetching reviews:", error);
+            }
+        }
+
+        fetchReviews();
+    }, [currentPage, pageSize, course]);
 
     const handlePreviewModal = async (videoId: string) => {
         const res = await fetch('/api/video/preview', {
@@ -95,203 +145,61 @@ const CourseDetailsPage = ({course}: {course: DBCourseInterface}) => {
                                 </div>
                             </div>
                             
-                            {/* <div className="rating-overview border">
-                                <div className="rating-overview-box">
-                                    <span className="rating-overview-box-total text-dark">4.2</span>
-                                    <span className="rating-overview-box-percent">out of 5.0</span>
-                                    <div
-                                        className="star-rating d-flex align-items-center justify-content-center gap-1 text-mid"
-                                        data-rating={5}
-                                    >
-                                        <i className="bi bi-star-fill" />
-                                        <i className="bi bi-star-fill" />
-                                        <i className="bi bi-star-fill" />
-                                        <i className="bi bi-star-fill" />
-                                        <i className="bi bi-star-fill" />
-                                    </div>
-                                </div>
-                                <div className="rating-bars">
-                                    <div className="rating-bars-item">
-                                        <span className="rating-bars-name">5 Star</span>
-                                        <span className="rating-bars-inner">
-                                            <span className="rating-bars-rating high" data-rating="4.7">
-                                                <span
-                                                    className="rating-bars-rating-inner"
-                                                    style={{ width: "85%" }}
-                                                />
-                                            </span>
-                                            <strong>85%</strong>
-                                        </span>
-                                    </div>
-                                    <div className="rating-bars-item">
-                                        <span className="rating-bars-name">4 Star</span>
-                                        <span className="rating-bars-inner">
-                                            <span className="rating-bars-rating good" data-rating="3.9">
-                                                <span
-                                                    className="rating-bars-rating-inner"
-                                                    style={{ width: "75%" }}
-                                                />
-                                            </span>
-                                            <strong>75%</strong>
-                                        </span>
-                                    </div>
-                                    <div className="rating-bars-item">
-                                        <span className="rating-bars-name">3 Star</span>
-                                        <span className="rating-bars-inner">
-                                            <span className="rating-bars-rating mid" data-rating="3.2">
-                                                <span
-                                                    className="rating-bars-rating-inner"
-                                                    style={{ width: "52.2%" }}
-                                                />
-                                            </span>
-                                            <strong>53%</strong>
-                                        </span>
-                                    </div>
-                                    <div className="rating-bars-item">
-                                        <span className="rating-bars-name">1 Star</span>
-                                        <span className="rating-bars-inner">
-                                            <span className="rating-bars-rating poor" data-rating={2.0}>
-                                                <span
-                                                    className="rating-bars-rating-inner"
-                                                    style={{ width: "20%" }}
-                                                />
-                                            </span>
-                                            <strong>20%</strong>
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div className="list-single-main-item fl-wrap border">
-                                <div className="list-single-main-item-title fl-wrap">
-                                    <h3>
-                                        Item Reviews - <span> 3 </span>
-                                    </h3>
-                                </div>
-                                <div className="reviews-comments-wrap">
-                                    <div className="reviews-comments-item">
-                                        <div className="review-comments-avatar">
-                                            <img src={`${appUrl}/assets/img/user-1.jpg`} className="img-fluid" alt="" />
+                            {reviews.length > 0 && (
+                                <>
+                                    <div className="list-single-main-item fl-wrap border">
+                                        <div className="list-single-main-item-title fl-wrap">
+                                            <h3>
+                                                Course Reviews <span>({totalEntries})</span>
+                                            </h3>
                                         </div>
-                                        <div className="reviews-comments-item-text">
-                                            <h4>
-                                                <a href="#">Josaph Manrty</a>
-                                                <span className="reviews-comments-item-date">
-                                                    <i className="bi bi-clock" />
-                                                    27 Oct 2019
-                                                </span>
-                                            </h4>
-                                            <div className="listing-rating high" data-starrating2={5}>
-                                                <i className="bi bi-star-fill active" />
-                                                <i className="bi bi-star-fill active" />
-                                                <i className="bi bi-star-fill active" />
-                                                <i className="bi bi-star-fill active" />
-                                                <i className="bi bi-star-fill active" />
-                                                <span className="review-count">4.9</span>{" "}
-                                            </div>
-                                            <div className="clearfix" />
-                                            <p>
-                                                " Commodo est luctus eget. Proin in nunc laoreet justo
-                                                volutpat blandit enim. Sem felis, ullamcorper vel aliquam non,
-                                                varius eget justo. Duis quis nunc tellus sollicitudin mauris.
-                                                "
-                                            </p>
-                                            <div className="pull-left reviews-reaction">
-                                                <a href="#" className="comment-like active">
-                                                    <i className="bi bi-hand-thumbs-up" /> 12
-                                                </a>
-                                                <a href="#" className="comment-dislike active">
-                                                    <i className="bi bi-hand-thumbs-down" /> 1
-                                                </a>
-                                                <a href="#" className="comment-love active">
-                                                    <i className="bi bi-suit-heart" /> 07
-                                                </a>
-                                            </div>
+                                        <div className="reviews-comments-wrap">
+                                            {reviews.map((review, index) => (
+                                                <div key={index} className="reviews-comments-item">
+                                                    <div className="review-comments-avatar">
+                                                        <img src={`${review.user.gender === 'male' ? `${appUrl}/assets/img/male-avatar.webp` : `${appUrl}/assets/img/female-avatar.webp`}`} 
+                                                            className="img-fluid" 
+                                                            alt="" 
+                                                        />
+                                                    </div>
+                                                    <div className="reviews-comments-item-text">
+                                                        <h4>
+                                                            <a href="#">{ review.isAnonymous ? 'Anonymous Student' : review.user.name}</a>
+                                                            <span className="reviews-comments-item-date">
+                                                                <i className="bi bi-clock" />
+                                                                { formatDateAndTime(review.createdAt) }{" "}
+                                                            </span>
+                                                        </h4>
+                                                        <div className={`listing-rating ${review.rating < 3 ? 'mid' : ((review.rating == 3) ? 'good' : 'high')}`} data-starrating2={5}>
+                                                            {Array.from({ length: 5 }).map((_, index) => (
+                                                                <i key={index} className={`bi bi-star-fill ${index < review.rating ? 'active' : ''}`} />
+                                                            ))}
+                                                            <span className="review-count">{review.rating}</span>{" "}
+                                                        </div>
+                                                        <div className="clearfix" />
+                                                        <p style={{ whiteSpace: 'pre-wrap' }}>
+                                                            &quot;{review.comment}&quot;
+                                                        </p>
+
+                                                        {review.reply && (
+                                                            <div className="card bg-light p-3 mb-3">
+                                                                <strong className="mb-2 d-block">Reply From Women Skills Hub:</strong>
+                                                                <p className="mb-0" style={{ whiteSpace: 'pre-wrap' }}>{review.reply}</p>
+                                                            </div>
+                                                        )}
+                                                    </div>
+
+                                                    <WebsitePagination 
+                                                        currentPage={currentPage}
+                                                        totalPages={totalPages}
+                                                        onPageChange={(page) => handleUrlChange('page', page)}
+                                                    />
+                                                </div>
+                                            ))}
                                         </div>
                                     </div>
-                                    
-                                    <div className="reviews-comments-item">
-                                        <div className="review-comments-avatar">
-                                            <img src={`${appUrl}/assets/img/user-2.jpg`} className="img-fluid" alt="" />
-                                        </div>
-                                        <div className="reviews-comments-item-text">
-                                            <h4>
-                                                <a href="#">Rita Chawla</a>
-                                                <span className="reviews-comments-item-date">
-                                                    <i className="bi bi-clock" />2 Nov May 2019
-                                                </span>
-                                            </h4>
-                                            <div className="listing-rating mid" data-starrating2={5}>
-                                                <i className="bi bi-star-fill active" />
-                                                <i className="bi bi-star-fill active" />
-                                                <i className="bi bi-star-fill active" />
-                                                <i className="bi bi-star-fill active" />
-                                                <i className="bi bi-star-fill" />
-                                                <span className="review-count">3.7</span>{" "}
-                                            </div>
-                                            <div className="clearfix" />
-                                            <p>
-                                                " Commodo est luctus eget. Proin in nunc laoreet justo
-                                                volutpat blandit enim. Sem felis, ullamcorper vel aliquam non,
-                                                varius eget justo. Duis quis nunc tellus sollicitudin mauris.
-                                                "
-                                            </p>
-                                            <div className="pull-left reviews-reaction">
-                                                <a href="#" className="comment-like active">
-                                                    <i className="bi bi-hand-thumbs-up" /> 12
-                                                </a>
-                                                <a href="#" className="comment-dislike active">
-                                                    <i className="bi bi-hand-thumbs-down" /> 1
-                                                </a>
-                                                <a href="#" className="comment-love active">
-                                                    <i className="bi bi-suit-heart" /> 07
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </div>
-                        
-                                    <div className="reviews-comments-item">
-                                        <div className="review-comments-avatar">
-                                            <img src={`${appUrl}/assets/img/user-3.jpg`} className="img-fluid" alt="" />
-                                        </div>
-                                        <div className="reviews-comments-item-text">
-                                            <h4>
-                                                <a href="#">Adam Wilsom</a>
-                                                <span className="reviews-comments-item-date">
-                                                    <i className="bi bi-clock" />
-                                                    10 Nov 2019
-                                                </span>
-                                            </h4>
-                                            <div className="listing-rating good" data-starrating2={5}>
-                                                <i className="bi bi-star-fill active" />
-                                                <i className="bi bi-star-fill active" />
-                                                <i className="bi bi-star-fill active" />
-                                                <i className="bi bi-star-fill active" />
-                                                <i className="bi bi-star-fill" />{" "}
-                                                <span className="review-count">4.2</span>{" "}
-                                            </div>
-                                            <div className="clearfix" />
-                                            <p>
-                                                " Commodo est luctus eget. Proin in nunc laoreet justo
-                                                volutpat blandit enim. Sem felis, ullamcorper vel aliquam non,
-                                                varius eget justo. Duis quis nunc tellus sollicitudin mauris.
-                                                "
-                                            </p>
-                                            <div className="pull-left reviews-reaction">
-                                                <a href="#" className="comment-like active">
-                                                    <i className="bi bi-hand-thumbs-up" /> 12
-                                                </a>
-                                                <a href="#" className="comment-dislike active">
-                                                    <i className="bi bi-hand-thumbs-down" /> 1
-                                                </a>
-                                                <a href="#" className="comment-love active">
-                                                    <i className="bi bi-suit-heart" /> 07
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div> */}
+                                </>
+                            )}
                         </div>
                     
                         {/* Sidebar */}

@@ -1,7 +1,9 @@
 'use server'
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import prisma from "@/src/lib/prisma";
-import { paginate } from "@/src/utils/pagination";
+import { paginate, paginateQuery } from "@/src/utils/pagination";
 import { Course } from "@prisma/client";
 
 export const categoryCourses = async () => {
@@ -116,6 +118,51 @@ export const singleCourseWebsite = async (slug: string) => {
             success: false,
             message: 'Unable to locate the course',
             course: null,
+        }
+    }
+}
+
+export const courseReviews = async (courseId: string, page: number = 1, pageSize: number = 20) => {
+    try {
+        return await paginateQuery<any>({
+            page,
+            pageSize,
+            dataQuery: ({ skip, take }) => prisma.studentReview.findMany({
+                where: {
+                    courseId,
+                    isApproved: true,
+                    isReviewed: true
+                },
+                orderBy: {
+                    createdAt: 'desc'
+                },
+                skip,
+                take,
+                include: {
+                    user: true,
+                    course: true,
+                }
+            }),
+            countQuery: () => prisma.studentReview.count({
+                where: {
+                    courseId,
+                    isApproved: true,
+                    isReviewed: true
+                }
+            })
+        });
+    } catch (error) {
+        console.log("Error fetching course reviews:", error);
+        return {
+            success: false,
+            message: 'No result found',
+            data: [],
+            pagination: {
+                totalCount: 0,
+                totalPages: 0,
+                currentPage: page,
+                pageSize: pageSize,
+            },
         }
     }
 }
