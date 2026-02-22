@@ -10,7 +10,7 @@ const Hero = () => {
                 <div className="row align-items-center">
                     <div className="col-lg-6 col-md-6 col-sm-12">
                         <div className="hero-caption mb-2">
-                            <div className="mb-3 d-flex gap-3 align-items-center">
+                            {/* <div className="mb-3 d-flex gap-3 align-items-center">
                                 <div className="avatar-group">
                                     <span className="avatar-single">
                                         <img
@@ -106,7 +106,7 @@ const Hero = () => {
                                     </div>
                                     <div className="text-light">Engaged Students</div>
                                 </div>
-                            </div>
+                            </div> */}
                             <h1 className="big-header-capt mb-0">
                                 Master New Skills With Women Skills Hub's
                                 Expert-Led Courses

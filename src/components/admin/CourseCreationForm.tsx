@@ -42,6 +42,7 @@ const mapDbRecordsToForm = (course: DBCourseInterface): CourseCreationInterface 
 
         isActive: course.isActive ?? false,
         whoIsCourseFor: course.whoIsCourseFor ?? '',
+        telegramLink: course.telegramLink ?? '',
     };
 }
 
@@ -69,6 +70,7 @@ const CourseCreationForm = ({formTitle, formText, onFormSubmit, initialValues, m
         seoKeywords: '',
         isActive: false,
         whoIsCourseFor: '',
+        telegramLink: ''
     });
 
     useEffect(() => {
@@ -210,6 +212,18 @@ const CourseCreationForm = ({formTitle, formText, onFormSubmit, initialValues, m
                 <small className="text-muted">
                     Maximum of 191 character course title.
                 </small>
+            </div>
+
+            <div className="form-group mb-3">
+                <label className="form-label">Telegram Link (Optional)</label>
+                <input
+                    type="text"
+                    name="telegramLink"
+                    className="form-control"
+                    placeholder="Enter Telegram link if available"
+                    value={formData.telegramLink ?? ''}
+                    onChange={(e) => handleInputChange('telegramLink', e.target.value)}
+                />
             </div>
 
             <div className="form-group mb-3">

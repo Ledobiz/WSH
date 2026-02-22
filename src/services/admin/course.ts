@@ -147,6 +147,7 @@ export const createCourse = async (unsafeData: z.infer<typeof CreateCourseValida
                 seoDescription: data.seoDescription,
                 seoKeywords: data.seoKeywords,
                 whoIsCourseFor: data.whoIsCourseFor,
+                telegramLink: data.telegramLink,
                 updatedAt: new Date(),
             }
         });
@@ -259,6 +260,7 @@ export const updateCourse = async (id: string, unsafeData: z.infer<typeof Create
                 seoDescription: data.seoDescription,
                 seoKeywords: data.seoKeywords,
                 whoIsCourseFor: data.whoIsCourseFor,
+                telegramLink: data.telegramLink,
                 updatedAt: new Date(),
             }
         });

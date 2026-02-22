@@ -9,7 +9,7 @@ import { Prisma } from "@prisma/client";
 import { useAuth } from "@/src/providers/AuthProvider";
 import { useProgressCounts } from "@/src/providers/StudentSidebarProvider";
 import { ongoingCourses } from "@/src/services/student/course";
-import { courseContentUrl, coursesUrl } from "@/src/utils/url";
+import { courseContentUrl, courseDetailUrl, coursesUrl } from "@/src/utils/url";
 import Link from "next/link";
 import { Suspense, useEffect, useState } from "react"
 import { durationInHourMinutesAndSeconds } from "@/src/utils/client_functions";
@@ -256,7 +256,7 @@ const DashboardPage = () => {
 
                                             {allCourses?.filter(c => !c.lecturesCompleted).map((course) => (
                                                 <div key={course.id} className="card border-0 hover shadow-sm mb-3 rounded-4 p-3">
-                                                    <Link href={`${courseContentUrl}/${course.course.id}`} className="row g-3 g-md-4 align-items-center">
+                                                    <Link href={`${courseDetailUrl}/${course.course.id}`} className="row g-3 g-md-4 align-items-center">
                                                         <div className="col-12 col-xl-4 col-lg-4 col-md-4">
                                                             <div
                                                                 className="rounded-3 p-3 bg-light d-flex align-items-center justify-content-center mx-auto mx-sm-0"

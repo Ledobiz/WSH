@@ -51,6 +51,7 @@ export interface CourseCreationInterface {
     seoKeywords: string;
     isActive: boolean;
     whoIsCourseFor?: string | null;
+    telegramLink?: string | null;
 }
 
 export interface CourseInterface {

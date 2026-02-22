@@ -15,6 +15,7 @@ export const CreateCourseValidation = z.object({
     seoDescription: z.string(),
     seoKeywords: z.string(),
     whoIsCourseFor: z.string().nullable().optional(),
+    telegramLink: z.string().nullable().optional(),
 });
 
 export const CreateModuleValidation = z.object({

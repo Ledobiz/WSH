@@ -70,6 +70,7 @@ model Course {
   seoDescription    String?
   seoKeywords       String?
   whoIsCourseFor    String?
+  telegramLink      String?
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @updatedAt
   deletedAt         DateTime?
