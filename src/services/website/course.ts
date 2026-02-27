@@ -28,7 +28,10 @@ export const categoryCourses = async () => {
                     take: 8,
                     include: {
                         courseModules: {
-                            where: { deletedAt: null },
+                            where: {
+                                isActive: true,
+                                deletedAt: null,
+                            },
                             include: {
                                 moduleComponents: {
                                     where: { deletedAt: null }
@@ -51,6 +54,51 @@ export const categoryCourses = async () => {
             success: false,
             message: 'Something went wrong',
             categories: [],
+        }
+    }
+}
+
+export const singleCategoryCourses = async (slug: string) => {
+    try {
+        const category = await prisma.category.findFirst({
+            where: {
+                slug,
+                deletedAt: null,
+            },
+            include: {
+                courses: {
+                    where: {
+                        isActive: true,
+                        deletedAt: null
+                    },
+                    include: {
+                        courseModules: {
+                            where: {
+                                isActive: true,
+                                deletedAt: null,
+                            },
+                            include: {
+                                moduleComponents: {
+                                    where: { deletedAt: null }
+                                }
+                            }
+                        }
+                    }
+                },
+            },
+        });
+
+        return {
+            success: true,
+            message: 'Success',
+            category
+        }
+    } catch (error) {
+        console.log(error);
+        return {
+            success: false,
+            message: 'Unable to get the category and its courses',
+            category: null,
         }
     }
 }

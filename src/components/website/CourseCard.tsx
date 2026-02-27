@@ -11,14 +11,13 @@ interface CardPropertyInterface {
     slug: string,
     title: string,
     lectures: number,
-    level: string,
     originalPrice: number,
     discountedPrice: number,
     image: string,
     course: any
 }
 
-const CourseCard = ({slug, course, title, lectures, level, originalPrice, discountedPrice, image}: CardPropertyInterface) => {
+const CourseCard = ({slug, course, title, lectures, originalPrice, discountedPrice, image}: CardPropertyInterface) => {
     const { addToCart, removeFromCart, loadingId, cartCourses } = useCart();
 
     return (
@@ -75,13 +74,17 @@ const CourseCard = ({slug, course, title, lectures, level, originalPrice, discou
                                 <i className="bi bi-cash-stack" />
                                 { formatAmount(discountedPrice) }
                             </li>
-                            <li>
+                            {/* <li>
                                 <i className="bi bi-camera-reels" />
                                 {  lectures } {lectures > 1 ? 'Lectures' : 'Lecture'}
-                            </li>
+                            </li> */}
                             <li>
                                 <i className="bi bi-bar-chart" />
-                                { level }
+                                Beginner
+                            </li>
+                            <li>
+                                <i className="bi bi-laptop" />
+                                LMS / Telegram
                             </li>
                         </ul>
                     </div>

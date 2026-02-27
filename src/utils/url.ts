@@ -8,6 +8,7 @@ export const termsAndConditionsUrl = '/terms-and-conditions'
 export const refundPolicyUrl = '/refund-policy'
 export const faq = '/faq'
 export const aboutUsUrl = '/about-us'
+export const categoryUrl = '/category'
 
 // Student Routes
 export const studentDashboardUrl = '/learners/dashboard'

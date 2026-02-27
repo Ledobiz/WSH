@@ -25,6 +25,7 @@ const CourseDetailsPage = ({course}: {course: DBCourseInterface}) => {
     const searchParams = useSearchParams();
     const pathName = usePathname();
     const { replace } = useRouter();
+    const router = useRouter();
 
     const appUrl = process.env.NEXT_PUBLIC_APP_URL;
 
@@ -80,6 +81,11 @@ const CourseDetailsPage = ({course}: {course: DBCourseInterface}) => {
         setShowPreviewModal(true);
     }
 
+    const handleBuyNow = async (course: any) => {
+        addToCart(course);
+        router.push(cartUrl);
+    }
+
     return (
         <>
             <CourseDetailsBanner title={course.title}
@@ -100,50 +106,58 @@ const CourseDetailsPage = ({course}: {course: DBCourseInterface}) => {
                                 <div 
                                     dangerouslySetInnerHTML={{ __html: course.description ?? '' }} 
                                 />
+
+                                <button onClick={() => handleBuyNow(course)} className="btn btn-gray rounded-pill w-100">
+                                    <i className="bi bi-basket2 me-2" />
+                                    Buy Now
+                                </button>
                             </div>
-                            <div className="edu_wraper border">
-                                <h4 className="edu_title">Course Curriculum</h4>
-                                <div id="accordionExample" className="accordion circullum">
-                                    {course.courseModules.map((module, index) => (
-                                        <div key={module.id} className="card border shadow-0 mb-3">
-                                            <div id={`heading${index}`} className="card-header">
-                                                <h6 className="mb-0 accordion_title">
-                                                    <a
-                                                        href="#"
-                                                        data-bs-toggle="collapse"
-                                                        data-bs-target={`#collapse${index}`}
-                                                        aria-expanded="true"
-                                                        aria-controls={`collapse${index}`}
-                                                        className="d-block position-relative text-dark collapsible-link py-2"
-                                                    >
-                                                        {`Part ${index + 1}: ${module.name}`}
-                                                    </a>
-                                                </h6>
-                                            </div>
-                                            <div
-                                                id={`collapse${index}`}
-                                                aria-labelledby={`heading${index}`}
-                                                data-parent="#accordionExample"
-                                                className={`collapse ${index == 0 ? 'show' : ''}`}
-                                            >
-                                                <div className="card-body">
-                                                    <ul className="lectures_lists">
-                                                        {module.moduleComponents.map((component, index) => (
-                                                            <li key={component.id}>
-                                                                <div className="lectures_lists_title">
-                                                                    <i className="bi bi-camera-video" />
-                                                                    Lecture: {index + 1}
-                                                                </div>
-                                                                { component.name }
-                                                            </li>
-                                                        ))}
-                                                    </ul>
+
+                            {course.courseModules.length > 0 && (
+                                <div className="edu_wraper border">
+                                    <h4 className="edu_title">Course Curriculum</h4>
+                                    <div id="accordionExample" className="accordion circullum">
+                                        {course.courseModules.map((module, index) => (
+                                            <div key={module.id} className="card border shadow-0 mb-3">
+                                                <div id={`heading${index}`} className="card-header">
+                                                    <h6 className="mb-0 accordion_title">
+                                                        <a
+                                                            href="#"
+                                                            data-bs-toggle="collapse"
+                                                            data-bs-target={`#collapse${index}`}
+                                                            aria-expanded="true"
+                                                            aria-controls={`collapse${index}`}
+                                                            className="d-block position-relative text-dark collapsible-link py-2"
+                                                        >
+                                                            {`Part ${index + 1}: ${module.name}`}
+                                                        </a>
+                                                    </h6>
+                                                </div>
+                                                <div
+                                                    id={`collapse${index}`}
+                                                    aria-labelledby={`heading${index}`}
+                                                    data-parent="#accordionExample"
+                                                    className={`collapse ${index == 0 ? 'show' : ''}`}
+                                                >
+                                                    <div className="card-body">
+                                                        <ul className="lectures_lists">
+                                                            {module.moduleComponents.map((component, index) => (
+                                                                <li key={component.id}>
+                                                                    <div className="lectures_lists_title">
+                                                                        <i className="bi bi-camera-video" />
+                                                                        Lecture: {index + 1}
+                                                                    </div>
+                                                                    { component.name }
+                                                                </li>
+                                                            ))}
+                                                        </ul>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    ))}
+                                        ))}
+                                    </div>
                                 </div>
-                            </div>
+                            )}
                             
                             {reviews.length > 0 && (
                                 <>
@@ -214,18 +228,18 @@ const CourseDetailsPage = ({course}: {course: DBCourseInterface}) => {
                                                 alt={course.title}
                                             />
                                             
-                                                <div className="overlay_icon">
-                                                    <div className="bb-video-box">
-                                                        <button
-                                                            onClick={() => handlePreviewModal(course.previewVideo ?? '')}
-                                                            data-bs-toggle="modal"
-                                                            data-bs-target="#popup-video"
-                                                            className="play-popup-video"
-                                                        >
-                                                            <i className="bi bi-play-fill" />
-                                                        </button>
-                                                    </div>
+                                            <div className="overlay_icon">
+                                                <div className="bb-video-box">
+                                                    <button
+                                                        onClick={() => handlePreviewModal(course.previewVideo ?? '')}
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#popup-video"
+                                                        className="play-popup-video"
+                                                    >
+                                                        <i className="bi bi-play-fill" />
+                                                    </button>
                                                 </div>
+                                            </div>
                                         </div>
                                     </div>
                                 )}
@@ -263,13 +277,13 @@ const CourseDetailsPage = ({course}: {course: DBCourseInterface}) => {
                                                 </button>
                                                 <Link href={cartUrl} className="btn btn-gray w-100 rounded-pill">
                                                     <i className="bi bi-basket2 me-2" />
-                                                    Go To Cart
+                                                    Buy Now
                                                 </Link>
                                             </>
                                         ) : (
-                                            <button onClick={() => addToCart(course)} className="btn btn-gray rounded-pill w-100">
+                                            <button onClick={() => handleBuyNow(course)} className="btn btn-gray rounded-pill w-100">
                                                 <i className="bi bi-basket2 me-2" />
-                                                Add To Cart
+                                                Buy Now
                                             </button>
                                         )}
                                         
@@ -286,13 +300,13 @@ const CourseDetailsPage = ({course}: {course: DBCourseInterface}) => {
                                         </span>
                                         <span className="text-dark right">{course.students.length}</span>
                                     </li>
-                                    <li>
+                                    {/* <li>
                                         <span className="info-title">
                                             <i className="bi bi-camera-reels" />
                                             Lectures
                                         </span>
                                         <span className="text-dark right">{getTotalLectures(course)}</span>
-                                    </li>
+                                    </li> */}
                                     <li>
                                         <span className="info-title">
                                             <i className="bi bi-tags" />

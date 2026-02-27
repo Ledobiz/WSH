@@ -1,8 +1,8 @@
 'use client'
 
 import { categoryCourses } from "@/src/services/website/course";
-import { formatAmount, getTotalLectures } from "@/src/utils/client_functions";
-import { coursesUrl, registerUrl } from "@/src/utils/url";
+import { getTotalLectures } from "@/src/utils/client_functions";
+import { categoryUrl, registerUrl } from "@/src/utils/url";
 import Link from "next/link";
 import { useEffect, useState } from "react"
 import { Prisma } from "@prisma/client";
@@ -170,7 +170,6 @@ const Homepage = () => {
                                                             slug={course.slug}
                                                             title={course.title}
                                                             lectures={getTotalLectures(course)}
-                                                            level="Advanced"
                                                             originalPrice={course.originalFee}
                                                             discountedPrice={course.discountedFee}
                                                             image={course.thumbnail ?? ''}
@@ -202,7 +201,7 @@ const Homepage = () => {
                         {loadingCategories ? <ButtonLoader /> : (
                             categories?.map((category) => (
                                 <div key={category.id} className="col-xl-3 col-lg-4 col-md-6 col-sm-6">
-                                    <div className="card-hover p-4 rounded-3 card card-body d-flex flex-column gap-3 m-0">
+                                    <Link href={`${categoryUrl}/${category.slug}`} className="card-hover p-4 rounded-3 card card-body d-flex flex-column gap-3 m-0">
                                         {/* <div className="icon-wraps">
                                             <span className="icon-slap fs-1">
                                                 <i className="bi bi-code-slash" />
@@ -216,7 +215,7 @@ const Homepage = () => {
                                                 <span className="fw-semibold me-1">{category.courses.length}</span>{category.courses.length > 1 ? 'Courses' : 'Course'}
                                             </span>
                                         </div>
-                                    </div>
+                                    </Link>
                                 </div>
                             ))
                         )}

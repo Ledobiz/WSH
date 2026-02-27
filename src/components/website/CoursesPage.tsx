@@ -88,7 +88,6 @@ const CoursesPage = () => {
                                         slug={course.slug}
                                         title={course.title}
                                         lectures={getTotalLectures(course)}
-                                        level="Advanced"
                                         originalPrice={course.originalFee}
                                         discountedPrice={course.discountedFee}
                                         image={course.thumbnail ?? ''}
