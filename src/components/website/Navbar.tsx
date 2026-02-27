@@ -1,7 +1,5 @@
 'use client';
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { loginUrl, registerUrl } from "@/src/utils/url";
 import Link from "next/link";
 import { useEffect } from "react";
@@ -45,15 +43,23 @@ const Navbar = () => {
     const appUrl = process.env.NEXT_PUBLIC_APP_URL!;
 
     useEffect(() => {
-        const win = window as any;
-  
-        if (typeof window !== 'undefined' && win.jQuery) {
-            const $ = win.jQuery;
+        // This function re-initializes the template's JS menu
+        // Ensure the script is loaded in your _document.js or _app.js
+        if (typeof window !== 'undefined' && window.jQuery) {
+            const $ = window.jQuery;
             
-            // Re-initialize the menu plugin
-            if ($.fn && $.fn.navigation) {
+            // 1. Initialize the plugin
+            if ($.fn.navigation) {
                 $('#navigation').navigation();
             }
+
+            // 2. Add this click handler to fix the scroll issue
+            $('.nav-menus-wrapper a').on('click', function() {
+                // Re-enable scrolling on the body
+                $('body').css('overflow', 'auto');
+                // If the menu has a class to close it, add that here too
+                $('.nav-menus-wrapper').removeClass('nav-menus-wrapper-open');
+            });
         }
     }, []); // Runs every time the URL changes
 

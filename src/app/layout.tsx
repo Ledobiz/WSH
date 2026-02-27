@@ -37,14 +37,14 @@ export default function RootLayout({
         <FacebookPixel />
         <TiktokPixel />
 
-        <Script src={`${appUrl}/assets/js/jquery.min.js`} strategy="lazyOnload"></Script>
-        <Script src={`${appUrl}/assets/js/popper.min.js`} strategy="lazyOnload"></Script>
-        <Script src={`${appUrl}/assets/js/bootstrap.min.js`} strategy="lazyOnload"></Script>
-        <Script src={`${appUrl}/assets/js/select2.min.js`} strategy="lazyOnload"></Script>
-        <Script src={`${appUrl}/assets/js/slick.js`} strategy="lazyOnload"></Script>
-        <Script src={`${appUrl}/assets/js/jquery.counterup.min.js`} strategy="lazyOnload"></Script>
-        <Script src={`${appUrl}/assets/js/counterup.min.js`} strategy="lazyOnload"></Script>
-        <Script src={`${appUrl}/assets/js/custom.js`} strategy="lazyOnload"></Script>
+        <Script src={`${appUrl}/assets/js/jquery.min.js`}></Script>
+        <Script src={`${appUrl}/assets/js/popper.min.js`}></Script>
+        <Script src={`${appUrl}/assets/js/bootstrap.min.js`}></Script>
+        <Script src={`${appUrl}/assets/js/select2.min.js`}></Script>
+        <Script src={`${appUrl}/assets/js/slick.js`}></Script>
+        <Script src={`${appUrl}/assets/js/jquery.counterup.min.js`}></Script>
+        <Script src={`${appUrl}/assets/js/counterup.min.js`}></Script>
+        <Script src={`${appUrl}/assets/js/custom.js`}></Script>
       </body>
     </html>
   );
