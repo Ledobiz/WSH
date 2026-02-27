@@ -3,8 +3,7 @@
 import Script from "next/script";
 
 const FacebookPixel = () => {
-  return (
-    <div>
+    return (
         <Script
             id="facebook-pixel-base"
             strategy="afterInteractive"
@@ -23,8 +22,7 @@ const FacebookPixel = () => {
                 `,
             }}
         />
-    </div>
-  );
+    );
 };
 
 export default FacebookPixel;

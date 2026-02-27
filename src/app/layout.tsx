@@ -23,6 +23,9 @@ export default function RootLayout({
         <link href={`${appUrl}/assets/css/colors.css`} rel="stylesheet" />
         <link rel="icon" type="image/svg+xml" href={`${appUrl}/assets/img/wsh-logo-light.jpeg`}></link>
         <title>Women Skills Hub</title>
+        
+        <FacebookPixel />
+        <TiktokPixel />
       </head>
       <body className="red-skin">
         <AuthProvider>
@@ -33,9 +36,6 @@ export default function RootLayout({
           </CartProvider>
         </AuthProvider>
         <ToastContainer style={{padding: 0}} className="p-0 m-0" />
-
-        <FacebookPixel />
-        <TiktokPixel />
 
         <Script src={`${appUrl}/assets/js/jquery.min.js`}></Script>
         <Script src={`${appUrl}/assets/js/popper.min.js`}></Script>
