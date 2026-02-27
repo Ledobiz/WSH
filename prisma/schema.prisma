@@ -386,3 +386,9 @@ model StudentReview {
   @@index(isApproved)
   @@index(isReviewed)
 }
+
+model ExchangeRate {
+  id              String   @id @default(uuid()) @db.VarChar(191)
+  conversionRates String
+  createdAt       DateTime @default(now())
+}

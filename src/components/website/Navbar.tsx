@@ -1,9 +1,10 @@
 'use client';
 
-import { useAuth } from "@/src/providers/AuthProvider";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { loginUrl, registerUrl } from "@/src/utils/url";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useEffect } from "react";
 
 const links = [
     {
@@ -42,22 +43,26 @@ const links = [
 
 const Navbar = () => {
     const appUrl = process.env.NEXT_PUBLIC_APP_URL!;
-    const pathName = usePathname();
+
+    useEffect(() => {
+        const win = window as any;
+  
+        if (typeof window !== 'undefined' && win.jQuery) {
+            const $ = win.jQuery;
+            
+            // Re-initialize the menu plugin
+            if ($.fn && $.fn.navigation) {
+                $('#navigation').navigation();
+            }
+        }
+    }, []); // Runs every time the URL changes
 
     return (  
         <>
-            <div className="header header-transparent change-logo">
+            <div className="header header-transparent">
                 <div className="container">
                     <nav id="navigation" className="navigation navigation-landscape">
                         <div className="nav-header">
-                            <Link className="nav-brand static-logo" href="/">
-                                <img 
-                                    src={`${appUrl}/assets/img/wsh-logo-light.jpeg`}
-                                    className="logo"
-                                    alt="Women Skills Hub logo"
-                                    style={{width: '60px', height: '100%'}}
-                                />
-                            </Link>
                             <Link className="nav-brand fixed-logo" href="/">
                                 <img 
                                     src={`${appUrl}/assets/img/wsh-logo-light.jpeg`}
@@ -68,7 +73,7 @@ const Navbar = () => {
                             </Link>
                             <div className="nav-toggle"></div>
                         </div>
-                        <div className="nav-menus-wrapper" style={{transitionProperty: 'none'}}>
+                        <div className="nav-menus-wrapper">
                             <ul className="nav-menu">
                                 {
                                     links.map((link) => (

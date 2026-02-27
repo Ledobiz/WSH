@@ -5,11 +5,10 @@ interface BannerInterface {
     totalEnrolled: number,
     level: string,
     banner?: string | null,
+    buyNow: () => void,
 }
 
-const CourseDetailsBanner = ({title, description, lectures, totalEnrolled, level, banner}: BannerInterface) => {
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL;
-
+const CourseDetailsBanner = ({title, description, lectures, totalEnrolled, level, banner, buyNow}: BannerInterface) => {
     return (
         <div
             className="image-cover ed_detail_head lg theme-ov"
@@ -41,6 +40,11 @@ const CourseDetailsBanner = ({title, description, lectures, totalEnrolled, level
                                     {description}
                                 </p>
                             </div>
+
+                            <button onClick={buyNow} className="btn btn-gray rounded-pill">
+                                <i className="bi bi-basket2 me-2" />
+                                Buy Now
+                            </button>
                         </div>
                     </div>
                 </div>

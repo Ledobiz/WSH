@@ -94,6 +94,7 @@ const CourseDetailsPage = ({course}: {course: DBCourseInterface}) => {
                 lectures={getTotalLectures(course)}
                 totalEnrolled={course.students.length}
                 level="Beginner | Advanced"
+                buyNow={() => handleBuyNow(course)}
             />
 
             <section>

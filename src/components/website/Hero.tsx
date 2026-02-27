@@ -112,7 +112,7 @@ const Hero = () => {
                                 Expert-Led Courses
                             </h1>
                         </div>
-                        <div className="hero-search my-4">
+                        {/* <div className="hero-search my-4">
                             <form
                                 className="search-form shadow-sm"
                             >
@@ -130,7 +130,7 @@ const Hero = () => {
                                     </button>
                                 </div>
                             </form>
-                        </div>
+                        </div> */}
 
                         <div className="d-block mt-2">
                             <div className="d-flex align-items-center justify-content-start gap-3">
