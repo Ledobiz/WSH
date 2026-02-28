@@ -1,0 +1,15 @@
+/* Nav header: currency switcher beside hamburger on mobile (no overlap) */
+.nav-header-right {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.navigation-portrait .nav-header-right .nav-toggle {
+  position: relative;
+  top: auto;
+  right: auto;
+  margin-top: 0;
+  flex-shrink: 0;
+  z-index: 2;
+}

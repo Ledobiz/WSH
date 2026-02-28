@@ -78,10 +78,11 @@ const Navbar = () => {
                                     style={{width: '60px', height: '100%'}}
                                 />
                             </Link>
-                            
-                            <CurrencySwitcher />
 
-                            <div className="nav-toggle"></div>
+                            <div className="nav-header-right">
+                                <CurrencySwitcher className="d-block d-lg-none" />
+                                <div className="nav-toggle"></div>
+                            </div>
                         </div>
                         <div className="nav-menus-wrapper">
                             <ul className="nav-menu">
@@ -97,7 +98,7 @@ const Navbar = () => {
                             </ul>
                             <ul className="nav-menu nav-menu-social align-to-right d-none d-lg-block">
                                 <li>
-                                    <CurrencySwitcher />
+                                    <CurrencySwitcher className="d-none d-lg-block" />
                                 </li>
                                 <li className="become-tutor light">
                                     <Link href={registerUrl}>
