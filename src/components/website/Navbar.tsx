@@ -3,6 +3,7 @@
 import { loginUrl, registerUrl } from "@/src/utils/url";
 import Link from "next/link";
 import { useEffect } from "react";
+import CurrencySwitcher from "./CurrencySwitcher";
 
 const links = [
     {
@@ -77,6 +78,9 @@ const Navbar = () => {
                                     style={{width: '60px', height: '100%'}}
                                 />
                             </Link>
+                            
+                            <CurrencySwitcher />
+
                             <div className="nav-toggle"></div>
                         </div>
                         <div className="nav-menus-wrapper">
@@ -92,6 +96,9 @@ const Navbar = () => {
                                 }
                             </ul>
                             <ul className="nav-menu nav-menu-social align-to-right d-none d-lg-block">
+                                <li>
+                                    <CurrencySwitcher />
+                                </li>
                                 <li className="become-tutor light">
                                     <Link href={registerUrl}>
                                         <i className="bi bi-person-circle" />

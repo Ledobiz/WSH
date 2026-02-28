@@ -7,6 +7,7 @@ import { useAuth } from './AuthProvider';
 import { decrypt, encrypt } from '../utils/encryption';
 import { toast } from 'react-toastify';
 import { addToCartServer, mergeCartWithServer, myCart, removeFromCartServer } from '@/src/services/website/cart';
+import { ExchangeRatesPayload, getTodayRates } from '@/src/services/website/exchangeRate';
 
 interface CartContextInterface {
     cartCourses: any[];
@@ -16,6 +17,10 @@ interface CartContextInterface {
     clearCart: () => void;
     isLoaded: boolean;
     loadingId: string | null;
+    currency: string;
+    changeCurrency: (newCurrency: string) => Promise<void>;
+    exchangeRates: Record<string, number> | null;
+    convertAmount: (amount: number, targetCurrency?: string) => number;
 }
 
 interface cartItemInterface {
@@ -43,6 +48,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     const [totalFees, setTotalFees] = useState(0);
     const [isLoaded, setIsLoaded] = useState(false); // Prevents hydration flicker
     const [loadingId, setLoadingId] = useState<string | null>(null);
+    const [currency, setCurrency] = useState<string>('NGN');
+    const [exchangeRates, setExchangeRates] = useState<Record<string, number> | null>(null);
     const { user } = useAuth();
 
     // Helper to calculate total
@@ -95,6 +102,73 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
         syncCart();
     }, [user]);
+
+    // Load currency & today's exchange rates on mount
+    useEffect(() => {
+        const initCurrencyAndRates = async () => {
+            if (typeof window === 'undefined') return;
+
+            const storedCurrency = localStorage.getItem('wsh_currency');
+            if (storedCurrency) {
+                setCurrency(storedCurrency);
+            }
+
+            try {
+                const payload: ExchangeRatesPayload = await getTodayRates();
+                setExchangeRates(payload.conversion_rates);
+            } catch (error) {
+                console.error("Failed to initialize exchange rates", error);
+                // Keep NGN as the active currency on failure
+            }
+        };
+
+        initCurrencyAndRates();
+    }, []);
+
+    const changeCurrency = async (newCurrency: string) => {
+        setCurrency(newCurrency);
+
+        if (typeof window !== 'undefined') {
+            localStorage.setItem('wsh_currency', newCurrency);
+        }
+
+        try {
+            // Ensure we have rates available; fetch if missing
+            if (!exchangeRates) {
+                const payload: ExchangeRatesPayload = await getTodayRates();
+                setExchangeRates(payload.conversion_rates);
+            } else if (!exchangeRates[newCurrency]) {
+                toast.error("Selected currency is not supported for today's rates. Falling back to NGN.");
+                setCurrency('NGN');
+                if (typeof window !== 'undefined') {
+                    localStorage.setItem('wsh_currency', 'NGN');
+                }
+            }
+        } catch (error) {
+            console.error("Failed to change currency", error);
+            toast.error("Unable to update currency at this time.");
+            setCurrency('NGN');
+            if (typeof window !== 'undefined') {
+                localStorage.setItem('wsh_currency', 'NGN');
+            }
+        }
+    };
+
+    const convertAmount = (amount: number, targetCurrency?: string): number => {
+        const activeCurrency = targetCurrency || currency;
+
+        if (!exchangeRates || activeCurrency === 'NGN') {
+            return amount;
+        }
+
+        const rate = exchangeRates[activeCurrency];
+
+        if (!rate) {
+            return amount;
+        }
+
+        return amount * rate;
+    };
 
     const addToCart = async (course: any) => {
         if (cartCourses.some(c => c.id === course.id)) {
@@ -180,6 +254,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         clearCart,
         isLoaded,
         loadingId,
+        currency,
+        changeCurrency,
+        exchangeRates,
+        convertAmount,
     }
 
     return (

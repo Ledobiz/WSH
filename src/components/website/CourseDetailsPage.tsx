@@ -20,7 +20,7 @@ const CourseDetailsPage = ({course}: {course: DBCourseInterface}) => {
     const [reviews, setReviews] = useState<any[]>([]);
     const [totalPages, setTotalPages] = useState(0);
     const [totalEntries, setTotalEntries] = useState(0);
-    const { addToCart, cartCourses, loadingId, removeFromCart } = useCart();
+    const { addToCart, cartCourses, removeFromCart, currency, convertAmount } = useCart();
 
     const searchParams = useSearchParams();
     const pathName = usePathname();
@@ -28,6 +28,17 @@ const CourseDetailsPage = ({course}: {course: DBCourseInterface}) => {
     const router = useRouter();
 
     const appUrl = process.env.NEXT_PUBLIC_APP_URL;
+
+    const convertedDiscountedFee = convertAmount(course.discountedFee);
+
+    const formatWithCurrency = (amount: number) => {
+        return new Intl.NumberFormat('en-NG', {
+            style: 'currency',
+            currency: currency || 'NGN',
+            minimumFractionDigits: currency === 'NGN' ? 0 : 2,
+            maximumFractionDigits: currency === 'NGN' ? 0 : 2,
+        }).format(amount);
+    };
 
     // 1. Get initial values from URL or defaults
     const currentPage = Number(searchParams.get('page')) || 1;
@@ -250,7 +261,7 @@ const CourseDetailsPage = ({course}: {course: DBCourseInterface}) => {
                                         <span className="badge bg-light-red text-red rounded-pill">
                                             {((course.originalFee - course.discountedFee) / course.originalFee) * 100}% off
                                         </span>
-                                        <h2 className="lh-base">{formatAmount(course.discountedFee)}</h2>
+                                        <h2 className="lh-base">{formatWithCurrency(convertedDiscountedFee)}</h2>
                                     </div>
                                     <div className="ed_view_features mb-4">
                                         <h6 className="fw-semibold">Course Features</h6>

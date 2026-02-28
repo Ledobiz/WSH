@@ -16,7 +16,7 @@ import Paystack from '@paystack/inline-js';
 
 const CartPage = () => {
     const appUrl = process.env.NEXT_PUBLIC_APP_URL!;
-    const { cartCourses, totalFees, removeFromCart, isLoaded, clearCart } = useCart();
+    const { cartCourses, totalFees, removeFromCart, isLoaded, clearCart, currency, convertAmount } = useCart();
     const { user } = useAuth();
     const [flutterwavePaymentInProcess, setFlutterwavePaymentInProcess] = useState(false);
     const [paystackPaymentInProcess, setPaystackPaymentInProcess] = useState(false);
@@ -42,14 +42,17 @@ const CartPage = () => {
 
         setFlutterwavePaymentInProcess(true);
 
+        const convertedTotal = convertAmount(totalFees);
+        const displayTotal = Number(convertedTotal.toFixed(2));
+
         const txRef = `wsh_${new Date().getTime()}${Math.floor(Math.random() * 1000000)}`;
 
         if (typeof window !== 'undefined' && (window as any).FlutterwaveCheckout) {
             const modal = (window as any).FlutterwaveCheckout({
                 public_key: process.env.NEXT_PUBLIC_FLUTTERWAVE_PUBLIC_KEY!,
                 tx_ref: txRef,
-                amount: totalFees,
-                currency: 'NGN',
+                amount: displayTotal,
+                currency: currency || 'NGN',
                 payment_options: 'card, ussd, banktransfer, opay, mobilemoneyghana, mobilemoneyuganda, mobilemoneyrwanda, mobilemoneyzambia',
                 meta: {
                     consumer_id: user.id,
@@ -104,13 +107,17 @@ const CartPage = () => {
 
         setPaystackPaymentInProcess(true);
 
+        const convertedTotal = convertAmount(totalFees);
+        const paystackAmount = Math.round(convertedTotal * 100);
+
         const paystackReference = `wsh_${new Date().getTime()}${Math.floor(Math.random() * 1000000)}`;
         
         const paystack = new Paystack();
         paystack.checkout({
             key: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY!,
             email: user.email,
-            amount: totalFees * 100,
+            amount: paystackAmount,
+            currency: currency || 'NGN',
             onSuccess: async (transaction: any) => {
                 setPaystackPaymentInProcess(false);
 
@@ -185,7 +192,14 @@ const CartPage = () => {
                                                         {course.title}
                                                     </th>
                                                     <td>
-                                                        <span className="wish_price theme-cl">{ formatAmount(course.discountedFee) }</span>
+                                                        <span className="wish_price theme-cl">
+                                                            {new Intl.NumberFormat('en-NG', {
+                                                                style: 'currency',
+                                                                currency: currency || 'NGN',
+                                                                minimumFractionDigits: currency === 'NGN' ? 0 : 2,
+                                                                maximumFractionDigits: currency === 'NGN' ? 0 : 2,
+                                                            }).format(convertAmount(course.discountedFee))}
+                                                        </span>
                                                     </td>
                                                     <td>
                                                         <button onClick={() => removeFromCart(course.id)} className="btn btn-remove">
@@ -228,7 +242,14 @@ const CartPage = () => {
                                     <div className="cart-wrap">
                                         <ul className="cart_list">
                                             <li>
-                                                Sub Total<strong>{ formatAmount(totalFees) }</strong>
+                                                Sub Total<strong>
+                                                    {new Intl.NumberFormat('en-NG', {
+                                                        style: 'currency',
+                                                        currency: currency || 'NGN',
+                                                        minimumFractionDigits: currency === 'NGN' ? 0 : 2,
+                                                        maximumFractionDigits: currency === 'NGN' ? 0 : 2,
+                                                    }).format(convertAmount(totalFees))}
+                                                </strong>
                                             </li>
                                             <li>
                                                 Discount<strong> { formatAmount(0) }</strong>
@@ -236,20 +257,32 @@ const CartPage = () => {
                                         </ul>
                                         <div className="flex_cart">
                                             <div className="flex_cart_1">Total Cost</div>
-                                            <div className="flex_cart_2">{ formatAmount(totalFees) }</div>
+                                            <div className="flex_cart_2">
+                                                {new Intl.NumberFormat('en-NG', {
+                                                    style: 'currency',
+                                                    currency: currency || 'NGN',
+                                                    minimumFractionDigits: currency === 'NGN' ? 0 : 2,
+                                                    maximumFractionDigits: currency === 'NGN' ? 0 : 2,
+                                                }).format(convertAmount(totalFees))}
+                                            </div>
                                         </div>
 
-                                        <p className="mt-3 mb-0">Please select any of the options below to complete your payment</p>
+                                        
+                                        {currency === 'NGN' && (
+                                            <p className="mt-3 mb-0">Please select any of the options below to complete your payment</p>
+                                        )}
 
                                         <div className="d-flex gap-2 flex-wrap mt-4">
-                                            <button 
-                                                onClick={makePaymentWithPaystack} 
-                                                disabled={paystackPaymentInProcess} 
-                                                type="button" 
-                                                className="btn btn-main p-3"
-                                            >
-                                                {paystackPaymentInProcess ? <ButtonLoader color="#6a1b9a" /> : 'Pay With Paystack'}
-                                            </button>
+                                            {currency === 'NGN' && (
+                                                <button 
+                                                    onClick={makePaymentWithPaystack} 
+                                                    disabled={paystackPaymentInProcess} 
+                                                    type="button" 
+                                                    className="btn btn-main p-3"
+                                                >
+                                                    {paystackPaymentInProcess ? <ButtonLoader color="#6a1b9a" /> : 'Pay With Paystack'}
+                                                </button>
+                                            )}
 
                                             <button 
                                                 onClick={makePaymentWithFlutterwave} 

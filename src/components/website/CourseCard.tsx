@@ -3,7 +3,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { useCart } from "@/src/providers/CartProvider"
-import { formatAmount } from "@/src/utils/client_functions"
 import { coursesUrl } from "@/src/utils/url"
 import Link from "next/link"
 
@@ -18,7 +17,19 @@ interface CardPropertyInterface {
 }
 
 const CourseCard = ({slug, course, title, lectures, originalPrice, discountedPrice, image}: CardPropertyInterface) => {
-    const { addToCart, removeFromCart, loadingId, cartCourses } = useCart();
+    const { addToCart, removeFromCart, loadingId, cartCourses, currency, convertAmount } = useCart();
+
+    const convertedOriginal = convertAmount(originalPrice);
+    const convertedDiscounted = convertAmount(discountedPrice);
+
+    const formatWithCurrency = (amount: number) => {
+        return new Intl.NumberFormat('en-NG', {
+            style: 'currency',
+            currency: currency || 'NGN',
+            minimumFractionDigits: currency === 'NGN' ? 0 : 2,
+            maximumFractionDigits: currency === 'NGN' ? 0 : 2,
+        }).format(amount);
+    };
 
     return (
         <div className="col-xxl-3 col-xl-4 col-lg-4 col-md-6">
@@ -68,11 +79,11 @@ const CourseCard = ({slug, course, title, lectures, originalPrice, discountedPri
                         <ul>
                             <li>
                                 <i className="bi bi-cash-stack" />
-                                <s>{ formatAmount(originalPrice) }</s>
+                                <s>{ formatWithCurrency(convertedOriginal) }</s>
                             </li>
                             <li>
                                 <i className="bi bi-cash-stack" />
-                                { formatAmount(discountedPrice) }
+                                { formatWithCurrency(convertedDiscounted) }
                             </li>
                             {/* <li>
                                 <i className="bi bi-camera-reels" />

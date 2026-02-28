@@ -196,6 +196,10 @@ export const verifyFlutterwaveTransaction = async (paymentId: string, userId: st
                 where: { id: userId },
             });
 
+            const rawAmount = Number(data.data.amount);
+            const normalizedAmount = Math.round(rawAmount);
+            const currency = String(data.data.currency || '').trim().toUpperCase();
+
             // Record the payment
             await prisma.transaction.create({
                 data: {
@@ -205,8 +209,8 @@ export const verifyFlutterwaveTransaction = async (paymentId: string, userId: st
                     name: user ? user.name : 'Unknown',
                     email: user ? user.email : '',
                     phone: user ? user.phone : '',
-                    currency: data.data.currency,
-                    amount: data.data.amount,
+                    currency,
+                    amount: normalizedAmount,
                     first4Digits: data.data.card?.first_6digits || '',
                     last4Digits: data.data.card?.last_4digits || '',
                     cardBrand: data.data.card?.type || '',
@@ -254,6 +258,10 @@ export const verifyPaystackTransaction = async (reference: string, userId: strin
                 where: { id: userId },
             });
 
+            const rawAmountMinorUnits = Number(data.data.amount);
+            const normalizedAmount = Math.round(rawAmountMinorUnits / 100); // store in base units
+            const currency = String(data.data.currency || '').trim().toUpperCase();
+
             // Record the payment
             await prisma.transaction.create({
                 data: {
@@ -263,8 +271,8 @@ export const verifyPaystackTransaction = async (reference: string, userId: strin
                     name: user ? user.name : 'Unknown',
                     email: user ? user.email : '',
                     phone: user ? user.phone : '',
-                    currency: data.data.currency,
-                    amount: data.data.amount,
+                    currency,
+                    amount: normalizedAmount,
                     first4Digits: data.data.authorization?.bin || '',
                     last4Digits: data.data.authorization?.last4 || '',
                     cardBrand: data.data.authorization?.brand || '',
