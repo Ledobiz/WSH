@@ -27,7 +27,8 @@ const CourseDetailsBanner = ({title, description, lectures, totalEnrolled, level
                                 <ul>
                                     <li>
                                         <i className="bi bi-camera-video" />
-                                        {lectures} Lectures
+                                        {/* {lectures} Lectures */}
+                                        Telegram / Website (LMS)
                                     </li>
                                     {/* <li>
                                         <i className="bi bi-people" />
