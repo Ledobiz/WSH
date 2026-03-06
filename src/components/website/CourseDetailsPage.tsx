@@ -259,7 +259,7 @@ const CourseDetailsPage = ({course}: {course: DBCourseInterface}) => {
                                 <div className="author-body py-3">
                                     <div className="ed_view_price">
                                         <span className="badge bg-light-red text-red rounded-pill">
-                                            {((course.originalFee - course.discountedFee) / course.originalFee) * 100}% off
+                                            {(((course.originalFee - course.discountedFee) / course.originalFee) * 100).toFixed(1)}% off
                                         </span>
                                         <h2 className="lh-base">{formatWithCurrency(convertedDiscountedFee)}</h2>
                                     </div>
