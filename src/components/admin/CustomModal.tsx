@@ -50,10 +50,10 @@ const CustomModal = ({
         <div
             className="modal fade"
             ref={modalRef}
-            tabIndex={-1}
             role="dialog"
             aria-labelledby="sign-up"
             aria-hidden="true"
+            data-focus="false"
         >
             <div
                 className={`modal-dialog modal-dialog-centered ${size} login-pop-form`}
