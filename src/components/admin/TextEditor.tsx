@@ -1,5 +1,7 @@
 'use client';
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { Editor } from '@tinymce/tinymce-react';
 import { useEffect, useRef } from 'react';
 
@@ -9,11 +11,11 @@ interface TextEditorProps {
     height?: number
 }
 
-const TextEditor = ({value, onChange, height = 500}: TextEditorProps) => {
+const TextEditor = ({value, onChange, height = 300}: TextEditorProps) => {
     const editorRef = useRef(null);
 
     useEffect(() => {
-        const handleFocusIn = (e) => {
+        const handleFocusIn = (e: any) => {
             // Check if the focus target is a TinyMCE dialog
             if (e.target.closest(".tox-tinymce-aux, .moxman-window, .tam-assetmanager-root")) {
                 e.stopImmediatePropagation();
@@ -31,7 +33,7 @@ const TextEditor = ({value, onChange, height = 500}: TextEditorProps) => {
             value={value}
             onEditorChange={onChange}
             init={{
-                height: 300,
+                height: height,
                 ui_mode: 'split',
                 // menubar: false,
                 plugins: [
@@ -43,7 +45,7 @@ const TextEditor = ({value, onChange, height = 500}: TextEditorProps) => {
                 toolbar: 'undo redo | blocks fontfamily fontsize | bold italic forecolor underline strikethrough | link image media table | ' +
                     'align lineheight | bullist numlist outdent indent | emoticons charmap | removeformat code preview',
                 content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
-                setup: (editor) => {
+                setup: (editor: any) => {
                     editor.on('PostRender', () => {
                         const container = editor.getContainer();
                         const uiContainer = document.querySelector('.tox.tox-tinymce-aux');
