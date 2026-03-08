@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 import CustomModal from "@/src/components/admin/CustomModal";
 import { useAuth } from "@/src/providers/AuthProvider";
 import { useCart } from "@/src/providers/CartProvider";
-import { cartUrl, courseDetailUrl, coursesUrl, loginUrl } from "@/src/utils/url";
+import { cartUrl, coursesUrl, loginUrl, studentDashboardUrl } from "@/src/utils/url";
 import Link from "next/link";
 import { toast } from "react-toastify";
 import { courseReviews } from "@/src/services/website/course";
@@ -126,7 +126,7 @@ const CourseDetailsPage = ({course}: {course: DBCourseInterface}) => {
             console.log('Assigning was successful')
             setAssigningFreeCourse(false);
             toast.success('Congratulations! You now have lifetime access to your free course');
-            router.push(`${courseDetailUrl}/${course.id}`)
+            router.push(studentDashboardUrl);
         }
         else {
             addToCart(course);
