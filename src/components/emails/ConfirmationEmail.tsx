@@ -97,8 +97,8 @@ export const ConfirmationEmail = ({studentName, courseName}: {studentName: strin
                             </Row>
                         </Section>
                         <Text className="mb-45 text-center text-gray-400">
-                            6, Wilson Estate, Asore Town, Ajuwon, Ifo, Ogun State, Nigeria.
-                            114302 <br /> &copy; {new Date().getFullYear()} WSH. All rights reserved.
+                            Alagbole, Ojodu Berger, Lagos.
+                            <br /> &copy; {new Date().getFullYear()} WSH. All rights reserved.
                         </Text>
                     </Container>
                 </Body>
