@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 import CustomModal from "@/src/components/admin/CustomModal";
 import { useAuth } from "@/src/providers/AuthProvider";
 import { useCart } from "@/src/providers/CartProvider";
-import { cartUrl, coursesUrl, loginUrl, studentDashboardUrl } from "@/src/utils/url";
+import { cartUrl, coursesUrl, loginUrl, thankYouUrl } from "@/src/utils/url";
 import Link from "next/link";
 import { toast } from "react-toastify";
 import { courseReviews } from "@/src/services/website/course";
@@ -104,7 +104,6 @@ const CourseDetailsPage = ({course}: {course: DBCourseInterface}) => {
         }
 
         if (course.isFree) {
-            console.log('Checking user is logged in')
             if (!user || user.role != 'student') {
                 toast.info('You must sign in first to get instant access to the course. Please sign in and try this again.');
                 router.push(`${loginUrl}?return=${coursesUrl}/${course.slug}`);
@@ -113,20 +112,18 @@ const CourseDetailsPage = ({course}: {course: DBCourseInterface}) => {
 
             setAssigningFreeCourse(true);
             
-            console.log('About to call assigning function')
             const response = await assignFreeCourse(course.id, user.id);
 
             if (!response.success) {
-                console.log('Assigning not successful')
                 toast.error(response.message);
                 setAssigningFreeCourse(false);
                 return;
             }
 
-            console.log('Assigning was successful')
             setAssigningFreeCourse(false);
             toast.success('Congratulations! You now have lifetime access to your free course');
-            router.push(studentDashboardUrl);
+            localStorage.setItem('payments-done', 'yes');
+            router.push(thankYouUrl);
         }
         else {
             addToCart(course);

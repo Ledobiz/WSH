@@ -19,7 +19,7 @@ const Checkout = () => {
         } else {
             localStorage.removeItem('payments-done');
         }
-    }, []);
+    }, [router]);
 
     return (
         <Suspense fallback={<Loading />}>
