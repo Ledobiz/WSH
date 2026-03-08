@@ -1,6 +1,7 @@
 'use client'
 
 import Link from "next/link"
+import { useSearchParams } from "next/navigation"
 import LoginForm from "./LoginForm"
 import Navbar from "./Navbar"
 import Footer from "./Footer"
@@ -10,10 +11,18 @@ import PageLoader from "./PageLoader"
 
 const LoginPage = () => {
     const { loading } = useAuth();
+    const searchParams = useSearchParams();
     const appUrl = process.env.NEXT_PUBLIC_APP_URL;
 
     if (loading) {
         return <PageLoader />;
+    }
+    
+    const returnUrl = searchParams.get('return');
+
+    let redirectBack = '';
+    if (returnUrl) {
+        redirectBack = '?return=' + decodeURIComponent(returnUrl);
     }
 
     return (
@@ -75,7 +84,7 @@ const LoginPage = () => {
                                     <div className="form-group">
                                         <div className="text-center text-muted">
                                             Don't have an account yet?{" "}
-                                            <Link href={registerUrl}>
+                                            <Link href={registerUrl+redirectBack}>
                                                 Sign Up
                                             </Link>
                                         </div>

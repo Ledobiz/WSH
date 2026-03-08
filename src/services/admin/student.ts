@@ -131,7 +131,7 @@ export const getStudentCourses = async (userId: string) => {
     }
 }
 
-export const assignCourseToStudent = async (userId: string, courseId: string) => {
+export const assignCourseToStudent = async (userId: string, courseId: string, byAdmin = true) => {
     try {
         const student = await prisma.student.findFirst({
             where: {
@@ -144,7 +144,7 @@ export const assignCourseToStudent = async (userId: string, courseId: string) =>
         if (student) {
             return {
                 success: false,
-                message: "Student is already enrolled in this course",
+                message: byAdmin ? "Student is already enrolled in this course" : 'Bad request! You have already enrolled into the course before.',
             };
         }
 
@@ -175,7 +175,7 @@ export const assignCourseToStudent = async (userId: string, courseId: string) =>
 
         return {
             success: true,
-            message: "Course assigned to student successfully",
+            message: byAdmin ? "Course assigned to student successfully" : 'Congratulations! You now have lifetime access to your free course',
         }
     } catch (error) {
         console.log("Error assigning course to student:", error);
@@ -428,7 +428,7 @@ export const bulkRemoveStudentsFromCourse = async (courseId: string, studentIds:
         );
 
         const failed = results.filter(r => r.status === 'rejected' || (r.status === 'fulfilled' && !r.value.success));
-        
+
         if (failed.length > 0) {
             return {
                 success: false,
@@ -480,7 +480,7 @@ export const bulkUpdateStudentLectures = async (courseId: string, studentIds: st
         );
 
         const failed = results.filter(r => r.status === 'rejected' || (r.status === 'fulfilled' && !r.value.success));
-        
+
         if (failed.length > 0) {
             return {
                 success: false,

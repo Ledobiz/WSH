@@ -13,10 +13,11 @@ interface CardPropertyInterface {
     originalPrice: number,
     discountedPrice: number,
     image: string,
-    course: any
+    course: any,
+    isFree: boolean,
 }
 
-const CourseCard = ({slug, course, title, lectures, originalPrice, discountedPrice, image}: CardPropertyInterface) => {
+const CourseCard = ({slug, course, title, lectures, originalPrice, discountedPrice, image, isFree}: CardPropertyInterface) => {
     const { addToCart, removeFromCart, loadingId, cartCourses, currency, convertAmount } = useCart();
 
     const convertedOriginal = convertAmount(originalPrice);
@@ -65,7 +66,7 @@ const CourseCard = ({slug, course, title, lectures, originalPrice, discountedPri
                     <div className="course-hours position-absolute top-0 start-0 ms-3 mt-3">
                         <span className="badge bg-dark rounded-pill">
                             <i className="bi bi-clock-history me-1" />
-                            {originalPrice > 0 ? Math.round(((originalPrice - discountedPrice) / originalPrice) * 100) : 0}% off
+                            {isFree ? 100 : (originalPrice > 0 ? Math.round(((originalPrice - discountedPrice) / originalPrice) * 100) : 0)}% off
                         </span>
                     </div>
                 </div>
@@ -83,7 +84,7 @@ const CourseCard = ({slug, course, title, lectures, originalPrice, discountedPri
                             </li>
                             <li>
                                 <i className="bi bi-cash-stack" />
-                                { formatWithCurrency(convertedDiscounted) }
+                                { isFree ? 'Free' : formatWithCurrency(convertedDiscounted) }
                             </li>
                             {/* <li>
                                 <i className="bi bi-camera-reels" />
@@ -105,7 +106,7 @@ const CourseCard = ({slug, course, title, lectures, originalPrice, discountedPri
                         href={`${coursesUrl}/${slug}`}
                         className="btn btn-md btn-outline-gray border-2 rounded-pill w-100"
                     >
-                        Enrol Now
+                        Get Instant Access
                         <i className="bi bi-arrow-right ms-2" />
                     </Link>
                 </div>

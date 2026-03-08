@@ -43,6 +43,7 @@ const CategoryCourses = ({courses}: {courses: DBCourseInterface[]}) => {
                                     originalPrice={course.originalFee}
                                     discountedPrice={course.discountedFee}
                                     image={course.thumbnail ?? ''}
+                                    isFree={course.isFree}
                                 />
                             ))}
                         </div>

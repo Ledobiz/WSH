@@ -2,17 +2,21 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { formatAmount, formatDateAndTime, getTotalLectures } from "@/src/utils/client_functions";
+import { formatDateAndTime, getTotalLectures } from "@/src/utils/client_functions";
 import CourseDetailsBanner from "./CourseDetailsBanner";
 import { DBCourseInterface } from "@/src/types";
 import { useEffect, useState } from "react";
 import CustomModal from "@/src/components/admin/CustomModal";
+import { useAuth } from "@/src/providers/AuthProvider";
 import { useCart } from "@/src/providers/CartProvider";
-import { cartUrl } from "@/src/utils/url";
+import { cartUrl, courseDetailUrl, coursesUrl, loginUrl } from "@/src/utils/url";
 import Link from "next/link";
+import { toast } from "react-toastify";
 import { courseReviews } from "@/src/services/website/course";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import WebsitePagination from "./WebsitePagination";
+import { assignFreeCourse } from "@/src/services/website/cart";
+import ButtonLoader from "../admin/ButtonLoader";
 
 const CourseDetailsPage = ({course}: {course: DBCourseInterface}) => {
     const [showPreviewModal, setShowPreviewModal] = useState(false);
@@ -21,6 +25,8 @@ const CourseDetailsPage = ({course}: {course: DBCourseInterface}) => {
     const [totalPages, setTotalPages] = useState(0);
     const [totalEntries, setTotalEntries] = useState(0);
     const { addToCart, cartCourses, removeFromCart, currency, convertAmount } = useCart();
+    const { user } = useAuth();
+    const [assigningFreeCourse, setAssigningFreeCourse] = useState<boolean>(false);
 
     const searchParams = useSearchParams();
     const pathName = usePathname();
@@ -93,8 +99,39 @@ const CourseDetailsPage = ({course}: {course: DBCourseInterface}) => {
     }
 
     const handleBuyNow = async (course: any) => {
-        addToCart(course);
-        router.push(cartUrl);
+        if (assigningFreeCourse) {
+            return;
+        }
+
+        if (course.isFree) {
+            console.log('Checking user is logged in')
+            if (!user || user.role != 'student') {
+                toast.info('You must sign in first to get instant access to the course. Please sign in and try this again.');
+                router.push(`${loginUrl}?return=${coursesUrl}/${course.slug}`);
+                return;
+            }
+
+            setAssigningFreeCourse(true);
+            
+            console.log('About to call assigning function')
+            const response = await assignFreeCourse(course.id, user.id);
+
+            if (!response.success) {
+                console.log('Assigning not successful')
+                toast.error(response.message);
+                setAssigningFreeCourse(false);
+                return;
+            }
+
+            console.log('Assigning was successful')
+            setAssigningFreeCourse(false);
+            toast.success('Congratulations! You now have lifetime access to your free course');
+            router.push(`${courseDetailUrl}/${course.id}`)
+        }
+        else {
+            addToCart(course);
+            router.push(cartUrl);
+        }
     }
 
     return (
@@ -106,6 +143,7 @@ const CourseDetailsPage = ({course}: {course: DBCourseInterface}) => {
                 totalEnrolled={course.students.length}
                 level="Beginner | Advanced"
                 buyNow={() => handleBuyNow(course)}
+                buyingFreeCourse={assigningFreeCourse}
             />
 
             <section>
@@ -121,7 +159,7 @@ const CourseDetailsPage = ({course}: {course: DBCourseInterface}) => {
 
                                 <button onClick={() => handleBuyNow(course)} className="btn btn-gray rounded-pill w-100">
                                     <i className="bi bi-basket2 me-2" />
-                                    Buy Now
+                                    Get Instant Access
                                 </button>
                             </div>
 
@@ -259,9 +297,9 @@ const CourseDetailsPage = ({course}: {course: DBCourseInterface}) => {
                                 <div className="author-body py-3">
                                     <div className="ed_view_price">
                                         <span className="badge bg-light-red text-red rounded-pill">
-                                            {(((course.originalFee - course.discountedFee) / course.originalFee) * 100).toFixed(1)}% off
+                                            {course.isFree ? 100 : (course.originalFee > 0 ? Math.round(((course.originalFee - course.discountedFee) / course.originalFee) * 100) : 0)}% off
                                         </span>
-                                        <h2 className="lh-base">{formatWithCurrency(convertedDiscountedFee)}</h2>
+                                        <h2 className="lh-base">{ course.isFree ? 'This course is free' : formatWithCurrency(convertedDiscountedFee) }</h2>
                                     </div>
                                     <div className="ed_view_features mb-4">
                                         <h6 className="fw-semibold">Course Features</h6>
@@ -289,13 +327,13 @@ const CourseDetailsPage = ({course}: {course: DBCourseInterface}) => {
                                                 </button>
                                                 <Link href={cartUrl} className="btn btn-gray w-100 rounded-pill">
                                                     <i className="bi bi-basket2 me-2" />
-                                                    Buy Now
+                                                    Get Instant Access
                                                 </Link>
                                             </>
                                         ) : (
                                             <button onClick={() => handleBuyNow(course)} className="btn btn-gray rounded-pill w-100">
                                                 <i className="bi bi-basket2 me-2" />
-                                                Buy Now
+                                                {assigningFreeCourse ? <ButtonLoader /> : 'Get Instant Access '}
                                             </button>
                                         )}
                                         

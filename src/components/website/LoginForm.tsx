@@ -22,6 +22,11 @@ const LoginForm = () => {
 
     const returnUrl = searchParams.get('return');
 
+    let redirectBack = '';
+    if (returnUrl) {
+        redirectBack = '?return=' + decodeURIComponent(returnUrl);
+    }
+
     const handleInputChange = (field: string, value: any) => {
         setFormData(prev => ({ ...prev, [field]: value }));
     };
@@ -134,7 +139,7 @@ const LoginForm = () => {
                         </label>
                     </div>
                     <div className="forget-password">
-                        <Link href={forgotPasswordUrl} className="text-decoration-underline">
+                        <Link href={forgotPasswordUrl+redirectBack} className="text-decoration-underline">
                             Forgot Password?
                         </Link>
                     </div>

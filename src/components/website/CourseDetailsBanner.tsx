@@ -1,3 +1,5 @@
+import ButtonLoader from "../admin/ButtonLoader"
+
 interface BannerInterface {
     title: string,
     description: string,
@@ -6,9 +8,10 @@ interface BannerInterface {
     level: string,
     banner?: string | null,
     buyNow: () => void,
+    buyingFreeCourse: boolean,
 }
 
-const CourseDetailsBanner = ({title, description, lectures, totalEnrolled, level, banner, buyNow}: BannerInterface) => {
+const CourseDetailsBanner = ({title, description, lectures, totalEnrolled, level, banner, buyNow, buyingFreeCourse}: BannerInterface) => {
     return (
         <div
             className="image-cover ed_detail_head lg theme-ov"
@@ -42,10 +45,18 @@ const CourseDetailsBanner = ({title, description, lectures, totalEnrolled, level
                                 </p>
                             </div>
 
-                            <button onClick={buyNow} className="btn btn-gray rounded-pill">
-                                <i className="bi bi-basket2 me-2" />
-                                Buy Now
-                            </button>
+                            {buyingFreeCourse && (
+                                <button onClick={() => {}} className="btn btn-main rounded-pill">
+                                    <ButtonLoader color="#fff" />
+                                </button>
+                            )}
+
+                            {!buyingFreeCourse && (
+                                <button onClick={buyNow} className="btn btn-gray rounded-pill">
+                                    <i className="bi bi-basket2 me-2" /> 
+                                    Get Instant Access
+                                </button>
+                            )}
                         </div>
                     </div>
                 </div>

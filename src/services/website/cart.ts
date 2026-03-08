@@ -5,6 +5,7 @@ import { inngest } from "@/src/inngest/client";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import prisma from "@/src/lib/prisma";
+import { assignCourseToStudent } from "../admin/student";
 
 export const myCart = async (userId: string) => {
     try {
@@ -135,7 +136,7 @@ export const addToCartServer = async (userId: string, courseId: string) => {
 
         let courseFee = 0;
         if (course) {
-            courseFee = course.discountedFee || 0;
+            courseFee = course.isFree ? 0 : (course.discountedFee || 0);
         }
 
         if (!cart) {
@@ -291,6 +292,27 @@ export const verifyPaystackTransaction = async (reference: string, userId: strin
         console.error("Transaction verification error:", error);
         return { success: false, message: "Transaction verification failed" };
     }
+}
+
+export const assignFreeCourse = async (courseId: string, userId: string) => {
+    if (!courseId || !userId) {
+        return { success: false, message: "Invalid request, please try again" };
+    }
+
+    // Confirm that the course is free
+    const course = await prisma.course.findUnique({
+        where: { id: courseId }
+    });
+
+    if (!course) {
+        return { success: false, message: 'Sorry, we cannot find the course' }
+    }
+
+    if (!course.isFree) {
+        return { success: false, message: 'Bad request! This course is not free' }
+    }
+
+    return await assignCourseToStudent(userId, courseId, false);
 }
 
 const queueCourseForAutoAssigning = async (userId: string, reference: string) => {

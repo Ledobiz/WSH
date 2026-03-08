@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect } from "react";
 import Footer from "./Footer"
 import Navbar from "./Navbar"
 import PageLoader from "./PageLoader";
 import { useAuth } from "@/src/providers/AuthProvider";
+import { useSearchParams } from 'next/navigation'
 import { loginUrl } from "@/src/utils/url";
 import SignupForm from "./SignupForm";
 import Link from "next/link";
@@ -13,6 +13,14 @@ const SignupPage = () => {
     const { loading } = useAuth();
     const appUrl = process.env.NEXT_PUBLIC_APP_URL;
     const appName = process.env.NEXT_PUBLIC_APP_NAME;
+
+    const searchParams = useSearchParams();
+    const returnUrl = searchParams.get('return');
+
+    let redirectBack = '';
+    if (returnUrl) {
+        redirectBack = '?return=' + decodeURIComponent(returnUrl);
+    }
 
     if (loading) {
         return <PageLoader />;
@@ -77,7 +85,7 @@ const SignupPage = () => {
                                     <div className="form-group mb-3">
                                         <div className="text-center text-muted">
                                             Already have an account?{" "}
-                                            <Link href={loginUrl}>
+                                            <Link href={loginUrl+redirectBack}>
                                                 Log In
                                             </Link>
                                         </div>
