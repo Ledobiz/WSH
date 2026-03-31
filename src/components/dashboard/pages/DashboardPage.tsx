@@ -132,8 +132,7 @@ const DashboardPage = () => {
                             <NavBreadcrumb page="Dashboard" />
                             
                             <Suspense fallback={<Loading />}>
-                                <div className="row g-3 mb-4">
-                                    {/* CARD 1 */}
+                                {/*<div className="row g-3 mb-4">
                                     <div className="col-12 col-sm-6 col-lg-3">
                                         <div
                                             className="stat-card position-relative shadow-lg text-white p-4 rounded-4"
@@ -188,7 +187,6 @@ const DashboardPage = () => {
                                             <div className="circle-bg" />
                                         </div>
                                     </div>
-                                    {/* CARD 3 */}
                                     <div className="col-12 col-sm-6 col-lg-3">
                                         <div
                                             className="stat-card position-relative shadow-lg text-white p-4 rounded-4"
@@ -240,7 +238,7 @@ const DashboardPage = () => {
                                             <div className="circle-bg" />
                                         </div>
                                     </div>
-                                </div>
+                                </div>*/ }
 
                                 {loading ? <PageLoader /> : (
                                     totalActiveCourses(allCourses ?? []) ? (
