@@ -6,6 +6,14 @@ import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import CurrencySwitcher from "./CurrencySwitcher";
 
+/** Clear body scroll lock and stray nav overlay (safe on unmount; does not call the nav plugin). */
+function releaseBodyNavOverlayLock() {
+    if (typeof window === "undefined" || !window.jQuery) return;
+    const $ = window.jQuery;
+    $("body").removeClass("no-scroll").css({ overflow: "", height: "" });
+    $(".nav-overlay-panel").stop(true, true).remove();
+}
+
 /** Undo jQuery navigation mobile lock (body.no-scroll + overlay) — required for Next.js client navigations. */
 function resetMobileNavScrollLock() {
     if (typeof window === "undefined" || !window.jQuery) return;
@@ -18,7 +26,7 @@ function resetMobileNavScrollLock() {
         $nav.find(".nav-menus-wrapper").removeClass("nav-menus-wrapper-open");
         $(".nav-overlay-panel").stop(true, true).remove();
     }
-    $("body").removeClass("no-scroll").css({ overflow: "", height: "" });
+    releaseBodyNavOverlayLock();
 }
 
 const links = [
@@ -76,13 +84,18 @@ const Navbar = () => {
 
         return () => {
             $(document).off("click.wshMobileNav", ".nav-menus-wrapper a");
-            resetMobileNavScrollLock();
         };
     }, []);
 
     useEffect(() => {
         resetMobileNavScrollLock();
     }, [pathname]);
+
+    useEffect(() => {
+        return () => {
+            releaseBodyNavOverlayLock();
+        };
+    }, []);
 
     return (  
         <>
