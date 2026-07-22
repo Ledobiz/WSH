@@ -417,3 +417,33 @@ model Note {
   createdAt                DateTime               @default(now())
   updatedAt                DateTime               @updatedAt
 }
+
+model BlogPost {
+  id          String       @id @default(uuid()) @db.VarChar(191)
+  title       String       @db.VarChar(191)
+  slug        String       @unique @db.VarChar(191)
+  excerpt     String
+  content     String
+  image       String
+  imagePublicId String?    @db.VarChar(191)
+  author      String       @default("Women Skills Hub") @db.VarChar(191)
+  category    String       @db.VarChar(191)
+  readTime    String       @db.VarChar(191)
+  status      BlogStatus   @default(draft)
+  publishedAt DateTime?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  deletedAt   DateTime?
+
+  @@index(slug)
+  @@index(status)
+  @@index(category)
+  @@index(publishedAt)
+  @@index(createdAt)
+  @@index(deletedAt)
+}
+
+enum BlogStatus {
+  draft
+  published
+}

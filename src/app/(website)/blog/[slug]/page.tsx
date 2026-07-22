@@ -2,12 +2,12 @@ import PageTransition from "@/src/components/PageTransition";
 import Navbar from "@/src/components/website/Navbar";
 import Footer from "@/src/components/website/Footer";
 import BlogPost from "@/src/views/website/BlogPost";
-import { blogPosts } from "@/src/data/blog";
+import { fetchPublishedPostBySlug } from "@/src/services/website/blog";
 import { Metadata } from "next";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
     const { slug } = await params;
-    const post = blogPosts.find((p) => p.slug === slug);
+    const { post } = await fetchPublishedPostBySlug(slug);
 
     if (!post) {
         return {

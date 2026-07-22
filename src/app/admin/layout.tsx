@@ -12,9 +12,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { AuthProvider } from "@/src/providers/AuthProvider";
 import ScrollToTop from "@/src/components/website/ScrollToTop";
 
-import { LayoutDashboard, Users, BookOpen, DollarSign, MessageSquare, BarChart3, Tag, Ticket, Menu, X, ChevronLeft, Shield } from "lucide-react";
+import { LayoutDashboard, Users, BookOpen, DollarSign, MessageSquare, BarChart3, Tag, Ticket, Menu, X, ChevronLeft, Shield, Newspaper } from "lucide-react";
 import {
-    adminAnalyticsUrl, adminCouponsUrl, adminCourseCategoryUrl, adminCoursesUrl, adminDashboardUrl,
+    adminAnalyticsUrl, adminBlogUrl, adminCouponsUrl, adminCourseCategoryUrl, adminCoursesUrl, adminDashboardUrl,
     adminReviewssUrl, adminStudentsUrl, earningsUrl,
 } from "@/src/utils/url";
 import Link from "next/link";
@@ -29,6 +29,7 @@ const navItems = [
     { label: "Coupons", path: adminCouponsUrl, icon: Ticket },
     { label: "Finances", path: earningsUrl, icon: DollarSign },
     { label: "Reviews", path: adminReviewssUrl, icon: MessageSquare },
+    { label: "Blog", path: adminBlogUrl, icon: Newspaper },
     { label: "Analytics", path: adminAnalyticsUrl, icon: BarChart3 },
 ];
 

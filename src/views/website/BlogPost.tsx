@@ -6,12 +6,12 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Calendar, Clock, ArrowLeft, ArrowRight, BookOpen, Share2, ShoppingCart } from "lucide-react";
+import { Calendar, Clock, ArrowLeft, ArrowRight, BookOpen, Share2, ShoppingCart, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/src/components/ui/badge";
 import { Button } from "@/src/components/ui/button";
 import CourseCard from "@/src/components/website/CourseCard";
-import { blogPosts } from "@/src/data/blog";
+import { fetchPublishedPostBySlug, fetchPublishedPosts } from "@/src/services/website/blog";
 import { homepageCourses } from "@/src/services/website/course";
 import { blogUrl } from "@/src/utils/url";
 
@@ -23,53 +23,32 @@ const getTotalLectures = (course: any): number => {
     );
 };
 
-// Lightweight markdown-ish renderer for the static blog content.
-const renderContent = (content: string) => {
-    return content.split("\n").map((line, i) => {
-        if (line.startsWith("## ")) {
-            return <h2 key={i} className="text-xl md:text-2xl font-bold font-display text-foreground mt-8 mb-3">{line.slice(3)}</h2>;
-        }
-        if (line.startsWith("### ")) {
-            return <h3 key={i} className="text-lg font-bold font-display text-foreground mt-6 mb-2">{line.slice(4)}</h3>;
-        }
-        if (line.startsWith("- **")) {
-            const parts = line.slice(2).split("**");
-            return (
-                <li key={i} className="ml-4 text-muted-foreground mb-1 list-disc">
-                    <strong className="text-foreground">{parts[1]}</strong>{parts[2]}
-                </li>
-            );
-        }
-        if (line.startsWith("- ")) {
-            return <li key={i} className="ml-4 text-muted-foreground mb-1 list-disc">{line.slice(2)}</li>;
-        }
-        if (line.match(/^\d+\./)) {
-            const text = line.replace(/^\d+\.\s*/, "");
-            const parts = text.split(/\*\*(.*?)\*\*/g);
-            return (
-                <li key={i} className="ml-4 text-muted-foreground mb-1 list-decimal">
-                    {parts.map((part, j) => j % 2 === 1 ? <strong key={j} className="text-foreground">{part}</strong> : part)}
-                </li>
-            );
-        }
-        if (line.startsWith("**") && line.endsWith("**")) {
-            return <p key={i} className="font-semibold text-foreground mt-4 mb-1">{line.slice(2, -2)}</p>;
-        }
-        if (line.trim() === "") return <div key={i} className="h-2" />;
-        const parts = line.split(/\*\*(.*?)\*\*/g);
-        return (
-            <p key={i} className="text-muted-foreground leading-relaxed mb-2">
-                {parts.map((part, j) => j % 2 === 1 ? <strong key={j} className="text-foreground">{part}</strong> : part)}
-            </p>
-        );
-    });
-};
-
 const BlogPost = ({ slug }: { slug: string }) => {
     const router = useRouter();
-    const post = blogPosts.find((p) => p.slug === slug);
 
+    const [post, setPost] = useState<any>(null);
+    const [allPosts, setAllPosts] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
     const [recommended, setRecommended] = useState<any[]>([]);
+
+    useEffect(() => {
+        const load = async () => {
+            setLoading(true);
+            try {
+                const [postResult, listResult] = await Promise.all([
+                    fetchPublishedPostBySlug(slug),
+                    fetchPublishedPosts(),
+                ]);
+                if (postResult.success) setPost(postResult.post);
+                if (listResult.success) setAllPosts(listResult.posts || []);
+            } catch (error) {
+                console.log("Error loading blog post:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        load();
+    }, [slug]);
 
     useEffect(() => {
         const fetchCourses = async () => {
@@ -83,6 +62,14 @@ const BlogPost = ({ slug }: { slug: string }) => {
         fetchCourses();
     }, []);
 
+    if (loading) {
+        return (
+            <div className="container py-32 flex items-center justify-center">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+        );
+    }
+
     if (!post) {
         return (
             <div className="container py-20 text-center">
@@ -94,11 +81,11 @@ const BlogPost = ({ slug }: { slug: string }) => {
         );
     }
 
-    const currentIndex = blogPosts.findIndex((p) => p.slug === slug);
-    const prevPost = currentIndex > 0 ? blogPosts[currentIndex - 1] : null;
-    const nextPost = currentIndex < blogPosts.length - 1 ? blogPosts[currentIndex + 1] : null;
+    const currentIndex = allPosts.findIndex((p) => p.slug === slug);
+    const prevPost = currentIndex > 0 ? allPosts[currentIndex - 1] : null;
+    const nextPost = currentIndex >= 0 && currentIndex < allPosts.length - 1 ? allPosts[currentIndex + 1] : null;
 
-    const relatedPosts = blogPosts
+    const relatedPosts = allPosts
         .filter((p) => p.category === post.category && p.slug !== post.slug)
         .slice(0, 2);
 
@@ -136,7 +123,7 @@ const BlogPost = ({ slug }: { slug: string }) => {
                             <Badge variant="secondary" className="bg-primary/10 text-primary">{post.category}</Badge>
                             <span className="flex items-center gap-1 text-sm text-muted-foreground">
                                 <Calendar className="h-3.5 w-3.5" />
-                                {new Date(post.date).toLocaleDateString("en-NG", { day: "numeric", month: "long", year: "numeric" })}
+                                {new Date(post.publishedAt).toLocaleDateString("en-NG", { day: "numeric", month: "long", year: "numeric" })}
                             </span>
                             <span className="flex items-center gap-1 text-sm text-muted-foreground">
                                 <Clock className="h-3.5 w-3.5" />
@@ -153,7 +140,7 @@ const BlogPost = ({ slug }: { slug: string }) => {
                         <div className="flex items-center justify-between mb-8 pb-6 border-b border-border">
                             <div className="flex items-center gap-3">
                                 <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center">
-                                    <span className="text-primary-foreground font-bold text-sm">W</span>
+                                    <span className="text-primary-foreground font-bold text-sm">{(post.author || "W").charAt(0).toUpperCase()}</span>
                                 </div>
                                 <div>
                                     <p className="font-semibold text-foreground text-sm">{post.author}</p>
@@ -166,9 +153,7 @@ const BlogPost = ({ slug }: { slug: string }) => {
                         </div>
 
                         {/* Content */}
-                        <article className="prose-custom">
-                            {renderContent(post.content)}
-                        </article>
+                        <article className="blog-content" dangerouslySetInnerHTML={{ __html: post.content }} />
 
                         {/* Navigation */}
                         <div className="flex items-center justify-between mt-12 pt-6 border-t border-border gap-4">

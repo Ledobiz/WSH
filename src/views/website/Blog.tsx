@@ -1,12 +1,15 @@
 'use client';
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { Calendar, Clock, ArrowRight, BookOpen } from "lucide-react";
 import { Badge } from "@/src/components/ui/badge";
 import { Skeleton } from "@/src/components/ui/skeleton";
-import { blogPosts, blogCategories } from "@/src/data/blog";
+import { blogCategories } from "@/src/data/blog";
+import { fetchPublishedPosts } from "@/src/services/website/blog";
 import { blogUrl } from "@/src/utils/url";
 
 const BlogCardSkeleton = () => (
@@ -45,15 +48,26 @@ const FeaturedSkeleton = () => (
 const Blog = () => {
     const [activeCategory, setActiveCategory] = useState("All");
     const [loading, setLoading] = useState(true);
+    const [posts, setPosts] = useState<any[]>([]);
 
     useEffect(() => {
-        const t = setTimeout(() => setLoading(false), 600);
-        return () => clearTimeout(t);
+        const load = async () => {
+            setLoading(true);
+            try {
+                const result = await fetchPublishedPosts();
+                if (result.success) setPosts(result.posts || []);
+            } catch (error) {
+                console.log("Error loading blog posts:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        load();
     }, []);
 
     const filtered = activeCategory === "All"
-        ? blogPosts
-        : blogPosts.filter((p) => p.category === activeCategory);
+        ? posts
+        : posts.filter((p) => p.category === activeCategory);
 
     return (
         <>
@@ -135,7 +149,7 @@ const Blog = () => {
                                                 <div className="flex items-center gap-4 text-sm text-muted-foreground">
                                                     <span className="flex items-center gap-1">
                                                         <Calendar className="h-3.5 w-3.5" />
-                                                        {new Date(filtered[0].date).toLocaleDateString("en-NG", { day: "numeric", month: "short", year: "numeric" })}
+                                                        {new Date(filtered[0].publishedAt).toLocaleDateString("en-NG", { day: "numeric", month: "short", year: "numeric" })}
                                                     </span>
                                                     <span className="flex items-center gap-1">
                                                         <Clock className="h-3.5 w-3.5" />
@@ -179,7 +193,7 @@ const Blog = () => {
                                                         <div className="flex items-center gap-3">
                                                             <span className="flex items-center gap-1">
                                                                 <Calendar className="h-3 w-3" />
-                                                                {new Date(post.date).toLocaleDateString("en-NG", { day: "numeric", month: "short" })}
+                                                                {new Date(post.publishedAt).toLocaleDateString("en-NG", { day: "numeric", month: "short" })}
                                                             </span>
                                                             <span className="flex items-center gap-1">
                                                                 <Clock className="h-3 w-3" />
