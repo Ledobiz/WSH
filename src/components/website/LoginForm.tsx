@@ -1,26 +1,26 @@
-'use client'
+import { useState } from "react";
+import Link from "next/link";
+import { Eye, EyeOff, ArrowRight } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
-import { signIn } from "@/src/services/auth"
-import { encrypt } from "@/src/utils/encryption"
-import { adminDashboardUrl, forgotPasswordUrl, studentDashboardUrl, studentProfileUrl } from "@/src/utils/url"
-import Link from "next/link"
-import { useRouter, useSearchParams } from "next/navigation"
-import { useState } from "react"
-import { toast } from "react-toastify"
+import LoadingButton from "@/src/components/website/LoadingButton";
+import { adminDashboardUrl, forgotPasswordUrl, studentDashboardUrl, studentProfileUrl } from "@/src/utils/url";
+import { signIn } from "@/src/services/auth";
+import { encrypt } from "@/src/utils/encryption";
+import { useSearchParams } from "next/navigation";
 
 const LoginForm = () => {
+    const [showPassword, setShowPassword] = useState(false);
+    const [loading, setLoading] = useState(false);   
     const router = useRouter();
     const searchParams = useSearchParams();
-    const [loading, setLoading] = useState(false);
-    const [showPassword, setShowPassword] = useState(false);
     const [formData, setFormData] = useState({
         email: '',
         password: '',
-    });
+    }); 
 
-    const returnUrl = searchParams.get('return');
+    const returnUrl = searchParams?.get('return');
 
     let redirectBack = '';
     if (returnUrl) {
@@ -31,9 +31,9 @@ const LoginForm = () => {
         setFormData(prev => ({ ...prev, [field]: value }));
     };
 
-    const handleSignIn = async (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-
+        
         if (!formData.email.trim() || !formData.password.trim()) {
             toast.error('Please fill in all fields');
             return;
@@ -91,66 +91,63 @@ const LoginForm = () => {
             toast.error('Something went wrong. Please try again.');
             setLoading(false);
         }
-    }
+    };
 
     return (
-        <form onSubmit={handleSignIn}>
-            <div className="form-group mb-4">
-                <input
-                    type="email"
-                    name="email"
-                    className="form-control"
-                    placeholder="Enter your email"
-                    value={formData.email}
-                    onChange={(e) => handleInputChange('email', e.target.value)}
-                    disabled={loading}
-                />
-            </div>
-            <div className="form-group mb-4">
-                <div className="position-relative">
+        <>
+            <div className="space-y-4">
+                <div>
+                    <label className="block text-sm font-medium text-foreground mb-1.5">Email</label>
                     <input
-                        type={showPassword ? "text" : "password"}
-                        name="password"
-                        className="form-control"
-                        placeholder="********"
-                        value={formData.password}
-                        onChange={(e) => handleInputChange('password', e.target.value)}
+                        type="email"
+                        placeholder="your@email.com"
+                        className="w-full h-11 px-4 rounded-xl border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 transition-shadow"
+                        value={formData.email}
+                        onChange={(e) => handleInputChange('email', e.target.value)}
                         disabled={loading}
+                        required
                     />
-                    <span className="position-absolute top-50 end-0 translate-middle-y me-3"
-                        onClick={() => setShowPassword(!showPassword)}
-                        style={{cursor: 'pointer'}}
-                    >
-                        <i className={`bi ${showPassword ? "bi-eye-slash" : "bi-eye"} text-muted`} />
-                    </span>
                 </div>
-            </div>
-            <div className="form-group mb-4">
-                <div className="d-flex align-items-center justify-content-between">
-                    <div className="form-check">
+                <div>
+                    <label className="block text-sm font-medium text-foreground mb-1.5">Password</label>
+                    <div className="relative">
                         <input
-                            id="saveinfo"
-                            className="form-check-input"
-                            name="saveinfo"
-                            type="checkbox"
+                            type={showPassword ? "text" : "password"}
+                            placeholder="Enter your password"
+                            className="w-full h-11 px-4 pr-10 rounded-xl border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 transition-shadow"
+                            value={formData.password}
+                            onChange={(e) => handleInputChange('password', e.target.value)}
+                            disabled={loading}
+                            required
                         />
-                        <label htmlFor="saveinfo" className="form-check-label">
-                            Remember me
-                        </label>
-                    </div>
-                    <div className="forget-password">
-                        <Link href={forgotPasswordUrl+redirectBack} className="text-decoration-underline">
-                            Forgot Password?
-                        </Link>
+                        <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                        >
+                            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        </button>
                     </div>
                 </div>
             </div>
-            <div className="form-group mb-3">
-                <button type="submit" className="btn btn-main w-100" disabled={loading}>
-                    {loading ? "Processing..." : "Sign In"}
-                </button>
+
+            <div className="flex justify-end">
+                <Link href={forgotPasswordUrl+redirectBack} className="text-sm text-primary font-medium hover:underline">
+                    Forgot password?
+                </Link>
             </div>
-        </form>
+
+            <LoadingButton 
+                variant="hero" 
+                size="lg" 
+                className="w-full h-12 cursor-pointer" 
+                loading={loading} 
+                type="submit"
+                onClick={handleSubmit}
+            >
+                Sign In <ArrowRight className="h-4 w-4" />
+            </LoadingButton>
+        </>
     )
 }
-export default LoginForm    
+export default LoginForm

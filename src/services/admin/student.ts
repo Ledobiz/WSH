@@ -131,6 +131,67 @@ export const getStudentCourses = async (userId: string) => {
     }
 }
 
+export const getStudentCourseContent = async (userId: string, courseId: string) => {
+    try {
+        // The student's OWN copy of the content (StudentModule / StudentModuleComponent),
+        // which can lag behind the master course until an admin refreshes it.
+        const student = await prisma.student.findFirst({
+            where: {
+                userId,
+                courseId,
+                deletedAt: null,
+            },
+            include: {
+                user: { select: { id: true, name: true, email: true } },
+                course: { select: { id: true, title: true } },
+                studentModules: {
+                    where: { deletedAt: null },
+                    orderBy: [
+                        { sorting: { sort: 'asc', nulls: 'last' } },
+                        { createdAt: 'asc' },
+                    ],
+                    include: {
+                        studentModuleComponents: {
+                            where: { deletedAt: null },
+                            orderBy: [
+                                { sorting: { sort: 'asc', nulls: 'last' } },
+                                { createdAt: 'asc' },
+                            ],
+                            include: {
+                                studentLectureRecords: {
+                                    where: { deletedAt: null },
+                                    select: { status: true },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        });
+
+        if (!student) {
+            return {
+                success: false,
+                message: 'This student is not enrolled in the course.',
+                student: null,
+            };
+        }
+
+        return {
+            success: true,
+            message: 'Success',
+            student,
+        };
+    } catch (error) {
+        console.log("Error fetching student course content:", error);
+        return {
+            success: false,
+            message: "Failed to load the student's course content.",
+            student: null,
+        };
+    }
+}
+
 export const assignCourseToStudent = async (userId: string, courseId: string, byAdmin = true) => {
     try {
         const student = await prisma.student.findFirst({

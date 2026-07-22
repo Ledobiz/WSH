@@ -1,18 +1,23 @@
-import Loading from "@/src/components/website/loading"
-import SignupPage from "@/src/components/website/SignupPage";
-import { Metadata } from "next";
-import { Suspense } from "react"
+import { Metadata } from "next"
+import PageTransition from "@/src/components/PageTransition";
+import Navbar from "@/src/components/website/Navbar";
+import Footer from "@/src/components/website/Footer";
+import SignupPage from "@/src/pages/website/SignupPage";
 
 export const metadata: Metadata = {
-    title: "Register - Women Skills Hub",
+    title: "Sign Up - Women Skills Hub",
     description: "The home for upskilling for financial independence"
 };
 
-const GetStarted = async () => {
+const page = () => {
     return (
-        <Suspense fallback={<Loading />}>
-            <SignupPage />
-        </Suspense>
+        <PageTransition>
+            <div className="min-h-screen bg-background">
+                <Navbar />
+                <SignupPage />
+                <Footer />
+            </div>
+        </PageTransition>
     )
 }
-export default GetStarted
+export default page

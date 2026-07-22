@@ -1,4 +1,4 @@
-import DashboardPage from "@/src/components/dashboard/pages/DashboardPage";
+import Dashboard from "@/src/pages/learners/Dashboard";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -6,11 +6,9 @@ export const metadata: Metadata = {
     description: "The home for upskilling for financial independence"
 };
 
-const Dashboard = () => {
+const page = () => {
     return (
-        <div id="main-wrapper">
-            <DashboardPage />
-        </div>
+        <Dashboard />
     )
 }
-export default Dashboard
+export default page

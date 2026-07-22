@@ -1,154 +1,87 @@
-import { aboutUsUrl, cartUrl, faq, privacyPolicyUrl, refundPolicyUrl, termsAndConditionsUrl, wishlitUrl } from "@/src/utils/url";
+'use client';
+
 import Link from "next/link";
+import { Heart, Facebook, Instagram } from "lucide-react";
+import { aboutUsUrl, blogUrl, contactUsUrl, coursesUrl, faq, privacyPolicyUrl, refundPolicyUrl, termsAndConditionsUrl } from "@/src/utils/url";
 
 const Footer = () => {
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL;
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL!;
 
     return (
-        <>
-            <footer className="dark-footer">
-                <div>
-                    <div className="container">
-                        <div className="row">
-                            <div className="col-lg-3 col-md-3">
-                                <div className="footer-widget">
-                                    <img
-                                        src={`${appUrl}/assets/img/wsh-logo-light.jpeg`}
-                                        className="img-footer"
-                                        alt="WSH-logo"
-                                        style={{width: '80px', height: '100%'}}
-                                    />
-                                    <div className="footer-add">
-                                        <address className="mb-4 lh-base">
-                                            Alagbole, Ojodu Berger,
-                                            <br />
-                                            Lagos State, Nigeria.
-                                        </address>
-                                        <div className="d-flex align-items-center call-now gap-2 mb-3">
-                                            <div className="square--30 circle">
-                                                <i className="bi bi-telephone" />
-                                            </div>
-                                            <div className="fs-6 fw-semibold">+2349075144830</div>
-                                        </div>
-                                        <div className="d-flex align-items-center call-now gap-2">
-                                            <div className="square--30 circle">
-                                                <i className="bi bi-envelope" />
-                                            </div>
-                                            <div className="fs-6 fw-semibold">support@womenskillshub.com</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="col-lg-2 col-md-3">
-                                <div className="footer-widget">
-                                    <h4 className="widget-title">Navigations</h4>
-                                    <ul className="footer-menu">
-                                        <li>
-                                            <Link href="/">Home</Link>
-                                        </li>
-                                        <li>
-                                            <Link href={aboutUsUrl}>About Us</Link>
-                                        </li>
-                                        <li>
-                                            <Link href={cartUrl}>Cart</Link>
-                                        </li>
-                                        <li>
-                                            <Link href={termsAndConditionsUrl}>Terms & Conditions</Link>
-                                        </li>
-                                        <li>
-                                            <Link href={privacyPolicyUrl}>Privacy Policy</Link>
-                                        </li>
-                                        <li>
-                                            <Link href={refundPolicyUrl}>Refund Policy</Link>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div className="col-lg-2 col-md-3">
-                                <div className="footer-widget">
-                                    <h4 className="widget-title">Help &amp; Support</h4>
-                                    <ul className="footer-menu">
-                                        <li>
-                                            <Link href="https://wa.me/2349075144830">Whatsapp</Link>
-                                        </li>
-                                        <li>
-                                            <Link href="mailto:support@womenskillshub.com">Mail Us</Link>
-                                        </li>
-                                        <li>
-                                            <Link href={faq}>Faqs</Link>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
+        <footer className="bg-foreground text-background">
+            <div className="container py-12 md:py-16">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+                    {/* Brand */}
+                    <div className="md:col-span-1">
+                        <div className="flex items-center gap-2 mb-4">
+                            <img src={`${appUrl}/images/wsh-logo-light.jpeg`} alt="Women Skills Hub" className="h-10 w-10 rounded-full object-cover" />
+                            <span className="font-display font-bold text-lg">Women Skills Hub</span>
                         </div>
+                        <p className="text-sm opacity-70 leading-relaxed">
+                            Empowering women with practical, income-generating skills. Learn at your own pace and turn your passion into profit.
+                        </p>
+                        <div className="flex items-center gap-3 mt-4">
+                            <a href="https://www.facebook.com/womenskillshub" target="_blank" rel="noopener noreferrer" className="opacity-70 hover:opacity-100 transition-opacity">
+                                <Facebook className="h-5 w-5" />
+                            </a>
+                            <a href="https://www.instagram.com/womenskillshub" target="_blank" rel="noopener noreferrer" className="opacity-70 hover:opacity-100 transition-opacity">
+                                <Instagram className="h-5 w-5" />
+                            </a>
+                            <a href="https://www.tiktok.com/@womenskillshub" target="_blank" rel="noopener noreferrer" className="opacity-70 hover:opacity-100 transition-opacity">
+                                <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1v-3.5a6.37 6.37 0 00-.79-.05A6.34 6.34 0 003.15 15.2a6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.34-6.34V8.75a8.18 8.18 0 004.76 1.52V6.84a4.84 4.84 0 01-1-.15z"/></svg>
+                            </a>
+                        </div>
+                    </div>
+
+                    {/* Quick links */}
+                    <div>
+                        <h4 className="font-display font-semibold mb-4">Quick Links</h4>
+                        <ul className="space-y-2 text-sm opacity-70">
+                            <li><Link href={coursesUrl} className="hover:opacity-100 transition-opacity">All Courses</Link></li>
+                            <li><Link href={aboutUsUrl} className="hover:opacity-100 transition-opacity">About Us</Link></li>
+                            <li><Link href={contactUsUrl} className="hover:opacity-100 transition-opacity">Contact</Link></li>
+                            <li><Link href={blogUrl} className="hover:opacity-100 transition-opacity">Blog</Link></li>
+                            <li><Link href={faq} className="hover:opacity-100 transition-opacity">FAQ</Link></li>
+                        </ul>
+                    </div>
+
+                    {/* Categories */}
+                    <div>
+                        <h4 className="font-display font-semibold mb-4">Categories</h4>
+                        <ul className="space-y-2 text-sm opacity-70">
+                            <li><Link href={`${coursesUrl}?category=beverage-production`} className="hover:opacity-100 transition-opacity">Beverage Production</Link></li>
+                            <li><Link href="/courses?category=art-of-baking" className="hover:opacity-100 transition-opacity">Art Of Baking</Link></li>
+                            <li><Link href="/courses?category=paper-craft" className="hover:opacity-100 transition-opacity">Paper Craft</Link></li>
+                            <li><Link href="/courses?category=nigerian-snacks" className="hover:opacity-100 transition-opacity">Nigerian Snacks</Link></li>
+                            <li><Link href="/courses?category=the-art-of-spice-blend" className="hover:opacity-100 transition-opacity">The Art Of Spice Blend</Link></li>
+                        </ul>
+                    </div>
+
+                    {/* Legal & Contact */}
+                    <div>
+                        <h4 className="font-display font-semibold mb-4">Legal</h4>
+                        <ul className="space-y-2 text-sm opacity-70">
+                            <li><Link href={privacyPolicyUrl} className="hover:opacity-100 transition-opacity">Privacy Policy</Link></li>
+                            <li><Link href={termsAndConditionsUrl} className="hover:opacity-100 transition-opacity">Terms & Conditions</Link></li>
+                            <li><Link href={refundPolicyUrl} className="hover:opacity-100 transition-opacity">Refund Policy</Link></li>
+                        </ul>
+                        <h4 className="font-display font-semibold mt-6 mb-3">Contact</h4>
+                        <ul className="space-y-2 text-sm opacity-70">
+                            <li>WhatsApp: +234 907 514 4830</li>
+                            <li>RC: 7108779</li>
+                        </ul>
                     </div>
                 </div>
 
-                <div className="footer-bottom">
-                    <div className="container">
-                        <div className="row align-items-center g-3">
-                            <div className="col-lg-6 col-md-6">
-                                <p className="mb-0">
-                                    © {new Date().getFullYear()} Women Skills Hub Limited. All Rights Reserved. <br />
-                                    RC 7108779 <br />
-                                    Developed By{" "} <a href="https://ledobiz.com/" target="_blank" style={{color: '#ffc107'}}>Ledobiz Technologies Ltd</a>.
-                                </p>
-                            </div>
-                            <div className="col-lg-6 col-md-6 text-md-end">
-                                <ul className="footer-bottom-social">
-                                    <li>
-                                        <Link href="https://www.facebook.com/share/1BbVDSP7Ut/" target="_blank">
-                                            <i className="ti-facebook" />
-                                        </Link>
-                                    </li>
-                                    <li>
-                                        <Link href="https://www.instagram.com/reel/DRBEZv_kxQn/?igsh=aWV3cXZtY2hwazls" target="_blank">
-                                        <i className="ti-instagram" />
-                                        </Link>
-                                    </li>
-                                    <li>
-                                        <Link href="https://www.tiktok.com/@womenskillshub?_r=1&_t=ZS-92k75jCDjiq" target="_blank">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style={{marginBottom: '-3px'}}>
-                                                <path d="M9 0h1.98c.144.715.54 1.617 1.235 2.512C12.895 3.389 13.797 4 15 4v2c-1.753 0-3.07-.814-4-1.829V11a5 5 0 1 1-5-5v2a3 3 0 1 0 3 3z"/>
-                                            </svg>
-                                        </Link>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
+                <div className="border-t border-background/10 mt-10 pt-6 flex flex-col md:flex-row items-center justify-between gap-4 text-sm opacity-60">
+                    <p>© {new Date().getFullYear()} Women Skills Hub Limited. All rights reserved.</p>
+                    <p className="flex items-center gap-1">
+                        Made with <Heart className="h-3 w-3 fill-current" /> for women everywhere
+                    </p>
                 </div>
-            </footer>
-            
-            <a id="back2Top" className="top-scroll" title="Back to top" href="#">
-                <i className="ti-arrow-up" />
-            </a>
+            </div>
+        </footer>
+    );
+};
 
-            <a
-                href="https://wa.me/2349075144830"
-                aria-label="Chat with us on WhatsApp"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="whatsapp-float pulse"
-                style={{
-                    position: 'fixed',
-                    right: 20,
-                    bottom: 70,
-                    width: 56,
-                    height: 56,
-                    borderRadius: '50%',
-                    backgroundColor: '#25D366',
-                    color: '#ffffff',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    boxShadow: '0 8px 16px rgba(0,0,0,0.15)',
-                    zIndex: 1050
-                }}
-            >
-                <i className="bi bi-whatsapp" style={{fontSize: 24}} />
-            </a>
-        </>
-    )
-}
-export default Footer
+export default Footer;

@@ -6,7 +6,7 @@ export interface User {
     id: string;
     name?: string | null | undefined;
     email: string;
-    image?: string | null | undefined,
+    image?: string | null,
     phone?: string | null | undefined;
     uid?: string | null | undefined;
     role: UserRole;

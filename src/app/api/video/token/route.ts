@@ -32,7 +32,10 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: "Not enrolled for course" }, { status: 403 });
     }*/
 
-    const signedVideoUrl = signVideoUrl(result.component?.vimeoVideoUrl);
+    const signedVideoUrl = signVideoUrl(
+        result.component?.vimeoVideoUrl,
+        (result.component as { bunnyLibraryId?: string | null })?.bunnyLibraryId,
+    );
 
     return NextResponse.json({
         playbackUrl: signedVideoUrl,

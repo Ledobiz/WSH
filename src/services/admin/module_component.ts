@@ -17,7 +17,7 @@ export const fetchAllComponents = async (moduleId: string) => {
                 deletedAt: null,
             },
             orderBy: [
-                { sorting: 'desc' },
+                { sorting: { sort: 'asc', nulls: 'last' } },
                 { createdAt: 'asc' },
             ],
         });
@@ -139,6 +139,7 @@ export const addComponent = async (moduleId: string, unsafeData: z.infer<typeof 
                 isActive: true,
                 type: data.type as unknown as ComponentType,
                 vimeoVideoUrl: data.type == 'video' ? data.vimeoVideoUrl : null,
+                bunnyLibraryId: data.type == 'video' ? (data.bunnyLibraryId || null) : null,
                 fileName: uploadedFile,
                 ...(fileNamePublicId && { fileNamePublicId }),
                 isFree: data.isFree,
@@ -211,6 +212,7 @@ export const updateComponent = async (id: string, unsafeData: z.infer<typeof Cre
                 isActive: true,
                 type: data.type as unknown as ComponentType,
                 vimeoVideoUrl: data.vimeoVideoUrl ?? null,
+                bunnyLibraryId: data.type == 'video' ? (data.bunnyLibraryId || null) : null,
                 fileName: fileUploaded ? fileUploaded.url : component.fileName,
                 ...(fileUploaded ? { fileNamePublicId: fileUploaded.publicId } : (oldPublicId ? { fileNamePublicId: oldPublicId } : {})),
                 isFree: data.isFree,
@@ -243,6 +245,50 @@ export const updateComponent = async (id: string, unsafeData: z.infer<typeof Cre
         }
     }
 }
+
+/**
+ * Persists a new component order within a module. `orderedIds` is the full list of the
+ * module's component ids in the desired order. Stores the position in `sorting`
+ * (ascending) on the master `ModuleComponent` AND mirrors it onto every enrolled
+ * student's `StudentModuleComponent` copy (matched via `moduleComponentId`) so the
+ * arrangement persists on the student side.
+ */
+export const reorderComponents = async (moduleId: string, orderedIds: string[]) => {
+    try {
+        if (!orderedIds || orderedIds.length === 0) {
+            return { success: false, message: 'No components to reorder' };
+        }
+
+        // Guard: every id must belong to this module.
+        const owned = await prisma.moduleComponent.findMany({
+            where: { id: { in: orderedIds }, courseModuleId: moduleId, deletedAt: null },
+            select: { id: true },
+        });
+
+        if (owned.length !== orderedIds.length) {
+            return { success: false, message: 'Some components do not belong to this module' };
+        }
+
+        await prisma.$transaction(
+            orderedIds.flatMap((id, index) => [
+                prisma.moduleComponent.update({
+                    where: { id },
+                    data: { sorting: index, updatedAt: new Date() },
+                }),
+                // Mirror onto enrolled students' copies of this component.
+                prisma.studentModuleComponent.updateMany({
+                    where: { moduleComponentId: id, deletedAt: null },
+                    data: { sorting: index },
+                }),
+            ])
+        );
+
+        return { success: true, message: 'Components reordered successfully' };
+    } catch (error) {
+        console.log('Error reordering components:', error);
+        return { success: false, message: 'Failed to reorder components. Please try again.' };
+    }
+};
 
 export const deleteComponent = async (id: string) => {
     try {

@@ -19,19 +19,70 @@ export const ongoingCourses = async (userId: string) => {
                 createdAt: 'desc',
             },
             include: {
-                course: true,
+                course: {
+                    include: {
+                        category: true
+                    },
+                },
                 studentModules: {
                     where: {
                         deletedAt: null,
                     },
+                    orderBy: [
+                        { sorting: { sort: 'asc', nulls: 'last' } },
+                        { createdAt: 'asc' },
+                    ],
                     include: {
                         studentModuleComponents: {
                             where: {
                                 deletedAt: null
-                            }
+                            },
+                            orderBy: [
+                                { sorting: { sort: 'asc', nulls: 'last' } },
+                                { createdAt: 'asc' },
+                            ]
                         }
                     }
                 }
+            }
+        });
+
+        const refinedCourses = await Promise.all(
+            courses.map(async (course) => ({
+                ...course,
+                lastLectureData: course.lastLectureId
+                    ? await componentInfo(course.lastLectureId)
+                    : null,
+            }))
+        );
+
+        return {
+            success: true,
+            message: 'Success',
+            courses: refinedCourses,
+        }
+    } catch (error) {
+        console.log(error);
+        return {
+            success: false,
+            message: 'Something went wrong',
+            courses: []
+        }
+    }
+}
+
+export const recentlyAddedCourses = async () => {
+    try {
+        const courses = await prisma.course.findMany({
+            where: {
+                isActive: true,
+                deletedAt: null,
+            },
+            include: {
+                category: true
+            },
+            orderBy: {
+                createdAt: 'desc',
             }
         });
 
@@ -40,12 +91,13 @@ export const ongoingCourses = async (userId: string) => {
             message: 'Success',
             courses,
         }
-    } catch (error) {
+    }
+    catch (error) {
         console.log(error);
         return {
             success: false,
             message: 'Something went wrong',
-            courses: []
+            courses: [],
         }
     }
 }
@@ -64,11 +116,19 @@ export const myLecture = async (userId?: string, courseId?: string, moduleId?: s
                     where: {
                         deletedAt: null
                     },
+                    orderBy: [
+                        { sorting: { sort: 'asc', nulls: 'last' } },
+                        { createdAt: 'asc' },
+                    ],
                     include: {
                         studentModuleComponents: {
                             where: {
                                 deletedAt: null
-                            }
+                            },
+                            orderBy: [
+                                { sorting: { sort: 'asc', nulls: 'last' } },
+                                { createdAt: 'asc' },
+                            ]
                         }
                     }
                 }
@@ -144,9 +204,10 @@ export const myLecture = async (userId?: string, courseId?: string, moduleId?: s
                         }
                     }
                 },
-                orderBy: {
-                    createdAt: 'asc'
-                },
+                orderBy: [
+                    { sorting: { sort: 'asc', nulls: 'last' } },
+                    { createdAt: 'asc' },
+                ],
             });
 
             // Get the first component of the module
@@ -167,7 +228,7 @@ export const myLecture = async (userId?: string, courseId?: string, moduleId?: s
                         AND slr."deletedAt" IS NULL
                     WHERE smc."studentModuleId" = ${studentModule.id}
                         AND smc."deletedAt" IS NULL
-                    ORDER BY smc."createdAt" ASC
+                    ORDER BY smc."sorting" ASC NULLS LAST, smc."createdAt" ASC
                     LIMIT 1
                 `);
 
@@ -438,6 +499,7 @@ export const populateCourseContentForStudent = async (userId: string, courseId: 
                             description: component.description,
                             type: component.type,
                             vimeoVideoUrl: component.vimeoVideoUrl,
+                            bunnyLibraryId: component.bunnyLibraryId,
                             embedVideoUrl: component.embedVideoUrl,
                             fileName: component.fileName,
                             fileNamePublicId: component.fileNamePublicId,
@@ -762,6 +824,7 @@ export const giveStudentNewlyAvailableLectureContents = async (userId: string, c
                                 description: component.description,
                                 type: component.type,
                                 vimeoVideoUrl: component.vimeoVideoUrl,
+                                bunnyLibraryId: component.bunnyLibraryId,
                                 embedVideoUrl: component.embedVideoUrl,
                                 fileName: component.fileName,
                                 fileNamePublicId: component.fileNamePublicId,
@@ -781,6 +844,7 @@ export const giveStudentNewlyAvailableLectureContents = async (userId: string, c
                                 description: component.description,
                                 type: component.type,
                                 vimeoVideoUrl: component.vimeoVideoUrl,
+                                bunnyLibraryId: component.bunnyLibraryId,
                                 embedVideoUrl: component.embedVideoUrl,
                                 fileName: component.fileName,
                                 fileNamePublicId: component.fileNamePublicId,
@@ -882,6 +946,165 @@ export const removeStudentFromCourse = async (userId: string, courseId: string) 
     }
 }
 
+export const saveLectureNote = async (userId: string, courseId: string, studentModuleComponentId: string, studentNote: string) => {
+    try {
+        const newNote = await prisma.note.create({
+            data: {
+                userId,
+                studentModuleComponentId,
+                courseId,
+                note: studentNote
+            }
+        })
+
+        return {
+            success: true,
+            message: 'Note has been added successfully.',
+            note: newNote,
+        };
+    } catch (error) {
+        console.log('Error saving note:', error);
+        return {
+            success: false,
+            message: 'Failed to save note. Please try again',
+            note: null,
+        };
+    }
+}
+
+export const getAllUserNotes = async (userId: string) => {
+    try {
+        const notes = await prisma.note.findMany({
+            where: {
+                userId
+            },
+            orderBy: {
+                updatedAt: 'desc'
+            },
+            include: {
+                course: {
+                    select: {
+                        id: true,
+                        title: true,
+                    }
+                },
+                studentModuleComponent: {
+                    select: {
+                        id: true,
+                        name: true,
+                        studentModuleId: true,
+                    }
+                }
+            }
+        });
+
+        return {
+            success: true,
+            message: 'Success',
+            notes,
+        };
+    } catch (error) {
+        console.log('Error fetching user notes:', error);
+        return {
+            success: false,
+            message: 'Failed to fetch notes.',
+            notes: [],
+        };
+    }
+}
+
+export const getLectureNotes = async (userId: string, courseId: string) => {
+    try {
+        const notes = await prisma.note.findMany({
+            where: {
+                userId,
+                courseId
+            },
+            orderBy: {
+                createdAt: 'asc'
+            }
+        });
+
+        return {
+            success: true,
+            message: 'Success',
+            notes,
+        };
+    } catch (error) {
+        console.log('Error fetching lecture notes:', error);
+        return {
+            success: false,
+            message: 'Failed to fetch notes.',
+            notes: [],
+        };
+    }
+}
+
+export const editLectureNote = async (noteId: string, newNote: string) => {
+    try {
+        const note = await prisma.note.findFirst({
+            where: {
+                id: noteId
+            }
+        });
+
+        if (!note) {
+            return {
+                success: false,
+                message: 'Note not found.'
+            };
+        }
+
+        await prisma.note.update({
+            where: { id: noteId },
+            data: { note: newNote },
+        });
+
+        return {
+            success: true,
+            message: 'Note was updated successfully',
+        }
+    } catch (error) {
+        console.log('Error saving lecture note', error);
+        return {
+            success: false,
+            message: 'Failed to update lecture note',
+        }
+    }
+}
+
+export const deleteLectureNote = async (noteId: string) => {
+    try {
+        const note = await prisma.note.findFirst({
+            where: {
+                id: noteId
+            }
+        });
+
+        if (!note) {
+            return {
+                success: false,
+                message: 'Note not found.'
+            };
+        }
+
+        await prisma.note.delete({
+            where: { id: noteId }
+        });
+
+        return {
+            success: true,
+            message: 'Note was deleted successfully',
+        }
+    } catch (error) {
+        console.log('Error deleting lecture note', error);
+        return {
+            success: false,
+            message: 'Failed to delete lecture note',
+        }
+    }
+}
+
 const lectureModuleComponent = async (studentModuleId: string) => {
     return await prisma.$queryRaw(Prisma.sql`
         SELECT smc.*, slr."id" AS "lectureRecordId", slr."status" AS "lectureStatus"
@@ -892,7 +1115,7 @@ const lectureModuleComponent = async (studentModuleId: string) => {
             AND slr."deletedAt" IS NULL
         WHERE smc."studentModuleId" = ${studentModuleId}
             AND smc."deletedAt" IS NULL
-        ORDER BY smc."createdAt" ASC
+        ORDER BY smc."sorting" ASC NULLS LAST, smc."createdAt" ASC
     `);
 }
 
@@ -974,3 +1197,11 @@ const getNextAndPreviousComponents = async (
         nextModule,
     };
 }
+
+const componentInfo = async (componentId: string) => {
+    return await prisma.studentModuleComponent.findFirst({
+        where: {
+            id: componentId
+        }
+    });
+} 

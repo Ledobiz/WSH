@@ -9,6 +9,43 @@ import { toast } from 'react-toastify';
 import { addToCartServer, mergeCartWithServer, myCart, removeFromCartServer } from '@/src/services/website/cart';
 import { ExchangeRatesPayload, getTodayRates } from '@/src/services/website/exchangeRate';
 
+interface cartItemInterface {
+    id: string;
+    title: string;
+    thumbnail: string | null;
+    discountedFee: number;
+    originalFee: number;
+}
+
+export type CurrencyCode = "NGN" | "GHS" | "KES" | "UGX" | "XAF" | "XOF" |  "ZAR" | "ZMW" | "ZWL" | "USD" | "GBP" | "EUR" | "CAD";
+
+interface CurrencyInfo {
+    code: CurrencyCode;
+    symbol: string;
+    flag: string;
+    name: string; // rate relative to NGN (1 NGN = rate)
+}
+
+const flagUrl = (countryCode: string) => `https://purecatamphetamine.github.io/country-flag-icons/3x2/${countryCode}.svg`;
+
+export const allCurrencyCodes: CurrencyCode[] = ["NGN", "GHS", "KES", "UGX", "XAF", "XOF", "ZAR", "ZMW", "ZWL", "USD", "GBP", "EUR", "CAD"];
+
+export const currencies: Record<CurrencyCode, CurrencyInfo> = {
+    NGN: { code: "NGN", symbol: "₦", flag: flagUrl('NG'), name: "Nigerian Naira" },
+    GHS: { code: "GHS", symbol: "₵", flag: flagUrl('GH'), name: "Ghanaian Cedi" },
+    KES: { code: "KES", symbol: "KSh", flag: flagUrl('KE'), name: "Kenyan Shilling" },
+    UGX: { code: "UGX", symbol: "USh", flag: flagUrl('UG'), name: "Ugandan Shilling" },
+    XAF: { code: "XAF", symbol: "FCFA", flag: flagUrl('CM'), name: "Central African CFA" },
+    XOF: { code: "XOF", symbol: "CFA", flag: flagUrl('SN'), name: "West African CFA" },
+    ZAR: { code: "ZAR", symbol: "R", flag: flagUrl('ZA'), name: "South African Rand" },
+    ZMW: { code: "ZMW", symbol: "K", flag: flagUrl('ZM'), name: "Zambian Kwacha" },
+    ZWL: { code: "ZWL", symbol: "Z$", flag: flagUrl('ZW'), name: "Zimbabwean Dollar" },
+    USD: { code: "USD", symbol: "$", flag: flagUrl('US'), name: "US Dollar" },
+    GBP: { code: "GBP", symbol: "£", flag: flagUrl('GB'), name: "British Pound" },
+    EUR: { code: "EUR", symbol: "€", flag: flagUrl('EU'), name: "Euro" },
+    CAD: { code: "CAD", symbol: "C$", flag: flagUrl('CA'), name: "Canadian Dollar" }
+};
+
 interface CartContextInterface {
     cartCourses: any[];
     totalFees: number;
@@ -18,17 +55,12 @@ interface CartContextInterface {
     isLoaded: boolean;
     loadingId: string | null;
     currency: string;
-    changeCurrency: (newCurrency: string) => Promise<void>;
+    changeCurrency: (newCurrency: CurrencyCode) => Promise<void>;
     exchangeRates: Record<string, number> | null;
     convertAmount: (amount: number, targetCurrency?: string) => number;
-}
-
-interface cartItemInterface {
-    id: string;
-    title: string;
-    thumbnail: string | null;
-    discountedFee: number;
-    originalFee: number;
+    allCurrencies: CurrencyCode[];
+    formatPrice: (ngnPrice: number) => string;
+    currencyInfo: CurrencyInfo;
 }
 
 const CartContext = createContext<CartContextInterface | undefined>(undefined);
@@ -48,14 +80,33 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     const [totalFees, setTotalFees] = useState(0);
     const [isLoaded, setIsLoaded] = useState(false); // Prevents hydration flicker
     const [loadingId, setLoadingId] = useState<string | null>(null);
-    const [currency, setCurrency] = useState<string>('NGN');
+    const [currency, setCurrency] = useState<CurrencyCode>('NGN');
     const [exchangeRates, setExchangeRates] = useState<Record<string, number> | null>(null);
     const { user } = useAuth();
+
+    const currencyInfo = currencies[currency];
 
     // Helper to calculate total
     const calculateTotal = (items: any[]) => {
         const total = items.reduce((sum, item) => sum + (item.discountedFee || item.originalFee || 0), 0);
         setTotalFees(total);
+    };
+
+    const formatPrice = (ngnPrice: number): string => {
+        const convertedAmount = convertAmount(ngnPrice);
+
+        /*new Intl.NumberFormat('en-NG', {
+            style: 'currency',
+            currency: currency || 'NGN',
+            minimumFractionDigits: currency === 'NGN' ? 0 : 2,
+            maximumFractionDigits: currency === 'NGN' ? 0 : 2,
+        }).format(convertedAmount);*/
+        
+        if (currency === "NGN") {
+            return `${currencyInfo.symbol}${convertedAmount.toLocaleString("en-NG")}`;
+        }
+
+        return `${currencyInfo.symbol}${convertedAmount.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     };
 
     // Helper: Save to Storage (Encrypted)
@@ -109,8 +160,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
             if (typeof window === 'undefined') return;
 
             const storedCurrency = localStorage.getItem('wsh_currency');
-            if (storedCurrency) {
-                setCurrency(storedCurrency);
+            if (storedCurrency && allCurrencyCodes.includes(storedCurrency as CurrencyCode)) {
+                setCurrency(storedCurrency as CurrencyCode);
             }
 
             try {
@@ -125,7 +176,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         initCurrencyAndRates();
     }, []);
 
-    const changeCurrency = async (newCurrency: string) => {
+    const changeCurrency = async (newCurrency: CurrencyCode) => {
         setCurrency(newCurrency);
 
         if (typeof window !== 'undefined') {
@@ -258,6 +309,9 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         changeCurrency,
         exchangeRates,
         convertAmount,
+        allCurrencies: allCurrencyCodes,
+        formatPrice,
+        currencyInfo
     }
 
     return (

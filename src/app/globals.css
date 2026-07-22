@@ -1,15 +1,216 @@
-/* Nav header: currency switcher beside hamburger on mobile (no overlap) */
-.nav-header-right {
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
+
+@import "tailwindcss";
+@config "../../tailwind.config.ts";
+
+@layer base {
+  :root {
+    /* Brand purple palette - #6a1b9a */
+    --primary: 282 70% 35%;
+    --primary-foreground: 0 0% 100%;
+    --primary-light: 282 40% 95%;
+    --primary-glow: 282 24% 59%;
+
+    /* Warm accent - #F6A823 */
+    --accent: 40 92% 55%;
+    --accent-foreground: 0 0% 10%;
+
+    /* Surfaces */
+    --background: 0 0% 100%;
+    --foreground: 240 10% 12%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 12%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 12%;
+
+    /* Secondary - warm neutral */
+    --secondary: 260 10% 96%;
+    --secondary-foreground: 240 10% 12%;
+
+    /* Muted */
+    --muted: 260 10% 96%;
+    --muted-foreground: 240 5% 46%;
+
+    /* Destructive */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* Borders */
+    --border: 260 10% 90%;
+    --input: 260 10% 90%;
+    --ring: 282 70% 35%;
+
+    --radius: 0.75rem;
+
+    /* Sidebar */
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 282 70% 35%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 260 10% 96%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 260 10% 90%;
+    --sidebar-ring: 282 70% 35%;
+
+    /* Custom tokens */
+    --gradient-hero: linear-gradient(135deg, hsl(282 70% 35%), hsl(282 24% 59%));
+    --gradient-accent: linear-gradient(135deg, hsl(40 92% 55%), hsl(35 95% 60%));
+    --shadow-card: 0 4px 24px -4px hsl(282 70% 35% / 0.08);
+    --shadow-card-hover: 0 12px 32px -8px hsl(282 70% 35% / 0.16);
+    --shadow-button: 0 4px 14px 0 hsl(282 70% 35% / 0.25);
+
+    /* Success green */
+    --success: 152 60% 42%;
+    --success-foreground: 0 0% 100%;
+  }
+
+  .dark {
+    --primary: 282 50% 70%;
+    --primary-foreground: 240 10% 6%;
+    --background: 240 10% 6%;
+    --foreground: 0 0% 95%;
+    --card: 240 10% 10%;
+    --card-foreground: 0 0% 95%;
+    --popover: 240 10% 10%;
+    --popover-foreground: 0 0% 95%;
+    --secondary: 240 10% 14%;
+    --secondary-foreground: 0 0% 95%;
+    --muted: 240 10% 14%;
+    --muted-foreground: 240 5% 60%;
+    --accent: 40 92% 55%;
+    --accent-foreground: 0 0% 10%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 240 10% 18%;
+    --input: 240 10% 18%;
+    --ring: 282 50% 70%;
+    --sidebar-background: 240 10% 8%;
+    --sidebar-foreground: 0 0% 95%;
+    --sidebar-primary: 282 50% 70%;
+    --sidebar-primary-foreground: 240 10% 6%;
+    --sidebar-accent: 240 10% 14%;
+    --sidebar-accent-foreground: 0 0% 95%;
+    --sidebar-border: 240 10% 18%;
+    --sidebar-ring: 282 50% 70%;
+  }
 }
 
-.navigation-portrait .nav-header-right .nav-toggle {
-  position: relative;
-  top: auto;
-  right: auto;
-  margin-top: 0;
-  flex-shrink: 0;
-  z-index: 2;
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-body antialiased;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display;
+  }
+}
+
+@layer utilities {
+  .gradient-hero {
+    background: hsl(var(--primary));
+  }
+  .gradient-accent {
+    background: hsl(var(--accent));
+  }
+  .text-gradient {
+    background: hsl(var(--primary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .shadow-card {
+    box-shadow: var(--shadow-card);
+  }
+  .shadow-card-hover {
+    box-shadow: var(--shadow-card-hover);
+  }
+}
+
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+
+/* App.css style contents from the UI */
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
 }

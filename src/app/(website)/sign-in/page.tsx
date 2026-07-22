@@ -1,18 +1,23 @@
-import Loading from "@/src/components/website/loading"
-import LoginPage from "@/src/components/website/LoginPage";
-import { Metadata } from "next";
-import { Suspense } from "react"
+import { Metadata } from "next"
+import PageTransition from "@/src/components/PageTransition";
+import Navbar from "@/src/components/website/Navbar";
+import Footer from "@/src/components/website/Footer";
+import LoginPage from "@/src/pages/website/LoginPage";
 
 export const metadata: Metadata = {
     title: "Sign In - Women Skills Hub",
     description: "The home for upskilling for financial independence"
 };
 
-const SignIn = async () => {
+const page = () => {
     return (
-        <Suspense fallback={<Loading />}>
-            <LoginPage />
-        </Suspense>
+        <PageTransition>
+            <div className="min-h-screen bg-background">
+                <Navbar />
+                <LoginPage />
+                <Footer />
+            </div>
+        </PageTransition>
     )
 }
-export default SignIn
+export default page

@@ -1,34 +1,23 @@
 'use client'
 
-// import CartPage from "@/src/components/website/CartPage"
+import PageTransition from "@/src/components/PageTransition"
 import Footer from "@/src/components/website/Footer"
-import HeroBanner from "@/src/components/website/HeroBanner"
-import Loading from "@/src/components/website/loading"
 import Navbar from "@/src/components/website/Navbar"
-// import { Metadata } from "next"
-import { Suspense } from "react"
 import dynamic from 'next/dynamic';
 
-const CartPage = dynamic(() => import('@/src/components/website/CartPage'), { ssr: false });
+const CartPage = dynamic(() => import('@/src/pages/website/CartPage'), { ssr: false });
 
-/*export const metadata: Metadata = {
-    title: "Cart - Women Skills Hub",
-    description: "The home for upskilling for financial independence"
-};*/
-
-const Cart = () => {
+const page = () => {
     return (
-        <Suspense fallback={<Loading />}>
-            <div id="main-wrapper">
+        <PageTransition>
+            <div className="min-h-screen bg-background">
                 <Navbar />
-                <HeroBanner page="Cart" />
 
                 <CartPage />
 
                 <Footer />
             </div>
-        </Suspense>
+        </PageTransition>
     )
 }
-
-export default Cart
+export default page

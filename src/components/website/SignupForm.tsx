@@ -1,6 +1,4 @@
-'use client'
-
-/* eslint-disable @typescript-eslint/no-explicit-any */
+'use client';
 
 import { signUp } from '@/src/services/auth'
 import { encrypt } from '@/src/utils/encryption'
@@ -8,6 +6,8 @@ import { studentDashboardUrl } from '@/src/utils/url'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useState } from 'react'
 import { toast } from 'react-toastify'
+import { Eye, EyeOff, ArrowRight } from "lucide-react";
+import LoadingButton from './LoadingButton';
 
 const SignupForm = () => {
     const router = useRouter();
@@ -20,7 +20,7 @@ const SignupForm = () => {
         password: '',
     });
 
-    const returnUrl = searchParams.get('return');
+    const returnUrl = searchParams?.get('return');
 
     const handleInputChange = (field: string, value: any) => {
         setFormData(prev => ({ ...prev, [field]: value }));
@@ -76,54 +76,66 @@ const SignupForm = () => {
     }
 
     return (
-        <form onSubmit={handleRegistration}>
-            <div className="form-group mb-3">
-                <input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={(e) => handleInputChange('name', e.target.value)}
-                    className="form-control"
-                    placeholder="Enter your name"
-                    disabled={loading}
-                />
-            </div>
-            <div className="form-group mb-3">
-                <input
-                    type="email"
-                    name="email"
-                    className="form-control"
-                    placeholder="Enter your email"
-                    value={formData.email}
-                    onChange={(e) => handleInputChange('email', e.target.value)}
-                    disabled={loading}
-                />
-            </div>
-            <div className="form-group mb-3">
-                <div className="position-relative">
+        <>
+            <div className="space-y-4">
+                <div>
+                    <label className="block text-sm font-medium text-foreground mb-1.5">First Name</label>
                     <input
-                        type={showPassword ? "text" : "password"}
-                        name="password"
-                        className="form-control"
-                        placeholder="********"
-                        value={formData.password}
-                        onChange={(e) => handleInputChange('password', e.target.value)}
+                        type="text"
+                        placeholder="Full Name"
+                        className="w-full h-11 px-4 rounded-xl border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 transition-shadow"
+                        value={formData.name}
+                        onChange={(e) => handleInputChange('name', e.target.value)}
                         disabled={loading}
+                        required
                     />
-                    <span className="position-absolute top-50 end-0 translate-middle-y me-3 cursor-pointer"
-                        onClick={() => setShowPassword(!showPassword)}
-                        style={{cursor: 'pointer'}}
-                    >
-                        <i className={`bi ${showPassword ? "bi-eye-slash" : "bi-eye"} text-muted`} />
-                    </span>
+                </div>
+                <div>
+                    <label className="block text-sm font-medium text-foreground mb-1.5">Email</label>
+                    <input
+                        type="email"
+                        placeholder="your@email.com"
+                        className="w-full h-11 px-4 rounded-xl border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 transition-shadow"
+                        value={formData.email}
+                        onChange={(e) => handleInputChange('email', e.target.value)}
+                        disabled={loading}
+                        required
+                    />
+                </div>
+                <div>
+                    <label className="block text-sm font-medium text-foreground mb-1.5">Password</label>
+                    <div className="relative">
+                        <input
+                            type={showPassword ? "text" : "password"}
+                            placeholder="Create a password"
+                            className="w-full h-11 px-4 pr-10 rounded-xl border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 transition-shadow"
+                            value={formData.password}
+                            onChange={(e) => handleInputChange('password', e.target.value)}
+                            disabled={loading}
+                            required
+                        />
+                        <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                        >
+                            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        </button>
+                    </div>
                 </div>
             </div>
-            <div className="form-group mb-3">
-                <button type="submit" className="btn btn-main w-100" disabled={loading}>
-                    {loading ? "Processing..." : "Sign Up"}
-                </button>
-            </div>
-        </form>
+
+            <LoadingButton 
+                variant="hero" 
+                size="lg" 
+                className="w-full h-12 cursor-pointer" 
+                loading={loading} 
+                type="submit"
+                onClick={handleRegistration}
+            >
+                Create Account <ArrowRight className="h-4 w-4" />
+            </LoadingButton>
+        </>
     )
 }
 export default SignupForm

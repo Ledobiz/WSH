@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
+
+import PageTransition from "@/src/components/PageTransition";
+import Navbar from "@/src/components/website/Navbar";
 import Footer from "@/src/components/website/Footer";
 import Hero from "@/src/components/website/Hero";
-import Navbar from "@/src/components/website/Navbar";
-import { Suspense } from "react";
-import Loading from "@/src/components/website/loading";
-import Homepage from "@/src/components/website/Homepage";
+import Homepage from "@/src/pages/website/Homepage";
+
 
 export const metadata: Metadata = {
     title: "Women Skills Hub - The home for upskilling for financial independence",
@@ -12,17 +13,14 @@ export const metadata: Metadata = {
 };
 
 export default function Home() {
-  	return (
-        <Suspense fallback={<Loading />}>
-            <div id="main-wrapper">
-                <Navbar />
-
-                <Hero />
-
-                <Homepage />
-                
-                <Footer />
-            </div>
-        </Suspense>
-  	);
+	return (
+		<PageTransition>
+			<div className="min-h-screen bg-background">
+				<Navbar />
+				<Hero />
+				<Homepage />
+				<Footer />
+			</div>
+		</PageTransition>
+	);
 }

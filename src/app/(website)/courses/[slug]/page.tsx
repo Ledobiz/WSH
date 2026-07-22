@@ -1,61 +1,40 @@
-import type { Metadata } from "next";
-import Navbar from "@/src/components/website/Navbar"
-import CourseDetailsPage from "@/src/components/website/CourseDetailsPage";
+import PageTransition from "@/src/components/PageTransition";
+import Navbar from "@/src/components/website/Navbar";
 import Footer from "@/src/components/website/Footer";
-import { Suspense } from "react";
-import Loading from "@/src/components/website/loading";
+import CourseDetail from "@/src/pages/website/CourseDetail";
 import { singleCourseWebsite } from "@/src/services/website/course";
-import { notFound } from "next/navigation";
+import { Metadata } from "next";
 
-interface PageProps {
-    params: {
-        slug: string;
-    };
-}
-
-// Fetch course data on the server BEFORE rendering
-const getCourseData = async (slug: string) => {
-    return await singleCourseWebsite(slug);
-}
-
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
     const { slug } = await params;
-    const result = await getCourseData(slug);
-    
-    const title = result?.course?.seoTitle || 'Women Skills Hub - The home for upskilling for financial independence';
-    const description = result?.course?.seoDescription || 'The home for upskilling for financial independence';
-
-    return {
-        title: title,
-        description: description,
-        openGraph: {
-            title: title,
-            description: description,
-            images: result?.course?.thumbnail ? [{ url: result.course.thumbnail }] : [],
-            type: 'article',
-        },
-    };
-}
-
-const CourseDetails = async ({params}: {params: Promise<{slug: string}>}) => {
-    const { slug } = await params;
-
     const result = await singleCourseWebsite(slug);
+    const course = result.course;
 
-    if (!result.course) {
-        notFound();
+    if (!course) {
+        return {
+            title: "Course - Women Skills Hub",
+            description: "The home for upskilling for financial independence"
+        };
     }
 
+    return {
+        title: course.seoTitle || `${course.title} - Women Skills Hub`,
+        description: course.seoDescription || course.description || "The home for upskilling for financial independence",
+    };
+}
+
+export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
+    const { slug } = await params;
+
     return (
-        <Suspense fallback={<Loading />}>
-            <div id="main-wrapper">
+        <PageTransition>
+            <div className="min-h-screen bg-background">
                 <Navbar />
 
-                <CourseDetailsPage course={result.course} />
+                <CourseDetail slug={slug} />
 
                 <Footer />
             </div>
-        </Suspense>
-    )
+        </PageTransition>
+    );
 }
-export default CourseDetails

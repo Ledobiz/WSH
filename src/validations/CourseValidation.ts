@@ -18,6 +18,19 @@ export const CreateCourseValidation = z.object({
     telegramLink: z.string().nullable().optional(),
 });
 
+export const CreateCouponValidation = z.object({
+    code: z.string().min(1),
+    name: z.string().nullable().optional(),
+    description: z.string().nullable().optional(),
+    isFixedAmount: z.boolean(),
+    discountAmount: z.number(),
+    courseId: z.string().nullable().optional(), // null/empty = applies to the entire cart
+    maxUse: z.number(),
+    startDate: z.string(),
+    endDate: z.string(),
+    isActive: z.boolean(),
+});
+
 export const CreateModuleValidation = z.object({
     name: z.string(),
     description: z.string().nullable().optional(),
@@ -30,6 +43,7 @@ export const CreateComponentValidation = z.object({
     isActive: z.boolean(),
     type: z.string(),
     vimeoVideoUrl: z.string().nullable().optional(),
+    bunnyLibraryId: z.string().nullable().optional(),
     fileName: z.file().nullable().optional(),
     isPrerequisite: z.boolean(),
     isFree: z.boolean(),

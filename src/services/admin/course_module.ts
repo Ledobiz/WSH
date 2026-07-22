@@ -32,7 +32,7 @@ export const fetchAllModules = async (courseId: string) => {
                 deletedAt: null,
             },
             orderBy: [
-                { sorting: 'desc' },
+                { sorting: { sort: 'asc', nulls: 'last' } },
                 { createdAt: 'asc' },
             ],
             include: {
@@ -40,9 +40,10 @@ export const fetchAllModules = async (courseId: string) => {
                     where: {
                         deletedAt: null,
                     },
-                    orderBy: {
-                        createdAt: 'asc',
-                    },
+                    orderBy: [
+                        { sorting: { sort: 'asc', nulls: 'last' } },
+                        { createdAt: 'asc' },
+                    ],
                 },
             }
         });
@@ -71,7 +72,7 @@ export const fetchActiveModules = async (courseId: string) => {
                 deletedAt: null,
             },
             orderBy: [
-                { sorting: 'desc' },
+                { sorting: { sort: 'asc', nulls: 'last' } },
                 { createdAt: 'asc' },
             ],
             include: {
@@ -79,9 +80,10 @@ export const fetchActiveModules = async (courseId: string) => {
                     where: {
                         deletedAt: null,
                     },
-                    orderBy: {
-                        createdAt: 'asc',
-                    },
+                    orderBy: [
+                        { sorting: { sort: 'asc', nulls: 'last' } },
+                        { createdAt: 'asc' },
+                    ],
                 },
             }
         });
@@ -206,6 +208,50 @@ export const updateModule = async (id: string, unsafeData: z.infer<typeof Create
         }
     }
 }
+
+/**
+ * Persists a new module order for a course. `orderedIds` is the full list of the
+ * course's module ids in the desired top-to-bottom order. We store the position in
+ * `sorting` (ascending) on the master `CourseModule` AND mirror it onto every enrolled
+ * student's `StudentModule` copy (matched via `courseModuleId`) so the arrangement the
+ * admin sets is exactly what students see in their lecture player.
+ */
+export const reorderModules = async (courseId: string, orderedIds: string[]) => {
+    try {
+        if (!orderedIds || orderedIds.length === 0) {
+            return { success: false, message: 'No modules to reorder' };
+        }
+
+        // Guard: every id must belong to this course.
+        const owned = await prisma.courseModule.findMany({
+            where: { id: { in: orderedIds }, courseId, deletedAt: null },
+            select: { id: true },
+        });
+
+        if (owned.length !== orderedIds.length) {
+            return { success: false, message: 'Some modules do not belong to this course' };
+        }
+
+        await prisma.$transaction(
+            orderedIds.flatMap((id, index) => [
+                prisma.courseModule.update({
+                    where: { id },
+                    data: { sorting: index, updatedAt: new Date() },
+                }),
+                // Mirror onto enrolled students' copies of this module.
+                prisma.studentModule.updateMany({
+                    where: { courseModuleId: id, deletedAt: null },
+                    data: { sorting: index },
+                }),
+            ])
+        );
+
+        return { success: true, message: 'Modules reordered successfully' };
+    } catch (error) {
+        console.log('Error reordering modules:', error);
+        return { success: false, message: 'Failed to reorder modules. Please try again.' };
+    }
+};
 
 export const deleteModule = async (id: string) => {
     try {

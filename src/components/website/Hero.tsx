@@ -1,210 +1,99 @@
-import { registerUrl } from "@/src/utils/url";
+'use client'
+
+import { motion } from "framer-motion";
+import { ArrowRight, Star, GraduationCap, Users, Sparkles } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
+
+import { Button } from "@/src/components/ui/button";
+import { Badge } from "@/src/components/ui/badge";
+import { coursesUrl, registerUrl } from "@/src/utils/url";
 
 const Hero = () => {
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL;
+	const appUrl = process.env.NEXT_PUBLIC_APP_URL;
 
     return (
-        <div className="image-cover hero_banner home-5" data-overlay="0">
-            <div className="container pt-lg-5">
-                <div className="row align-items-center">
-                    <div className="col-lg-6 col-md-6 col-sm-12">
-                        <div className="hero-caption mb-2">
-                            {/* <div className="mb-3 d-flex gap-3 align-items-center">
-                                <div className="avatar-group">
-                                    <span className="avatar-single">
-                                        <img
-                                            alt="avatar"
-                                            src="assets/img/avatar-1.jpg"
-                                            className="img-fluid border thumb-sm circle"
-                                        />
-                                    </span>
-                                    <span className="avatar-single">
-                                        <img
-                                            alt="avatar"
-                                            src="assets/img/avatar-2.jpg"
-                                            className="img-fluid border thumb-sm circle"
-                                        />
-                                    </span>
-                                    <span className="avatar-single">
-                                    <img
-                                        alt="avatar"
-                                        src="assets/img/avatar-3.jpg"
-                                        className="img-fluid border thumb-sm circle"
-                                    />
-                                    </span>
-                                    <span className="avatar-single">
-                                    <img
-                                        alt="avatar"
-                                        src="assets/img/avatar-5.jpg"
-                                        className="img-fluid border thumb-sm circle"
-                                    />
-                                    </span>
-                                    <span className="avatar-single">
-                                    <img
-                                        alt="avatar"
-                                        src="assets/img/avatar-6.jpg"
-                                        className="img-fluid border thumb-sm circle"
-                                    />
-                                    </span>
-                                </div>
-                                <div className="reviews-caption">
-                                    <div className="d-flex align-items-center gap-2 fs-5 lh-0">
-                                        <div className="text-light fw-semibold">4.9</div>
-                                        <div className="reviews-star">
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                width={14}
-                                                height={14}
-                                                fill="currentColor"
-                                                className="bi bi-star-fill text-warning"
-                                                viewBox="0 0 16 16"
-                                            >
-                                                <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z" />
-                                            </svg>
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                width={14}
-                                                height={14}
-                                                fill="currentColor"
-                                                className="bi bi-star-fill text-warning"
-                                                viewBox="0 0 16 16"
-                                            >
-                                                <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z" />
-                                            </svg>
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                width={14}
-                                                height={14}
-                                                fill="currentColor"
-                                                className="bi bi-star-fill text-warning"
-                                                viewBox="0 0 16 16"
-                                            >
-                                                <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z" />
-                                            </svg>
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                width={14}
-                                                height={14}
-                                                fill="currentColor"
-                                                className="bi bi-star-fill text-warning"
-                                                viewBox="0 0 16 16"
-                                            >
-                                                <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z" />
-                                            </svg>
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                width={14}
-                                                height={14}
-                                                fill="currentColor"
-                                                className="bi bi-star-fill text-warning"
-                                                viewBox="0 0 16 16"
-                                            >
-                                                <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z" />
-                                            </svg>
-                                        </div>
-                                    </div>
-                                    <div className="text-light">Engaged Students</div>
-                                </div>
-                            </div> */}
-                            <h1 className="big-header-capt mb-0">
-                                Master New Skills With Women Skills Hub's
-                                Expert-Led Courses
-                            </h1>
+        <section className="relative overflow-hidden bg-primary">
+            <div className="container py-16 md:py-24 lg:py-32">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+                    <motion.div
+                        initial={{ opacity: 0, x: -30 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.6 }}
+                        className="text-primary-foreground space-y-6"
+                    >
+                        <Badge className="bg-background/20 text-primary-foreground border-0 backdrop-blur-sm text-sm py-1.5 px-4">
+                            <Sparkles className="h-3.5 w-3.5 mr-1.5" />
+                            50+ Courses Available
+                        </Badge>
+                        <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
+                            Master New Skills With Expert-Led Courses
+                        </h1>
+                        <p className="text-lg md:text-xl opacity-90 max-w-lg leading-relaxed">
+                            Learn high-impact, career-focused courses designed for women — from digital skills to business, crafts, and professional development.
+                        </p>
+                        <div className="flex flex-wrap gap-3">
+                            <Link href={coursesUrl}>
+                                <Button variant="accent" size="lg" className="text-base h-12 px-8 hover:scale-105 active:scale-95 transition-transform cursor-pointer">
+                                    Explore Courses <ArrowRight className="h-4 w-4" />
+                                </Button>
+                            </Link>
+                            <Link href={registerUrl}>
+                                <Button variant="outline" size="lg" className="text-base h-12 px-8 bg-transparent border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground hover:scale-105 active:scale-95 transition-transform cursor-pointer">
+                                    Join for Free
+                                </Button>
+                            </Link>
                         </div>
-                        {/* <div className="hero-search my-4">
-                            <form
-                                className="search-form shadow-sm"
+                        <div className="flex items-center gap-6 pt-2">
+                            <div className="flex items-center gap-1.5">
+                                <Star className="h-4 w-4 fill-accent text-accent" />
+                                <span className="font-semibold">4.9</span>
+                                <span className="opacity-70 text-sm">Success Rate</span>
+                            </div>
+                            <div className="flex items-center gap-1.5">
+                                <Users className="h-4 w-4" />
+                                <span className="opacity-70 text-sm">1000+ Students</span>
+                            </div>
+                        </div>
+                    </motion.div>
+
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.6, delay: 0.2 }}
+                        className="relative hidden lg:block"
+                    >
+                        <div className="relative">
+                            <img
+                                src={`${appUrl}/images/wsh-hero-img.jpg`}
+                                alt="Women learning skills at Women Skills Hub"
+                                className="w-full max-w-lg mx-auto rounded-3xl"
+                                loading="eager"
+                                width="512"
+                                height="512"
+                            />
+                            <motion.div
+                                animate={{ y: [0, -10, 0] }}
+                                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                                className="absolute -bottom-4 -left-4 bg-background rounded-2xl p-4 shadow-lg"
                             >
-                                <div className="form-group flex-fill">
-                                    <input
-                                        type="text"
-                                        className="form-control"
-                                        placeholder="Search for courses"
-                                    />
-                                    <i className="ico bi bi-search" />
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded-xl bg-success/10 flex items-center justify-center">
+                                        <GraduationCap className="h-5 w-5 text-success" />
+                                    </div>
+                                    <div>
+                                        <p className="font-semibold text-foreground text-sm">Get Certified</p>
+                                        <p className="text-xs text-muted-foreground">Earn industry certificates</p>
+                                    </div>
                                 </div>
-                                <div className="form-group">
-                                    <button type="button" className="btn btn-dark">
-                                        <i className="bi bi-send"></i>
-                                    </button>
-                                </div>
-                            </form>
-                        </div> */}
-
-                        <div className="d-block mt-2">
-                            <div className="d-flex align-items-center justify-content-start gap-3">
-                                <div className="join-buttons">
-                                    <Link href={registerUrl} className="btn btn-backup rounded-pill px-4">Enrol Now</Link>
-                                </div>
-                            </div>
+                            </motion.div>
                         </div>
-                    </div>
-
-                    <div className="col-lg-6 col-md-6 col-sm-12">
-                        <div className="flixio position-relative">
-                            <div className="bg-white rounded-4 p-3 px-4 position-absolute start-0 bottom-0 ms-4 shadow-sm animate-bounce d-none d-md-block">
-                                <div className="d-flex align-items-center justify-content-start flex-column gap-3">
-                                    <div className="d-flex align-items-center gap-2 lh-0">
-                                        <div className="reviews-star">
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                width={18}
-                                                height={18}
-                                                fill="currentColor"
-                                                className="bi bi-star-fill text-warning"
-                                                viewBox="0 0 16 16"
-                                            >
-                                            <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z" />
-                                            </svg>
-                                        </div>
-                                        <div className="text-dark fw-semibold">Success Rate 4.9%</div>
-                                    </div>
-                                    <div className="d-flex align-items-start flex-column gap-1 w-100">
-                                        <div
-                                            className="progress w-100 mb-2"
-                                            role="progressbar"
-                                            aria-label="Example with label"
-                                            aria-valuenow={80}
-                                            aria-valuemin={0}
-                                            aria-valuemax={100}
-                                            style={{ height: 5 }}
-                                        >
-                                            <div className="progress-bar bg-success" style={{ width: "80%" }} />
-                                        </div>
-                                        <div
-                                            className="progress w-100 mb-2"
-                                            role="progressbar"
-                                            aria-label="Example with label"
-                                            aria-valuenow={60}
-                                            aria-valuemin={0}
-                                            aria-valuemax={100}
-                                            style={{ height: 5 }}
-                                        >
-                                            <div className="progress-bar bg-primary" style={{ width: "60%" }} />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <img className="img-fluid" src="assets/img/wsh-banner.png" alt="hero-banner" />
-                            
-                            <div className="bg-white rounded-4 p-3 pe-4 position-absolute end-0 top-0 mt-5 shadow-sm animate-bounce d-none d-md-block">
-                                <div className="d-flex align-items-center justify-content-start gap-2">
-                                    <div className="square--50 circle bg-light-green text-green">
-                                        <i className="bi bi-mortarboard-fill fs-4" />
-                                    </div>
-                                    <div className="d-flex align-items-start flex-column gap-1">
-                                        <div className="fs-6 text-dark fw-semibold">Join for Free</div>
-                                        <div className="text-gray-500">50+ Courses Available</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    </motion.div>
                 </div>
             </div>
-        </div>
+            <div className="absolute top-0 right-0 w-64 h-64 bg-primary-foreground/5 rounded-full -translate-y-1/2 translate-x-1/2" />
+            <div className="absolute bottom-0 left-0 w-48 h-48 bg-primary-foreground/5 rounded-full translate-y-1/2 -translate-x-1/2" />
+        </section>
     )
 }
 export default Hero

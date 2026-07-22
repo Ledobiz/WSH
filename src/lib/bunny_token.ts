@@ -2,10 +2,14 @@ import crypto from 'crypto';
 
 export function signVideoUrl(
     videoId: string | null,
+    libraryIdOverride?: string | null,
     expirationTime = 300,
 ): string {
     const securityKey = process.env.BUNNY_PLAYER_SECRET_KEY!;
-    const libraryId = process.env.BUNNY_VIDEO_LIBRARY_ID!;
+    // Per-lesson Bunny folder/library override; falls back to the default library.
+    // The signing token depends only on the (shared) security key + video id + expiry,
+    // so a single key works across libraries and existing videos remain backward compatible.
+    const libraryId = libraryIdOverride?.trim() || process.env.BUNNY_VIDEO_LIBRARY_ID!;
     const baseUrl = process.env.BUNNY_VIDEO_BASE_URL!;
 
     if (!libraryId || !securityKey) {

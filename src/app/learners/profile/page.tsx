@@ -1,17 +1,14 @@
-import { Suspense } from "react";
-import Loading from "@/src/components/website/loading";
-import ProfileClient from "@/src/components/learners/ProfileClient";
+import ProfilePage from "@/src/pages/learners/ProfilePage";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "Profile - Women Skills Hub",
+    title: "Profile Settings - Women Skills Hub",
     description: "The home for upskilling for financial independence"
 };
 
-export default function ProfilePage() {
+const page = () => {
     return (
-        <Suspense fallback={<Loading />}>   
-            <ProfileClient />
-        </Suspense>
-    );
+        <ProfilePage />
+    )
 }
+export default page

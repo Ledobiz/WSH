@@ -1,18 +1,14 @@
+import AdminFinances from "@/src/pages/admin/AdminFinances";
 import { Metadata } from "next";
-import { Suspense } from "react";
-import EarningPage from "@/src/components/admin/pages/EarningPage";
-import PageLoader from "@/src/components/website/PageLoader";
 
 export const metadata: Metadata = {
-    title: "Earnings - Women Skills Hub",
+    title: "Finances - Admin - Women Skills Hub",
     description: "The home for upskilling for financial independence"
 };
 
-const Earnings = () => {
+const page = () => {
     return (
-        <Suspense fallback={<PageLoader />}> 
-            <EarningPage />
-        </Suspense>
+        <AdminFinances />
     )
 }
-export default Earnings
+export default page

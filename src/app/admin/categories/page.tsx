@@ -1,14 +1,14 @@
-import CategoriesPage from "@/src/components/admin/pages/CategoriesPage";
+import AdminCategories from "@/src/pages/admin/AdminCategories";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "Categories - Women Skills Hub",
+    title: "Categories - Admin - Women Skills Hub",
     description: "The home for upskilling for financial independence"
 };
 
-const Categories = () => {
+const page = () => {
     return (
-        <CategoriesPage />
+        <AdminCategories />
     )
 }
-export default Categories
+export default page
