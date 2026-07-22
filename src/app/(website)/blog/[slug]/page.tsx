@@ -1,7 +1,7 @@
 import PageTransition from "@/src/components/PageTransition";
 import Navbar from "@/src/components/website/Navbar";
 import Footer from "@/src/components/website/Footer";
-import BlogPost from "@/src/pages/website/BlogPost";
+import BlogPost from "@/src/views/website/BlogPost";
 import { blogPosts } from "@/src/data/blog";
 import { Metadata } from "next";
 

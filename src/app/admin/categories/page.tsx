@@ -1,4 +1,4 @@
-import AdminCategories from "@/src/pages/admin/AdminCategories";
+import AdminCategories from "@/src/views/admin/AdminCategories";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {

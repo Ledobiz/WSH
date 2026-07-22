@@ -16,7 +16,7 @@ import RequireCompleteProfile from "@/src/components/learners/RequireCompletePro
 import { useAuth } from "@/src/providers/AuthProvider";
 import { ongoingCourses, recentlyAddedCourses } from "@/src/services/student/course";
 import { cartUrl, courseDetailUrl, coursesUrl } from "@/src/utils/url";
-import { courseProgress } from "@/src/utils/server_functions";
+import { courseProgress } from "@/src/utils/progress_functions";
 import { useCart } from "@/src/providers/CartProvider";
 import { useRouter } from "next/navigation";
 import TelegramChoiceModal from "@/src/components/learners/TelegramChoiceModal";

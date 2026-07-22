@@ -1,4 +1,4 @@
-import NotesPage from "@/src/pages/learners/NotesPage";
+import NotesPage from "@/src/views/learners/NotesPage";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {

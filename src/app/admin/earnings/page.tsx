@@ -1,4 +1,4 @@
-import AdminFinances from "@/src/pages/admin/AdminFinances";
+import AdminFinances from "@/src/views/admin/AdminFinances";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {

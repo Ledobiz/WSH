@@ -1,4 +1,4 @@
-import AdminAnalytics from "@/src/pages/admin/AdminAnalytics";
+import AdminAnalytics from "@/src/views/admin/AdminAnalytics";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {

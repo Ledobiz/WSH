@@ -1,4 +1,4 @@
-import AdminDashboard from "@/src/pages/admin/AdminDashboard";
+import AdminDashboard from "@/src/views/admin/AdminDashboard";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {

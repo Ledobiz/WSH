@@ -2,7 +2,7 @@ import PageTransition from "@/src/components/PageTransition";
 import Navbar from "@/src/components/website/Navbar";
 import { Metadata } from "next"
 import Footer from "@/src/components/website/Footer";
-import ContactUs from "@/src/pages/website/ContactUs";
+import ContactUs from "@/src/views/website/ContactUs";
 
 export const metadata: Metadata = {
     title: "Contact Us - Women Skills Hub",

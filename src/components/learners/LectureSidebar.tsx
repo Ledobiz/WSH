@@ -3,7 +3,7 @@
 import { CheckCircle2, ChevronDown, ChevronLeft, File, FileSpreadsheet, FileText, HelpCircle, Play } from "lucide-react";
 import { Progress } from "../ui/progress";
 import { AnimatePresence, motion } from "framer-motion";
-import { Lesson } from "@/src/pages/learners/CourseLecturePage";
+import { Lesson } from "@/src/views/learners/CourseLecturePage";
 import { durationInHourMinutesAndSeconds } from '@/src/utils/client_functions';
 import { studentDashboardUrl } from "@/src/utils/url";
 import { useSmartBack } from "@/src/hooks/useSmartBack";

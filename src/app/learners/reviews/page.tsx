@@ -1,4 +1,4 @@
-import ReviewsPage from "@/src/pages/learners/ReviewsPage";
+import ReviewsPage from "@/src/views/learners/ReviewsPage";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {

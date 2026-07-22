@@ -4,7 +4,7 @@ import PageTransition from "@/src/components/PageTransition";
 import Navbar from "@/src/components/website/Navbar";
 import Footer from "@/src/components/website/Footer";
 import Hero from "@/src/components/website/Hero";
-import Homepage from "@/src/pages/website/Homepage";
+import Homepage from "@/src/views/website/Homepage";
 
 
 export const metadata: Metadata = {

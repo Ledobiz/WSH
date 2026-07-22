@@ -1,4 +1,4 @@
-import AdminReviews from "@/src/pages/admin/AdminReviews";
+import AdminReviews from "@/src/views/admin/AdminReviews";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {

@@ -1,7 +1,7 @@
 import PageTransition from "@/src/components/PageTransition";
 import Navbar from "@/src/components/website/Navbar";
 import Footer from "@/src/components/website/Footer";
-import CourseDetail from "@/src/pages/website/CourseDetail";
+import CourseDetail from "@/src/views/website/CourseDetail";
 import { singleCourseWebsite } from "@/src/services/website/course";
 import { Metadata } from "next";
 

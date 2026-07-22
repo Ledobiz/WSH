@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import PageTransition from "@/src/components/PageTransition";
 import Navbar from "@/src/components/website/Navbar";
 import Footer from "@/src/components/website/Footer";
-import ChangePassword from "@/src/pages/website/ChangePassword";
+import ChangePassword from "@/src/views/website/ChangePassword";
 
 export const metadata: Metadata = {
     title: "Reset Password - Women Skills Hub",

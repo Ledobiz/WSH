@@ -16,7 +16,7 @@ import Link from "next/link";
 import { useAuth } from "@/src/providers/AuthProvider";
 import { ongoingCourses } from "@/src/services/student/course";
 import { courseDetailUrl, coursesUrl } from "@/src/utils/url";
-import { courseProgress } from "@/src/utils/server_functions";
+import { courseProgress } from "@/src/utils/progress_functions";
 import { useRouter } from "next/navigation";
 
 type DBStudentInterface = Prisma.StudentGetPayload<{

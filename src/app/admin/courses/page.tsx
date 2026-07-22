@@ -1,4 +1,4 @@
-import AdminCourses from "@/src/pages/admin/AdminCourses";
+import AdminCourses from "@/src/views/admin/AdminCourses";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {

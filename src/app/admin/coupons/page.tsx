@@ -1,4 +1,4 @@
-import AdminCoupons from "@/src/pages/admin/AdminCoupons";
+import AdminCoupons from "@/src/views/admin/AdminCoupons";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {

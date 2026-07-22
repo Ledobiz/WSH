@@ -1,8 +1,9 @@
 import { Metadata } from "next"
+import { Suspense } from "react";
 import PageTransition from "@/src/components/PageTransition";
 import Navbar from "@/src/components/website/Navbar";
 import Footer from "@/src/components/website/Footer";
-import LoginPage from "@/src/pages/website/LoginPage";
+import LoginPage from "@/src/views/website/LoginPage";
 
 export const metadata: Metadata = {
     title: "Sign In - Women Skills Hub",
@@ -14,7 +15,9 @@ const page = () => {
         <PageTransition>
             <div className="min-h-screen bg-background">
                 <Navbar />
-                <LoginPage />
+                <Suspense fallback={null}>
+                    <LoginPage />
+                </Suspense>
                 <Footer />
             </div>
         </PageTransition>

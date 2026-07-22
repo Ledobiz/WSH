@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import PageTransition from "@/src/components/PageTransition";
 import Navbar from "@/src/components/website/Navbar";
-import Courses from "@/src/pages/website/Courses";
+import Courses from "@/src/views/website/Courses";
 import Footer from "@/src/components/website/Footer";
 
 export const metadata: Metadata = {
@@ -14,7 +15,9 @@ function page() {
         <PageTransition>
             <div className="min-h-screen bg-background">
                 <Navbar />
-                <Courses />
+                <Suspense fallback={null}>
+                    <Courses />
+                </Suspense>
                 <Footer />
             </div>
         </PageTransition>

@@ -1,4 +1,4 @@
-import PaymentPage from "@/src/pages/learners/PaymentPage";
+import PaymentPage from "@/src/views/learners/PaymentPage";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {

@@ -1,4 +1,4 @@
-import Dashboard from "@/src/pages/learners/Dashboard";
+import Dashboard from "@/src/views/learners/Dashboard";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {

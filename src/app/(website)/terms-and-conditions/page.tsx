@@ -2,7 +2,7 @@ import { Metadata } from "next"
 import PageTransition from "@/src/components/PageTransition";
 import Navbar from "@/src/components/website/Navbar";
 import Footer from "@/src/components/website/Footer";
-import TermsAndConditions from "@/src/pages/website/TermsAndConditions";
+import TermsAndConditions from "@/src/views/website/TermsAndConditions";
 
 export const metadata: Metadata = {
     title: "Terms and Conditions - Women Skills Hub",

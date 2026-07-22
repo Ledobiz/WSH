@@ -5,7 +5,7 @@ import Footer from "@/src/components/website/Footer"
 import Navbar from "@/src/components/website/Navbar"
 import dynamic from 'next/dynamic';
 
-const CartPage = dynamic(() => import('@/src/pages/website/CartPage'), { ssr: false });
+const CartPage = dynamic(() => import('@/src/views/website/CartPage'), { ssr: false });
 
 const page = () => {
     return (

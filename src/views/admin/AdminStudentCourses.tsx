@@ -14,7 +14,7 @@ import { toast } from "sonner";
 import AdminHeader from "@/src/components/admin/AdminHeader";
 import { getStudentCourses, assignCourseToStudent } from "@/src/services/admin/student";
 import { removeStudentFromCourse, giveStudentNewlyAvailableLectureContents } from "@/src/services/student/course";
-import { courseProgress } from "@/src/utils/server_functions";
+import { courseProgress } from "@/src/utils/progress_functions";
 import { adminStudentsUrl } from "@/src/utils/url";
 import { useSmartBack } from "@/src/hooks/useSmartBack";
 

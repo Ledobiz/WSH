@@ -6,7 +6,7 @@ import prisma from "@/src/lib/prisma";
 import { paginateQuery } from "@/src/utils/pagination";
 import { inngest } from "@/src/inngest/client";
 import { removeStudentFromCourse, giveStudentNewlyAvailableLectureContents } from "@/src/services/student/course";
-import { courseProgress } from "@/src/utils/server_functions";
+import { courseProgress } from "@/src/utils/progress_functions";
 
 export const getAllStudents = async (page: number = 1, pageSize: number = 20, searchTerm?: string) => {
     try {

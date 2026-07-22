@@ -1,5 +1,6 @@
-import ProfilePage from "@/src/pages/learners/ProfilePage";
+import ProfilePage from "@/src/views/learners/ProfilePage";
 import { Metadata } from "next";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
     title: "Profile Settings - Women Skills Hub",
@@ -8,7 +9,9 @@ export const metadata: Metadata = {
 
 const page = () => {
     return (
-        <ProfilePage />
+        <Suspense fallback={null}>
+            <ProfilePage />
+        </Suspense>
     )
 }
 export default page
