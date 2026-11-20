@@ -8,38 +8,72 @@ import { inngest } from "@/src/inngest/client";
 import { removeStudentFromCourse, giveStudentNewlyAvailableLectureContents } from "@/src/services/student/course";
 import { courseProgress } from "@/src/utils/progress_functions";
 
-export const getAllStudents = async (page: number = 1, pageSize: number = 20, searchTerm?: string) => {
+export type StudentListFilters = {
+    status?: 'all' | 'active' | 'inactive';
+    // ISO timestamps. The client converts the admin's local calendar dates
+    // into [registeredFrom, registeredTo) so timezone boundaries are correct.
+    registeredFrom?: string;
+    registeredTo?: string;
+};
+
+const parseDate = (value?: string) => {
+    if (!value) return undefined;
+    const date = new Date(value);
+    return isNaN(date.getTime()) ? undefined : date;
+};
+
+export const getAllStudents = async (
+    page: number = 1,
+    pageSize: number = 20,
+    searchTerm?: string,
+    filters: StudentListFilters = {},
+) => {
     try {
         const search = searchTerm?.trim();
+        const from = parseDate(filters.registeredFrom);
+        const to = parseDate(filters.registeredTo);
+
+        const where: any = {
+            role: 'student',
+            deletedAt: null,
+            ...(filters.status === 'active' ? { isActive: true } : {}),
+            ...(filters.status === 'inactive' ? { isActive: false } : {}),
+            ...(from || to
+                ? {
+                    createdAt: {
+                        ...(from ? { gte: from } : {}),
+                        ...(to ? { lt: to } : {}),
+                    }
+                }
+                : {}
+            ),
+            ...(search
+                ? {
+                    OR: [
+                        { name: { contains: search, mode: 'insensitive' } },
+                        { email: { contains: search, mode: 'insensitive' } },
+                        // Match enrolled course titles via Student relation
+                        {
+                            students: {
+                                some: {
+                                    deletedAt: null,
+                                    course: {
+                                        title: { contains: search, mode: 'insensitive' }
+                                    }
+                                }
+                            }
+                        }
+                    ],
+                }
+                : {}
+            ),
+        };
 
         return await paginateQuery<any>({
             page,
             pageSize,
             dataQuery: ({ skip, take }) => prisma.user.findMany({
-                where: {
-                    role: 'student',
-                    deletedAt: null,
-                    ...(search
-                        ? {
-                            OR: [
-                                { name: { contains: search, mode: 'insensitive' } },
-                                { email: { contains: search, mode: 'insensitive' } },
-                                // Match enrolled course titles via Student relation
-                                {
-                                    students: {
-                                        some: {
-                                            deletedAt: null,
-                                            course: {
-                                                title: { contains: search, mode: 'insensitive' }
-                                            }
-                                        }
-                                    }
-                                }
-                            ],
-                        }
-                        : {}
-                    ),
-                },
+                where,
                 orderBy: {
                     createdAt: 'desc'
                 },
@@ -54,37 +88,34 @@ export const getAllStudents = async (page: number = 1, pageSize: number = 20, se
                     }
                 }
             }),
-            countQuery: () => prisma.user.count({
-                where: {
-                    role: 'student',
-                    deletedAt: null,
-                    ...(search
-                        ? {
-                            OR: [
-                                { name: { contains: search, mode: 'insensitive' } },
-                                { email: { contains: search, mode: 'insensitive' } },
-                                {
-                                    students: {
-                                        some: {
-                                            deletedAt: null,
-                                            course: {
-                                                title: { contains: search, mode: 'insensitive' }
-                                            }
-                                        }
-                                    }
-                                }
-                            ],
-                        }
-                        : {}
-                    ),
-                }
-            })
+            countQuery: () => prisma.user.count({ where })
         });
     } catch (error) {
         console.log("Error fetching students:", error);
         return {
-            students: [],
+            success: false,
+            message: 'Failed to fetch students',
+            data: [],
+            pagination: {
+                totalCount: 0,
+                totalPages: 0,
+                currentPage: page,
+                pageSize,
+            },
         };
+    }
+}
+
+export const getStudentStats = async () => {
+    try {
+        const [total, active] = await Promise.all([
+            prisma.user.count({ where: { role: 'student', deletedAt: null } }),
+            prisma.user.count({ where: { role: 'student', deletedAt: null, isActive: true } }),
+        ]);
+        return { total, active };
+    } catch (error) {
+        console.log("Error fetching student stats:", error);
+        return { total: 0, active: 0 };
     }
 }
 
