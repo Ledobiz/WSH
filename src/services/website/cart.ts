@@ -1,6 +1,5 @@
 'use server'
 
-import error from "@/src/app/error";
 import { inngest } from "@/src/inngest/client";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -413,7 +412,8 @@ const queueCourseForAutoAssigning = async (userId: string, reference: string) =>
                 where: {
                     userId_courseId: { userId, courseId: item.courseId }
                 },
-                update: {},
+                // Restore a previously soft-deleted enrollment when the student pays again.
+                update: { deletedAt: null },
                 create: { userId, courseId: item.courseId }
             });
         })

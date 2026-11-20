@@ -49,8 +49,9 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ success: true, message: "Nothing to process" });
         }
 
+        // Gateways may return the email with different casing than the account.
         const user = await prisma.user.findFirst({
-            where: { email, deletedAt: null },
+            where: { email: { equals: email.trim(), mode: "insensitive" }, deletedAt: null },
         });
 
         if (!user) {
