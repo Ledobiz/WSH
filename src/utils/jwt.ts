@@ -21,7 +21,23 @@ export const sessionSchema = z.object({
 
 type UserSession = z.infer<typeof sessionSchema>
 
-const SECRET_KEY = new TextEncoder().encode(process.env.NEXT_PUBLIC_APP_KEY!);
+// Session tokens are signed with a SERVER-ONLY secret. Never use a NEXT_PUBLIC_*
+// variable here: those are bundled into browser JavaScript, which would let anyone
+// forge a session (including role "admin"). Fails closed if the secret is missing.
+const MIN_SECRET_LENGTH = 32;
+let secretKey: Uint8Array | null = null;
+function getSecretKey(): Uint8Array {
+    if (secretKey) return secretKey;
+    const secret = process.env.SESSION_SECRET;
+    if (!secret || secret.length < MIN_SECRET_LENGTH) {
+        throw new Error(`SESSION_SECRET must be set to a random value of at least ${MIN_SECRET_LENGTH} characters`);
+    }
+    if (secret === process.env.NEXT_PUBLIC_APP_KEY) {
+        throw new Error("SESSION_SECRET must not reuse NEXT_PUBLIC_APP_KEY (that value is public)");
+    }
+    secretKey = new TextEncoder().encode(secret);
+    return secretKey;
+}
 const SESSION_NAME = process.env.SESSION_NAME!;
 const SESSION_EXPIRATION_MS = 1000 * 60 * 60 * 24 * 3;
 const ONE_DAY_MS = 1000 * 60 * 60 * 24;
@@ -32,12 +48,21 @@ export async function encrypt(payload: any) {
         .setProtectedHeader({ alg: "HS256" })
         .setIssuedAt()
         .setExpirationTime("7d") // Token expires in 7 days
-        .sign(SECRET_KEY);
+        .sign(getSecretKey());
 }
 
 export async function decrypt(token: string) {
+    let key: Uint8Array;
     try {
-        const { payload } = await jwtVerify(token, SECRET_KEY, {
+        key = getSecretKey();
+    } catch (error) {
+        // Misconfiguration: treat everyone as logged out (public pages and checkout keep
+        // working, nobody is authenticated) and make it loud in the logs.
+        console.error("[auth] Session verification disabled:", (error as Error).message);
+        return null;
+    }
+    try {
+        const { payload } = await jwtVerify(token, key, {
             algorithms: ["HS256"],
         });
         return payload;
