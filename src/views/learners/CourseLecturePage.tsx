@@ -256,12 +256,19 @@ const CourseLectureContent = ({courseId}: { courseId: string }) => {
             const userId = user?.id;
             if (!userId || !course?.id) return;
 
-            await saveCourseReview(userId, course.id, student?.id, {
+            const result = await saveCourseReview(userId, course.id, student?.id, {
                 rating: reviewData.rating,
                 review: reviewData.text,
                 anonymous: reviewData.anonymous,
             });
 
+            if (!result.success && !result.alreadyReviewed) {
+                toast.error(result.message);
+                return;
+            }
+
+            // Remember it locally so the form isn't offered again this session.
+            setStudent((prev: any) => (prev ? { ...prev, submittedReview: true } : prev));
             setShowReviewDialog(false);
             setShowCompletionReview(false);
             toast.success('Thank you for submitting your review!');
@@ -531,6 +538,8 @@ const CourseLectureContent = ({courseId}: { courseId: string }) => {
                         <CourseCompletionReview
                             courseTitle={course.title}
                             onSubmit={handleReviewSubmit}
+                            alreadyReviewed={!!student?.submittedReview}
+                            onClose={() => setShowReviewDialog(false)}
                         />
                     </DialogContent>
                 </Dialog>
@@ -542,6 +551,8 @@ const CourseLectureContent = ({courseId}: { courseId: string }) => {
                             <CourseCompletionReview
                                 courseTitle={course.title}
                                 onSubmit={handleReviewSubmit}
+                                alreadyReviewed={!!student?.submittedReview}
+                                onClose={() => setShowCompletionReview(false)}
                             />
                         </div>
                     ) : currentLesson ? (

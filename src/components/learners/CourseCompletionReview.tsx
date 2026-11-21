@@ -10,11 +10,15 @@ import confetti from "canvas-confetti";
 interface CourseCompletionReviewProps {
   courseTitle: string;
   onSubmit: (review: { rating: number; text: string; anonymous: boolean; images: string[] }) => void;
+  /** Student already reviewed this course: show the celebration only, no form. */
+  alreadyReviewed?: boolean;
+  /** Shown as a "Continue" button when alreadyReviewed. */
+  onClose?: () => void;
 }
 
 const CLAP_AUDIO_URL = "https://cdn.pixabay.com/audio/2021/08/04/audio_0625c1539c.mp3";
 
-const CourseCompletionReview = ({ courseTitle, onSubmit }: CourseCompletionReviewProps) => {
+const CourseCompletionReview = ({ courseTitle, onSubmit, alreadyReviewed = false, onClose }: CourseCompletionReviewProps) => {
   const [rating, setRating] = useState(0);
   const [text, setText] = useState("");
   const [anonymous, setAnonymous] = useState(false);
@@ -121,9 +125,21 @@ const CourseCompletionReview = ({ courseTitle, onSubmit }: CourseCompletionRevie
         transition={{ delay: 0.4 }}
         className="text-sm text-muted-foreground mb-6"
       >
-        You've completed <strong>{courseTitle}</strong>. We'd love your feedback!
+        {alreadyReviewed ? (
+          <>You&apos;ve completed <strong>{courseTitle}</strong>. Thank you for sharing your review!</>
+        ) : (
+          <>You&apos;ve completed <strong>{courseTitle}</strong>. We&apos;d love your feedback!</>
+        )}
       </motion.p>
 
+      {alreadyReviewed ? (
+        onClose && (
+          <Button variant="hero" onClick={onClose} className="w-full">
+            Continue
+          </Button>
+        )
+      ) : (
+      <>
       {/* Star rating */}
       <div className="mb-5">
         <p className="text-sm font-medium text-foreground mb-2">Rate this course</p>
@@ -209,6 +225,8 @@ const CourseCompletionReview = ({ courseTitle, onSubmit }: CourseCompletionRevie
           Submit Review
         </Button>
       </div>
+      </>
+      )}
     </motion.div>
   );
 };

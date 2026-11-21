@@ -694,6 +694,17 @@ export const saveCourseReview = async (
             throw new Error('Missing identifiers for saving review');
         }
 
+        // One review per enrollment (the Reviews page applies the same rule).
+        const existing = await prisma.studentReview.findFirst({ where: { studentId }, select: { id: true } });
+        if (existing) {
+            await prisma.student.updateMany({ where: { id: studentId, submittedReview: false }, data: { submittedReview: true } });
+            return {
+                success: false,
+                alreadyReviewed: true,
+                message: 'You have already reviewed this course.',
+            };
+        }
+
         await prisma.$transaction(async (tx) => {
             await tx.studentReview.create({
                 data: {
