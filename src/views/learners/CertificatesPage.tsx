@@ -28,7 +28,8 @@ interface CertificateCourse {
     courseId: string;
     courseTitle: string;
     thumbnail: string | null;
-    completedAt: string;
+    enrolledAt: string;
+    completed: boolean;
     request: CertificateRequestSummary | null;
 }
 
@@ -74,7 +75,7 @@ const CertificatesPage = () => {
                     <EmptyState
                         icon={Award}
                         title="No Certificates Yet"
-                        description="Complete a course that offers a certificate to request yours. Keep learning and you'll get there!"
+                        description="None of your courses offer a certificate yet. Once you're enrolled in a course that does, you can request yours here."
                     />
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -96,7 +97,10 @@ const CertificatesPage = () => {
                                             <h3 className="font-semibold text-foreground text-sm line-clamp-2">{course.courseTitle}</h3>
                                             <StatusBadge request={request} />
                                         </div>
-                                        <p className="text-xs text-muted-foreground mt-1">Completed {formatDate(course.completedAt)}</p>
+                                        <p className="text-xs text-muted-foreground mt-1">
+                                            Enrolled {formatDate(course.enrolledAt)}
+                                            {course.completed && <span className="text-green-700"> · Course completed</span>}
+                                        </p>
 
                                         {request && (
                                             <p className="mt-2 flex min-w-0 items-center gap-1 text-xs text-foreground">

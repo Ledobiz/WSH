@@ -96,6 +96,7 @@ export const getCertificateRequest = async (id: string) => {
             include: {
                 user: { select: { id: true, name: true, email: true, phone: true } },
                 course: { select: { id: true, title: true } },
+                student: { select: { lecturesCompleted: true, createdAt: true } },
                 reviewedBy: { select: { name: true } },
                 files: { orderBy: [{ attempt: "desc" }, { createdAt: "asc" }] },
             },

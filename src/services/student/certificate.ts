@@ -12,12 +12,12 @@ import {
     validateCertificateName,
 } from "@/src/utils/certificate";
 
-// A course is eligible for a certificate when the course offers one and the
-// student has completed all its lectures.
+// A course is eligible for a certificate when the student is enrolled and the
+// course offers one. Completion on the platform is NOT required: some students
+// took the class on Telegram. Admins judge eligibility from the practicals.
 const eligibleEnrollmentWhere = (userId: string) => ({
     userId,
     deletedAt: null,
-    lecturesCompleted: true,
     course: { hasCertificate: true, deletedAt: null },
 });
 
@@ -27,10 +27,11 @@ export const getMyCertificates = async () => {
 
         const enrollments = await prisma.student.findMany({
             where: eligibleEnrollmentWhere(user.id),
-            orderBy: { updatedAt: "desc" },
+            orderBy: { createdAt: "desc" },
             select: {
                 id: true,
-                updatedAt: true,
+                createdAt: true,
+                lecturesCompleted: true,
                 course: { select: { id: true, title: true, thumbnail: true } },
                 certificateRequest: {
                     select: {
@@ -55,7 +56,8 @@ export const getMyCertificates = async () => {
                 courseId: e.course.id,
                 courseTitle: e.course.title,
                 thumbnail: e.course.thumbnail,
-                completedAt: e.updatedAt.toISOString(),
+                enrolledAt: e.createdAt.toISOString(),
+                completed: e.lecturesCompleted,
                 request: e.certificateRequest
                     ? {
                         ...e.certificateRequest,

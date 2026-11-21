@@ -280,6 +280,15 @@ const CertificateReviewSheet = ({ id, onClose, onReviewed }: { id: string | null
                                 <div className="min-w-0"><p className="text-xs text-muted-foreground">Email</p><p className="truncate text-foreground">{request.user?.email}</p></div>
                                 <div><p className="text-xs text-muted-foreground">Status</p>{statusBadge(request.status)}</div>
                                 <div><p className="text-xs text-muted-foreground">Submitted</p><p className="text-foreground">{fmt(request.submittedAt)}{request.attempt > 1 ? ` (attempt ${request.attempt})` : ""}</p></div>
+                                <div className="col-span-2">
+                                    <p className="text-xs text-muted-foreground">Course progress on the platform</p>
+                                    {request.student?.lecturesCompleted ? (
+                                        <p className="text-green-700">All lectures completed</p>
+                                    ) : (
+                                        <p className="text-amber-700">Not completed on the platform (they may have taken the class on Telegram), so check the practicals carefully.</p>
+                                    )}
+                                    {request.student?.createdAt && <p className="text-xs text-muted-foreground">Enrolled {new Date(request.student.createdAt).toLocaleDateString()}</p>}
+                                </div>
                                 {request.reviewedAt && (
                                     <div className="col-span-2"><p className="text-xs text-muted-foreground">Last reviewed</p><p className="text-foreground">{fmt(request.reviewedAt)}{request.reviewedBy?.name ? ` by ${request.reviewedBy.name}` : ""}</p></div>
                                 )}
