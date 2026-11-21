@@ -11,6 +11,8 @@ export const CreateCourseValidation = z.object({
     previewVideo: z.string().nullable().optional(),
     isFree: z.boolean(),
     isActive: z.boolean(),
+    // Optional so callers that don't send it (e.g. publish toggle) leave it unchanged.
+    hasCertificate: z.boolean().optional(),
     seoTitle: z.string(),
     seoDescription: z.string(),
     seoKeywords: z.string(),

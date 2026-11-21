@@ -4,7 +4,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { Search, Plus, MoreVertical, Edit, Trash2, Eye, EyeOff, Users, Layers, Loader2 } from "lucide-react";
+import { Search, Plus, MoreVertical, Edit, Trash2, Eye, EyeOff, Users, Layers, Loader2, Award } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
 import { Label } from "@/src/components/ui/label";
@@ -28,6 +28,7 @@ interface CourseFormState {
     previewVideo: string;
     isFree: boolean;
     isActive: boolean;
+    hasCertificate: boolean;
     seoTitle: string;
     seoDescription: string;
     seoKeywords: string;
@@ -37,7 +38,7 @@ interface CourseFormState {
 
 const emptyForm: CourseFormState = {
     title: "", categoryId: "", description: "", originalFee: "", discountedFee: "",
-    previewVideo: "", isFree: false, isActive: true, seoTitle: "", seoDescription: "",
+    previewVideo: "", isFree: false, isActive: true, hasCertificate: false, seoTitle: "", seoDescription: "",
     seoKeywords: "", whoIsCourseFor: "", telegramLink: "",
 };
 
@@ -108,6 +109,7 @@ const AdminCourses = () => {
             previewVideo: course.previewVideo || "",
             isFree: !!course.isFree,
             isActive: !!course.isActive,
+            hasCertificate: !!course.hasCertificate,
             seoTitle: course.seoTitle || "",
             seoDescription: course.seoDescription || "",
             seoKeywords: course.seoKeywords || "",
@@ -130,6 +132,7 @@ const AdminCourses = () => {
         previewVideo: form.previewVideo || null,
         isFree: form.isFree,
         isActive: form.isActive,
+        hasCertificate: form.hasCertificate,
         seoTitle: form.seoTitle,
         seoDescription: form.seoDescription,
         seoKeywords: form.seoKeywords,
@@ -307,6 +310,11 @@ const AdminCourses = () => {
                                         <span className={`px-2 py-0.5 rounded-full ${course.isActive ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"}`}>
                                             {course.isActive ? "published" : "draft"}
                                         </span>
+                                        {course.hasCertificate && (
+                                            <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/10 text-primary">
+                                                <Award className="h-3 w-3" /> certificate
+                                            </span>
+                                        )}
                                     </div>
                                 </div>
                             </div>
@@ -397,6 +405,15 @@ const AdminCourses = () => {
                             <div>
                                 <Label htmlFor="isPublic">Is available to the public?</Label>
                                 <p className="text-xs text-muted-foreground">Check if the course should appear on the website.</p>
+                            </div>
+                        </div>
+                        <div className="flex items-start gap-2">
+                            <input type="checkbox" id="hasCertificate" checked={form.hasCertificate} onChange={(e) => setForm({ ...form, hasCertificate: e.target.checked })} className="rounded border-border mt-1" />
+                            <div>
+                                <Label htmlFor="hasCertificate">Offers a certificate?</Label>
+                                <p className="text-xs text-muted-foreground">
+                                    Students who complete this course can request a certificate (reviewed by an admin). Also shows &quot;Certificate included&quot; on the course page.
+                                </p>
                             </div>
                         </div>
                         <div>

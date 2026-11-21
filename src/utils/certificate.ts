@@ -1,163 +1,73 @@
-// Client-side certificate generator. Draws a certificate of completion onto a
-// canvas and triggers a PNG download — no external dependencies or backend needed.
+// Shared certificate rules, wording and layout — used by the server actions, the
+// PDF builder (src/lib/certificate-pdf.ts) and the in-browser preview so they can
+// never drift apart.
 
-interface CertificateData {
-    studentName: string;
-    courseTitle: string;
-    date: string; // human-readable, e.g. "July 21, 2026"
-    certificateId?: string;
+export const CERTIFICATE_LIMITS = {
+    maxFiles: 20,
+    maxImageBytes: 10 * 1024 * 1024, // 10 MB
+    maxVideoBytes: 100 * 1024 * 1024, // 100 MB
+    nameMin: 2,
+    nameMax: 80,
+    reasonMin: 5,
+    reasonMax: 1000,
+};
+
+export const ACCEPTED_PRACTICAL_TYPES = "image/*,video/*";
+
+export type CertificateStatus = "pending" | "approved" | "rejected";
+
+// What the browser sends back after a direct upload to Cloudinary. The server
+// verifies `signature` (Cloudinary's response signature) before trusting it.
+export interface UploadedAsset {
+    publicId: string;
+    version: number;
+    signature: string;
+    resourceType: "image" | "video";
+    secureUrl: string;
+    bytes: number;
+    format?: string;
 }
 
-const PRIMARY = "#7c3aed";
-const ACCENT = "#f59e0b";
-const INK = "#1f2937";
-const MUTED = "#6b7280";
+export const normalizeCertificateName = (value: string) => value.trim().replace(/\s+/g, " ");
 
-const wrapText = (
-    ctx: CanvasRenderingContext2D,
-    text: string,
-    maxWidth: number
-): string[] => {
-    const words = text.split(" ");
-    const lines: string[] = [];
-    let current = "";
+// Letters (any language), spaces, apostrophes, hyphens and full stops.
+const NAME_PATTERN = /^[\p{L}\p{M}][\p{L}\p{M} '’.\-]*$/u;
 
-    for (const word of words) {
-        const candidate = current ? `${current} ${word}` : word;
-        if (ctx.measureText(candidate).width > maxWidth && current) {
-            lines.push(current);
-            current = word;
-        } else {
-            current = candidate;
-        }
-    }
-    if (current) lines.push(current);
-    return lines;
+export const validateCertificateName = (raw: string): string | null => {
+    const name = normalizeCertificateName(raw);
+    if (name.length < CERTIFICATE_LIMITS.nameMin) return "Please enter your full name.";
+    if (name.length > CERTIFICATE_LIMITS.nameMax) return `Name must be ${CERTIFICATE_LIMITS.nameMax} characters or fewer.`;
+    if (!NAME_PATTERN.test(name)) return "Name can only contain letters, spaces, apostrophes, hyphens and full stops.";
+    return null;
 };
 
-const drawCertificate = (data: CertificateData): HTMLCanvasElement => {
-    const width = 1600;
-    const height = 1131;
-    const canvas = document.createElement("canvas");
-    canvas.width = width;
-    canvas.height = height;
-    const ctx = canvas.getContext("2d")!;
+const titleCase = (value: string) =>
+    value.toLowerCase().replace(/(^|[\s(\-/])(\p{L})/gu, (_, sep, ch) => sep + ch.toUpperCase());
 
-    // Background
-    ctx.fillStyle = "#ffffff";
-    ctx.fillRect(0, 0, width, height);
-    ctx.fillStyle = "#faf8ff";
-    ctx.fillRect(0, 0, width, height);
+export const formatCertificateDate = (date: Date) =>
+    new Intl.DateTimeFormat("en-US", { timeZone: "Africa/Lagos", month: "long", day: "numeric", year: "numeric" })
+        .format(date)
+        .toUpperCase();
 
-    // Outer + inner borders
-    ctx.strokeStyle = PRIMARY;
-    ctx.lineWidth = 10;
-    ctx.strokeRect(40, 40, width - 80, height - 80);
-    ctx.strokeStyle = ACCENT;
-    ctx.lineWidth = 3;
-    ctx.strokeRect(64, 64, width - 128, height - 128);
+export const certificateSentence = (courseTitle: string) =>
+    `Has Successfully Completed The Online ${titleCase(courseTitle.trim())} Class And Has Satisfactorily Met The Requirements For This Certificate.`;
 
-    ctx.textAlign = "center";
+// Template page size (A4 landscape) and text positions, in PDF points with the
+// origin at the bottom-left — measured from src/assets/certificate/template.pdf.
+export const CERTIFICATE_PAGE = { width: 841.89, height: 595.28 };
 
-    // Brand
-    ctx.fillStyle = PRIMARY;
-    ctx.font = "bold 34px Georgia, 'Times New Roman', serif";
-    ctx.fillText("WOMEN SKILLS HUB", width / 2, 170);
-
-    ctx.fillStyle = MUTED;
-    ctx.font = "20px Georgia, serif";
-    ctx.fillText("Upskilling for financial independence", width / 2, 205);
-
-    // Title
-    ctx.fillStyle = INK;
-    ctx.font = "bold 74px Georgia, serif";
-    ctx.fillText("Certificate of Completion", width / 2, 340);
-
-    // Accent divider
-    ctx.strokeStyle = ACCENT;
-    ctx.lineWidth = 4;
-    ctx.beginPath();
-    ctx.moveTo(width / 2 - 120, 375);
-    ctx.lineTo(width / 2 + 120, 375);
-    ctx.stroke();
-
-    // Body
-    ctx.fillStyle = MUTED;
-    ctx.font = "28px Georgia, serif";
-    ctx.fillText("This is to certify that", width / 2, 460);
-
-    // Student name
-    ctx.fillStyle = PRIMARY;
-    ctx.font = "italic bold 66px Georgia, serif";
-    ctx.fillText(data.studentName, width / 2, 555);
-
-    // Underline under name
-    const nameWidth = Math.min(ctx.measureText(data.studentName).width + 80, width - 300);
-    ctx.strokeStyle = "#e5e7eb";
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(width / 2 - nameWidth / 2, 585);
-    ctx.lineTo(width / 2 + nameWidth / 2, 585);
-    ctx.stroke();
-
-    ctx.fillStyle = MUTED;
-    ctx.font = "28px Georgia, serif";
-    ctx.fillText("has successfully completed the course", width / 2, 650);
-
-    // Course title (wrapped)
-    ctx.fillStyle = INK;
-    ctx.font = "bold 44px Georgia, serif";
-    const lines = wrapText(ctx, data.courseTitle, width - 400);
-    let y = 730;
-    for (const line of lines.slice(0, 3)) {
-        ctx.fillText(line, width / 2, y);
-        y += 58;
-    }
-
-    // Footer: date + signature line
-    const footerY = 970;
-
-    ctx.fillStyle = INK;
-    ctx.font = "26px Georgia, serif";
-    ctx.textAlign = "center";
-    ctx.fillText(data.date, width / 2 - 380, footerY);
-    ctx.fillText("Women Skills Hub", width / 2 + 380, footerY);
-
-    ctx.strokeStyle = "#cbd5e1";
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(width / 2 - 540, footerY + 18);
-    ctx.lineTo(width / 2 - 220, footerY + 18);
-    ctx.moveTo(width / 2 + 220, footerY + 18);
-    ctx.lineTo(width / 2 + 540, footerY + 18);
-    ctx.stroke();
-
-    ctx.fillStyle = MUTED;
-    ctx.font = "20px Georgia, serif";
-    ctx.fillText("Date", width / 2 - 380, footerY + 50);
-    ctx.fillText("Authorized Signature", width / 2 + 380, footerY + 50);
-
-    if (data.certificateId) {
-        ctx.fillStyle = MUTED;
-        ctx.font = "16px Georgia, serif";
-        ctx.fillText(`Certificate ID: ${data.certificateId}`, width / 2, height - 90);
-    }
-
-    return canvas;
+export const CERTIFICATE_LAYOUT = {
+    pageCenterX: 420.9,
+    name: { baselineY: 306, maxSize: 55, minSize: 26, maxWidth: 610 },
+    date: { centerX: 418.7, centerY: 268.4, size: 19, maxWidth: 196 },
+    body: { firstBaselineY: 202, lineHeight: 21.5, size: 18, minSize: 12, maxWidth: 615, maxLines: 3 },
+    studentLine: { centerX: 663.6, y: 101, width: 172 },
+    signature: { maxWidth: 160, maxHeight: 54, gapAboveLine: 3 },
+    studentName: { centerX: 630, baselineY: 79, size: 18, minSize: 9, maxWidth: 280 },
 };
 
-const slugify = (value: string) =>
-    value
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/(^-|-$)/g, "");
-
-export const downloadCertificate = (data: CertificateData) => {
-    const canvas = drawCertificate(data);
-    const link = document.createElement("a");
-    link.download = `wsh-certificate-${slugify(data.courseTitle) || "course"}.png`;
-    link.href = canvas.toDataURL("image/png");
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+export const formatBytes = (bytes: number) => {
+    if (bytes >= 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+    if (bytes >= 1024) return `${Math.round(bytes / 1024)} KB`;
+    return `${bytes} B`;
 };

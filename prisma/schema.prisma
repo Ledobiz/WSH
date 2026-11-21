@@ -27,12 +27,14 @@ model User {
   deletedAt DateTime?
 
   // relationships
-  carts          Cart[]
-  wishlists      Wishlist[]
-  transactions   Transaction[]
-  students       Student[]
-  studentReviews StudentReview[]
-  notes          Note[]
+  carts                       Cart[]
+  wishlists                   Wishlist[]
+  transactions                Transaction[]
+  students                    Student[]
+  studentReviews              StudentReview[]
+  notes                       Note[]
+  certificateRequests         CertificateRequest[] @relation("CertificateRequestUser")
+  reviewedCertificateRequests CertificateRequest[] @relation("CertificateRequestReviewer")
 
   @@index(email)
   @@index(uid)
@@ -51,37 +53,38 @@ enum UserGender {
 }
 
 model Course {
-  id                String          @id @default(uuid()) @db.VarChar(191)
-  title             String          @db.VarChar(191)
-  slug              String          @unique @db.VarChar(191)
-  description       String?
-  isActive          Boolean?        @default(true)
-  hasCertificate    Boolean?        @default(false)
-  category          Category        @relation(fields: [categoryId], references: [id])
-  categoryId        String          @db.VarChar(191)
-  originalFee       Int
-  discountedFee     Int
-  thumbnail         String?
-  thumbnailPublicId String?
-  banner            String?
-  bannerPublicId    String?
-  previewVideo      String?
-  isFree            Boolean         @default(false)
-  seoTitle          String?         @db.VarChar(191)
-  seoDescription    String?
-  seoKeywords       String?
-  whoIsCourseFor    String?
-  telegramLink      String?
-  createdAt         DateTime        @default(now())
-  updatedAt         DateTime        @updatedAt
-  deletedAt         DateTime?
-  cartItems         CartItem[]
-  wishlists         Wishlist[]
-  courseModules     CourseModule[]
-  students          Student[]
-  studentReviews    StudentReview[]
-  notes             Note[]
-  coupons           Coupon[]
+  id                  String               @id @default(uuid()) @db.VarChar(191)
+  title               String               @db.VarChar(191)
+  slug                String               @unique @db.VarChar(191)
+  description         String?
+  isActive            Boolean?             @default(true)
+  hasCertificate      Boolean?             @default(false)
+  category            Category             @relation(fields: [categoryId], references: [id])
+  categoryId          String               @db.VarChar(191)
+  originalFee         Int
+  discountedFee       Int
+  thumbnail           String?
+  thumbnailPublicId   String?
+  banner              String?
+  bannerPublicId      String?
+  previewVideo        String?
+  isFree              Boolean              @default(false)
+  seoTitle            String?              @db.VarChar(191)
+  seoDescription      String?
+  seoKeywords         String?
+  whoIsCourseFor      String?
+  telegramLink        String?
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  deletedAt           DateTime?
+  cartItems           CartItem[]
+  wishlists           Wishlist[]
+  courseModules       CourseModule[]
+  students            Student[]
+  studentReviews      StudentReview[]
+  notes               Note[]
+  certificateRequests CertificateRequest[]
+  coupons             Coupon[]
 
   @@index(slug)
   @@index(isActive)
@@ -286,6 +289,7 @@ model Student {
   studentModules          StudentModule[]
   studentModuleComponents StudentModuleComponent[]
   studentReviews          StudentReview[]
+  certificateRequest      CertificateRequest?
 
   @@unique([userId, courseId])
   @@index(courseContentAssigned)
@@ -419,21 +423,21 @@ model Note {
 }
 
 model BlogPost {
-  id          String       @id @default(uuid()) @db.VarChar(191)
-  title       String       @db.VarChar(191)
-  slug        String       @unique @db.VarChar(191)
-  excerpt     String
-  content     String
-  image       String
+  id            String     @id @default(uuid()) @db.VarChar(191)
+  title         String     @db.VarChar(191)
+  slug          String     @unique @db.VarChar(191)
+  excerpt       String
+  content       String
+  image         String
   imagePublicId String?    @db.VarChar(191)
-  author      String       @default("Women Skills Hub") @db.VarChar(191)
-  category    String       @db.VarChar(191)
-  readTime    String       @db.VarChar(191)
-  status      BlogStatus   @default(draft)
-  publishedAt DateTime?
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  deletedAt   DateTime?
+  author        String     @default("Women Skills Hub") @db.VarChar(191)
+  category      String     @db.VarChar(191)
+  readTime      String     @db.VarChar(191)
+  status        BlogStatus @default(draft)
+  publishedAt   DateTime?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  deletedAt     DateTime?
 
   @@index(slug)
   @@index(status)
@@ -446,4 +450,59 @@ model BlogPost {
 enum BlogStatus {
   draft
   published
+}
+
+enum CertificateRequestStatus {
+  pending
+  approved
+  rejected
+}
+
+// A student's request for a course certificate. One per enrollment (Student row).
+// `certificateName` is set on first submission and can never be changed by the
+// student; an admin may correct it only while the request is not yet approved.
+model CertificateRequest {
+  id                String                   @id @default(uuid()) @db.VarChar(191)
+  studentId         String                   @unique @db.VarChar(191)
+  student           Student                  @relation(fields: [studentId], references: [id])
+  userId            String                   @db.VarChar(191)
+  user              User                     @relation("CertificateRequestUser", fields: [userId], references: [id])
+  courseId          String                   @db.VarChar(191)
+  course            Course                   @relation(fields: [courseId], references: [id])
+  certificateName   String                   @db.VarChar(191)
+  originalName      String                   @db.VarChar(191)
+  signatureUrl      String
+  signaturePublicId String                   @db.VarChar(255)
+  status            CertificateRequestStatus @default(pending)
+  rejectionReason   String?
+  attempt           Int                      @default(1)
+  submittedAt       DateTime                 @default(now())
+  reviewedAt        DateTime?
+  reviewedById      String?                  @db.VarChar(191)
+  reviewedBy        User?                    @relation("CertificateRequestReviewer", fields: [reviewedById], references: [id])
+  approvedAt        DateTime?
+  createdAt         DateTime                 @default(now())
+  updatedAt         DateTime                 @updatedAt
+  files             CertificateRequestFile[]
+
+  @@index(userId)
+  @@index(courseId)
+  @@index(status)
+  @@index(submittedAt)
+}
+
+// Practical evidence (images/videos) uploaded with a request. `attempt` groups
+// files by submission so earlier attempts stay visible to the admin.
+model CertificateRequestFile {
+  id           String             @id @default(uuid()) @db.VarChar(191)
+  requestId    String             @db.VarChar(191)
+  request      CertificateRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  url          String
+  publicId     String             @db.VarChar(255)
+  resourceType String             @db.VarChar(16)
+  bytes        Int?
+  attempt      Int                @default(1)
+  createdAt    DateTime           @default(now())
+
+  @@index(requestId)
 }
