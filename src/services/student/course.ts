@@ -365,6 +365,15 @@ export const myLecture = async (userId?: string, courseId?: string, moduleId?: s
             }
         }
 
+        // Self-repair: progress shows 100% but the enrollment was never flagged.
+        if (totalLectures > 0 && lecturesCompleted === totalLectures && !student.lecturesCompleted) {
+            try {
+                if (await syncCourseCompletion(student.id)) student.lecturesCompleted = true;
+            } catch (error) {
+                console.log('Error repairing course completion flag:', error);
+            }
+        }
+
         return {
             success: true,
             message: 'Success',
@@ -422,6 +431,16 @@ export const lectureIsComplete = async (studentModuleId: string, studentModuleCo
                 status: 'completed'
             }
         });
+
+        // Flag the course as completed in the same request, so it can't be lost
+        // if the browser never makes a follow-up call. Best-effort: the lecture
+        // itself is already saved, and myLecture repairs the flag on next load.
+        try {
+            const mod = await prisma.studentModule.findUnique({ where: { id: studentModuleId }, select: { studentId: true } });
+            if (mod) await syncCourseCompletion(mod.studentId);
+        } catch (error) {
+            console.log('Error syncing course completion:', error);
+        }
 
         return {
             success: true,
@@ -647,33 +666,8 @@ export const courseLectureIsCompleted = async (userId: string, courseId: string)
             };
         }
 
-        const totalLectures = await prisma.studentModuleComponent.count({
-            where: {
-                studentModule: {
-                    studentId: student.id,
-                    deletedAt: null
-                },
-                deletedAt: null
-            }
-        });
-
-        const completedLectures = await prisma.studentLectureRecord.count({
-            where: {
-                status: 'completed',
-                studentModule: {
-                    studentId: student.id,
-                    deletedAt: null
-                },
-                deletedAt: null
-            }
-        });
-
-        if (totalLectures > 0 && totalLectures === completedLectures) {
-            await prisma.student.update({
-                where: { id: student.id },
-                data: { lecturesCompleted: true }
-            });
-        }
+        // Kept for existing callers; the flag is now also set server-side in lectureIsComplete.
+        await syncCourseCompletion(student.id);
 
         return {
             success: true,
@@ -1103,6 +1097,26 @@ export const deleteLectureNote = async (noteId: string) => {
             message: 'Failed to delete lecture note',
         }
     }
+}
+
+// Sets Student.lecturesCompleted once every live lecture has a completed record.
+// Uses the same rules as the progress bar in myLecture (non-deleted modules and
+// components, one completed record per component), so "100%" and "Completed"
+// can no longer disagree. Never un-sets the flag. Returns true if it is set.
+async function syncCourseCompletion(studentId: string): Promise<boolean> {
+    const live = { deletedAt: null, studentModule: { studentId, deletedAt: null } };
+    const [total, done] = await Promise.all([
+        prisma.studentModuleComponent.count({ where: live }),
+        prisma.studentModuleComponent.count({
+            where: { ...live, studentLectureRecords: { some: { status: 'completed', deletedAt: null } } },
+        }),
+    ]);
+    if (total === 0 || done < total) return false;
+    await prisma.student.updateMany({
+        where: { id: studentId, lecturesCompleted: false },
+        data: { lecturesCompleted: true },
+    });
+    return true;
 }
 
 const lectureModuleComponent = async (studentModuleId: string) => {

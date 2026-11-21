@@ -118,7 +118,9 @@ const Dashboard = () => {
                 }
 
                 setProgressData(progress);
-                setAllCourses(enrolledCourses.courses);                
+                // courseProgress repairs the completion flag server-side; reflect it immediately.
+                setAllCourses((enrolledCourses.courses ?? []).map((c: any) =>
+                    progress[c.course.id] >= 100 ? { ...c, lecturesCompleted: true } : c));
             } catch (error) {
                 console.error("Error fetching courses:", error);
                 setProgressData({});

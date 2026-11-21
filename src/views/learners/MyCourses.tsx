@@ -73,7 +73,9 @@ const MyCourses = () => {
                 }
 
                 setProgressData(progress);
-                setMyCourses(result.courses);
+                // courseProgress repairs the completion flag server-side; reflect it immediately.
+                setMyCourses((result.courses ?? []).map((c) =>
+                    progress[c.course.id] >= 100 ? { ...c, lecturesCompleted: true } : c));
             } catch (error) {
                 console.log('Error fetching courses:', error);
                 setProgressData({});
