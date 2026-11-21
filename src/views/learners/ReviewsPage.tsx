@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Star, MessageSquare, ImagePlus, X, Camera, Edit3, Plus, Trash2, Loader2 } from "lucide-react";
+import { Star, MessageSquare, ImagePlus, X, Camera, Edit3, Plus, Trash2, Loader2, CheckCircle2 } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
 import { Textarea } from "@/src/components/ui/textarea";
 import { Checkbox } from "@/src/components/ui/checkbox";
@@ -32,6 +32,7 @@ interface Review {
     comment: string;
     images: string[];
     isAnonymous: boolean;
+    isApproved?: boolean;
     createdAt: string;
     updatedAt: string;
     course?: { id: string; title: string; thumbnail: string } | null;
@@ -513,12 +514,18 @@ const ReviewsPage = () => {
                                                 >
                                                     <Camera className="h-3 w-3" /> Add Photos
                                                 </button>
-                                                <button
-                                                    onClick={() => handleDelete(review.id)}
-                                                    className="flex items-center gap-1 text-xs text-destructive hover:underline cursor-pointer"
-                                                >
-                                                    <Trash2 className="h-3 w-3" /> Delete
-                                                </button>
+                                                {review.isApproved ? (
+                                                    <span className="flex items-center gap-1 text-xs text-green-700" title="Published reviews can't be deleted">
+                                                        <CheckCircle2 className="h-3 w-3" /> Published
+                                                    </span>
+                                                ) : (
+                                                    <button
+                                                        onClick={() => handleDelete(review.id)}
+                                                        className="flex items-center gap-1 text-xs text-destructive hover:underline cursor-pointer"
+                                                    >
+                                                        <Trash2 className="h-3 w-3" /> Delete
+                                                    </button>
+                                                )}
                                                 <span className="text-[10px] text-muted-foreground ml-auto">
                                                     {new Date(review.updatedAt).toLocaleDateString("en-US", {
                                                         month: "short", day: "numeric", year: "numeric",

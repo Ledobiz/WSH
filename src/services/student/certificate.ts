@@ -15,6 +15,10 @@ import {
 // A course is eligible for a certificate when the student is enrolled and the
 // course offers one. Completion on the platform is NOT required: some students
 // took the class on Telegram. Admins judge eligibility from the practicals.
+// The student must also have reviewed the course (any review status counts).
+const hasReviewedCourse = async (userId: string, courseId: string) =>
+    Boolean(await prisma.studentReview.findFirst({ where: { userId, courseId }, select: { id: true } }));
+
 const eligibleEnrollmentWhere = (userId: string) => ({
     userId,
     deletedAt: null,
@@ -49,11 +53,16 @@ export const getMyCertificates = async () => {
             },
         });
 
+        const reviewed = new Set(
+            (await prisma.studentReview.findMany({ where: { userId: user.id }, select: { courseId: true } })).map((r) => r.courseId),
+        );
+
         return {
             success: true,
             message: "Success",
             certificates: enrollments.map((e) => ({
                 courseId: e.course.id,
+                hasReview: reviewed.has(e.course.id),
                 courseTitle: e.course.title,
                 thumbnail: e.course.thumbnail,
                 enrolledAt: e.createdAt.toISOString(),
@@ -114,7 +123,11 @@ export const submitCertificateRequest = async (input: SubmitCertificateInput) =>
         });
 
         if (!enrollment) {
-            return { success: false, message: "You can request a certificate only for completed courses that offer one." };
+            return { success: false, message: "You can request a certificate only for courses that offer one." };
+        }
+
+        if (!(await hasReviewedCourse(user.id, enrollment.courseId))) {
+            return { success: false, needsReview: true, message: "Please review the course before requesting your certificate." };
         }
 
         // Practicals

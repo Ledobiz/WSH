@@ -2,13 +2,14 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Award, CheckCircle2, Clock, Download, Lock, RotateCcw, Send, XCircle } from "lucide-react";
+import { Award, CheckCircle2, Clock, Download, Lock, RotateCcw, Send, Star, XCircle } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
 
 import DashboardHeader from "@/src/components/learners/DashboardHeader";
 import EmptyState from "@/src/components/website/EmptyState";
 import { CertificatesSkeleton } from "@/src/components/learners/LMSSkeletons";
 import CertificateRequestDialog from "@/src/components/learners/certificate/CertificateRequestDialog";
+import CertificateReviewDialog from "@/src/components/learners/certificate/CertificateReviewDialog";
 import { getMyCertificates } from "@/src/services/student/certificate";
 import type { CertificateStatus } from "@/src/utils/certificate";
 
@@ -27,6 +28,7 @@ interface CertificateRequestSummary {
 interface CertificateCourse {
     courseId: string;
     courseTitle: string;
+    hasReview: boolean;
     thumbnail: string | null;
     enrolledAt: string;
     completed: boolean;
@@ -47,6 +49,15 @@ const CertificatesPage = () => {
     const [loading, setLoading] = useState(true);
     const [courses, setCourses] = useState<CertificateCourse[]>([]);
     const [active, setActive] = useState<CertificateCourse | null>(null);
+    const [reviewing, setReviewing] = useState<CertificateCourse | null>(null);
+
+    // A review is required before requesting (or re-submitting) a certificate.
+    const startRequest = (course: CertificateCourse) => (course.hasReview ? setActive(course) : setReviewing(course));
+    const reviewNotice = (
+        <p className="mt-2 flex items-start gap-1 text-xs text-amber-800">
+            <Star className="mt-0.5 h-3 w-3 shrink-0" /> Please review this course first. It only takes a minute.
+        </p>
+    );
 
     const load = useCallback(async () => {
         try {
@@ -115,8 +126,11 @@ const CertificatesPage = () => {
                                                 <p className="mt-2 text-xs text-muted-foreground">
                                                     Upload your practicals, enter your name and sign to request your certificate.
                                                 </p>
-                                                <Button size="sm" onClick={() => setActive(course)} className="mt-3 gap-1.5 text-xs h-8 cursor-pointer">
-                                                    <Send className="h-3.5 w-3.5" /> Request Certificate
+                                                {!course.hasReview && reviewNotice}
+                                                <Button size="sm" onClick={() => startRequest(course)} className="mt-3 gap-1.5 text-xs h-8 cursor-pointer">
+                                                    {course.hasReview
+                                                        ? <><Send className="h-3.5 w-3.5" /> Request Certificate</>
+                                                        : <><Star className="h-3.5 w-3.5" /> Review this course</>}
                                                 </Button>
                                             </>
                                         )}
@@ -133,8 +147,11 @@ const CertificatesPage = () => {
                                                     <p className="font-semibold">Feedback from our team</p>
                                                     <p className="mt-0.5 whitespace-pre-line">{request.rejectionReason}</p>
                                                 </div>
-                                                <Button size="sm" onClick={() => setActive(course)} className="mt-3 gap-1.5 text-xs h-8 cursor-pointer">
-                                                    <RotateCcw className="h-3.5 w-3.5" /> Re-submit Request
+                                                {!course.hasReview && reviewNotice}
+                                                <Button size="sm" onClick={() => startRequest(course)} className="mt-3 gap-1.5 text-xs h-8 cursor-pointer">
+                                                    {course.hasReview
+                                                        ? <><RotateCcw className="h-3.5 w-3.5" /> Re-submit Request</>
+                                                        : <><Star className="h-3.5 w-3.5" /> Review this course</>}
                                                 </Button>
                                             </>
                                         )}
@@ -156,6 +173,19 @@ const CertificatesPage = () => {
                     </div>
                 )}
             </div>
+
+            {reviewing && (
+                <CertificateReviewDialog
+                    open
+                    onOpenChange={(open) => { if (!open) setReviewing(null); }}
+                    courseId={reviewing.courseId}
+                    courseTitle={reviewing.courseTitle}
+                    onReviewed={() => {
+                        const courseId = reviewing.courseId;
+                        setCourses((prev) => prev.map((c) => (c.courseId === courseId ? { ...c, hasReview: true } : c)));
+                    }}
+                />
+            )}
 
             {active && (
                 <CertificateRequestDialog

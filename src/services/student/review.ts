@@ -3,6 +3,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import prisma from "@/src/lib/prisma";
+import { requireUser } from "@/src/lib/auth-guard";
 import { fileToBuffer, uploadToCloudinary } from "@/src/utils/server_functions";
 
 const uploadReviewImages = async (files: File[]): Promise<string[]> => {
@@ -20,6 +21,9 @@ const uploadReviewImages = async (files: File[]): Promise<string[]> => {
 // Enrolled courses + the user's reviews, used to drive the reviews page.
 export const getReviewData = async (userId: string) => {
     try {
+        const user = await requireUser();
+        if (user.id !== userId) throw new Error('Not allowed');
+
         const [students, reviews] = await Promise.all([
             prisma.student.findMany({
                 where: {
@@ -89,6 +93,24 @@ export const createReview = async (
     data: { rating: number; comment: string; anonymous: boolean; images: File[] }
 ) => {
     try {
+        // Only for the signed-in student; never trust a userId from the browser.
+        const user = await requireUser();
+        if (user.id !== userId) {
+            return { success: false, message: 'You are not allowed to do that.', review: null };
+        }
+
+        const rating = Math.round(Number(data.rating));
+        const comment = typeof data.comment === 'string' ? data.comment.trim() : '';
+        if (!(rating >= 1 && rating <= 5)) {
+            return { success: false, message: 'Please select a rating between 1 and 5.', review: null };
+        }
+        if (!comment) {
+            return { success: false, message: 'Please write a review.', review: null };
+        }
+        if (comment.length > 2000) {
+            return { success: false, message: 'Your review is too long (2000 characters max).', review: null };
+        }
+
         const student = await prisma.student.findFirst({
             where: {
                 userId,
@@ -125,8 +147,8 @@ export const createReview = async (
                 userId,
                 studentId: student.id,
                 courseId,
-                rating: data.rating,
-                comment: data.comment,
+                rating,
+                comment,
                 images: imageUrls,
                 isAnonymous: data.anonymous,
             },
@@ -162,6 +184,12 @@ export const updateReview = async (
     data: { rating: number; comment: string; anonymous: boolean; existingImages: string[]; newImages: File[] }
 ) => {
     try {
+        const user = await requireUser();
+        const owned = await prisma.studentReview.findFirst({ where: { id: reviewId, userId: user.id }, select: { id: true } });
+        if (!owned) {
+            return { success: false, message: 'Review not found.', review: null };
+        }
+
         const uploaded = data.newImages.length ? await uploadReviewImages(data.newImages) : [];
         const images = [...data.existingImages, ...uploaded];
 
@@ -197,8 +225,9 @@ export const updateReview = async (
 
 export const deleteReview = async (reviewId: string) => {
     try {
-        const review = await prisma.studentReview.findUnique({
-            where: { id: reviewId }
+        const user = await requireUser();
+        const review = await prisma.studentReview.findFirst({
+            where: { id: reviewId, userId: user.id }
         });
 
         if (!review) {
@@ -208,8 +237,18 @@ export const deleteReview = async (reviewId: string) => {
             };
         }
 
+        // Published reviews are part of the public course page and can't be removed.
+        if (review.isApproved) {
+            return {
+                success: false,
+                message: 'This review has been published and can no longer be deleted.',
+            };
+        }
+
         await prisma.$transaction(async (tx) => {
-            await tx.studentReview.delete({ where: { id: reviewId } });
+            // Re-check inside the transaction in case it was approved meanwhile.
+            const { count } = await tx.studentReview.deleteMany({ where: { id: reviewId, userId: user.id, isApproved: false } });
+            if (count === 0) throw new Error('REVIEW_PUBLISHED');
             await tx.student.updateMany({
                 where: { userId: review.userId, courseId: review.courseId },
                 data: { submittedReview: false },
@@ -221,6 +260,9 @@ export const deleteReview = async (reviewId: string) => {
             message: 'Review deleted successfully.',
         };
     } catch (error) {
+        if ((error as Error)?.message === 'REVIEW_PUBLISHED') {
+            return { success: false, message: 'This review has been published and can no longer be deleted.' };
+        }
         console.log('Error deleting review:', error);
         return {
             success: false,
