@@ -234,7 +234,8 @@ export const singleCourseWebsite = async (slug: string) => {
             },
             include: {
                 category: true,
-                students: true,
+                // Public page only needs the number of students, never the enrollment rows.
+                _count: { select: { students: true } },
                 courseModules: {
                     where: {
                         isActive: true,

@@ -130,7 +130,7 @@ const CourseDetail = ({ slug }: { slug: string }) => {
         : course.originalFee > 0
             ? Math.round(((course.originalFee - course.discountedFee) / course.originalFee) * 100)
             : 0;
-    const studentsCount = course.students?.length ?? 0;
+    const studentsCount = course._count?.students ?? 0;
 
     const handleEnroll = async () => {
         if (inCart) {
