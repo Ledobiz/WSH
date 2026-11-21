@@ -218,14 +218,14 @@ const CourseDetail = ({ slug }: { slug: string }) => {
                             )}
 
                             {/* Preview Video */}
-                            {course.previewVideo && (
+                            {course.previewVideoUrl && (
                                 <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
                                     <h2 className="text-2xl font-bold text-foreground mb-4 flex items-center gap-2">
                                         <Play className="h-5 w-5 text-primary" /> Course Preview
                                     </h2>
                                     <div className="aspect-video rounded-xl overflow-hidden border border-border shadow-sm">
                                         <iframe
-                                            src={course.previewVideo}
+                                            src={course.previewVideoUrl}
                                             title={`${course.title} - Preview`}
                                             className="w-full h-full"
                                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

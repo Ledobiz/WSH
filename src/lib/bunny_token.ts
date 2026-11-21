@@ -35,3 +35,26 @@ export function signVideoUrl(
     // 4. Return the full Embed URL
     return `${baseUrl}/${libraryId}/${videoId}?token=${token}&expires=${expires}`;
 }
+
+const BUNNY_VIDEO_ID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/**
+ * Turns a course's stored preview value into something an <iframe> can play.
+ * - A Bunny video id is signed (server-side only) so the embed is authorised.
+ * - A full https:// URL (e.g. a pasted embed link) is used as-is.
+ * - Anything else returns null so the page hides the preview instead of
+ *   loading a broken relative URL.
+ */
+export function resolvePreviewVideoUrl(value?: string | null): string | null {
+    const raw = value?.trim();
+    if (!raw) return null;
+    if (/^https:\/\//i.test(raw)) return raw;
+    if (!BUNNY_VIDEO_ID.test(raw)) return null;
+    try {
+        // Long enough for a visitor to watch after the page loads; re-signed on every visit.
+        return signVideoUrl(raw, null, 6 * 60 * 60);
+    } catch (error) {
+        console.log("Unable to sign preview video:", error);
+        return null;
+    }
+}

@@ -6,6 +6,7 @@ import prisma from "@/src/lib/prisma";
 import { paginate, paginateQuery } from "@/src/utils/pagination";
 import { Course } from "@prisma/client";
 import { PUBLIC_REVIEW_SELECT, PUBLISHED_REVIEW_WHERE, PublicReview, toPublicReview } from "@/src/lib/public-showcase";
+import { resolvePreviewVideoUrl } from "@/src/lib/bunny_token";
 
 type WebsiteCoursesFilters = {
     pageSize?: number;
@@ -280,7 +281,8 @@ export const singleCourseWebsite = async (slug: string) => {
         return {
             success: true,
             message: 'Success',
-            course,
+            // previewVideo holds a Bunny video id; the page needs a signed, playable URL.
+            course: { ...course, previewVideoUrl: resolvePreviewVideoUrl(course.previewVideo) },
             rating: {
                 average: ratingAgg._avg.rating ?? 0,
                 count: ratingAgg._count._all,
