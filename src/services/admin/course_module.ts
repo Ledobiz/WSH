@@ -1,11 +1,13 @@
 'use server'
 
+import { requireAdmin } from "@/src/lib/auth-guard";
 import * as z from "zod";
 import prisma from "@/src/lib/prisma";
 import { CreateModuleValidation } from "@/src/validations/CourseValidation";
 import { getFirstErrorFromFieldSubmission } from "@/src/utils/client_functions";
 
 export const fetchModuleById = async (id: string) => {
+    await requireAdmin();
     try {
         const courseModule = await prisma.courseModule.findUnique({
             where: { id }
@@ -25,6 +27,7 @@ export const fetchModuleById = async (id: string) => {
 }
 
 export const fetchAllModules = async (courseId: string) => {
+    await requireAdmin();
     try {
         const modules = await prisma.courseModule.findMany({
             where: {
@@ -64,6 +67,7 @@ export const fetchAllModules = async (courseId: string) => {
 }
 
 export const fetchActiveModules = async (courseId: string) => {
+    await requireAdmin();
     try {
         const modules = await prisma.courseModule.findMany({
             where: {
@@ -104,6 +108,7 @@ export const fetchActiveModules = async (courseId: string) => {
 }
 
 export const addModule = async (courseId: string, unsafeData: z.infer<typeof CreateModuleValidation>) => {
+    await requireAdmin();
     const { success, data, error } = CreateModuleValidation.safeParse(unsafeData);
 
     if (!success) {
@@ -150,6 +155,7 @@ export const addModule = async (courseId: string, unsafeData: z.infer<typeof Cre
 }
 
 export const updateModule = async (id: string, unsafeData: z.infer<typeof CreateModuleValidation>) => {
+    await requireAdmin();
     const { success, data, error } = CreateModuleValidation.safeParse(unsafeData);
 
     if (!success) {
@@ -217,6 +223,7 @@ export const updateModule = async (id: string, unsafeData: z.infer<typeof Create
  * admin sets is exactly what students see in their lecture player.
  */
 export const reorderModules = async (courseId: string, orderedIds: string[]) => {
+    await requireAdmin();
     try {
         if (!orderedIds || orderedIds.length === 0) {
             return { success: false, message: 'No modules to reorder' };
@@ -254,6 +261,7 @@ export const reorderModules = async (courseId: string, orderedIds: string[]) => 
 };
 
 export const deleteModule = async (id: string) => {
+    await requireAdmin();
     try {
         const courseModule = await prisma.courseModule.findFirst({
             where: {

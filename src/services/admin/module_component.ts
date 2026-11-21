@@ -2,6 +2,7 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import { requireAdmin } from "@/src/lib/auth-guard";
 import * as z from "zod";
 import { ComponentType } from "@prisma/client";
 import prisma from "@/src/lib/prisma";
@@ -10,6 +11,7 @@ import { CreateComponentValidation } from "@/src/validations/CourseValidation";
 import { deleteFromCloudinary, fileToBuffer, uploadToCloudinary } from "@/src/utils/server_functions";
 
 export const fetchAllComponents = async (moduleId: string) => {
+    await requireAdmin();
     try {
         const components = await prisma.moduleComponent.findMany({
             where: {
@@ -38,6 +40,7 @@ export const fetchAllComponents = async (moduleId: string) => {
 }
 
 export const fetchActiveComponents = async (moduleId: string) => {
+    await requireAdmin();
     try {
         const components = await prisma.moduleComponent.findMany({
             where: {
@@ -67,6 +70,7 @@ export const fetchActiveComponents = async (moduleId: string) => {
 }
 
 export const fetchComponentById = async (id: string, forWho: string) => {
+    await requireAdmin();
     try {
         let component = null;
 
@@ -107,6 +111,7 @@ export const fetchComponentById = async (id: string, forWho: string) => {
 }
 
 export const addComponent = async (moduleId: string, unsafeData: z.infer<typeof CreateComponentValidation>) => {
+    await requireAdmin();
     const { success, data, error } = CreateComponentValidation.safeParse(unsafeData);
 
     if (!success) {
@@ -166,6 +171,7 @@ export const addComponent = async (moduleId: string, unsafeData: z.infer<typeof 
 }
 
 export const updateComponent = async (id: string, unsafeData: z.infer<typeof CreateComponentValidation>) => {
+    await requireAdmin();
     const { success, data, error } = CreateComponentValidation.safeParse(unsafeData);
 
     if (!success) {
@@ -254,6 +260,7 @@ export const updateComponent = async (id: string, unsafeData: z.infer<typeof Cre
  * arrangement persists on the student side.
  */
 export const reorderComponents = async (moduleId: string, orderedIds: string[]) => {
+    await requireAdmin();
     try {
         if (!orderedIds || orderedIds.length === 0) {
             return { success: false, message: 'No components to reorder' };
@@ -291,6 +298,7 @@ export const reorderComponents = async (moduleId: string, orderedIds: string[]) 
 };
 
 export const deleteComponent = async (id: string) => {
+    await requireAdmin();
     try {
         const component = await prisma.moduleComponent.findFirst({
             where: {

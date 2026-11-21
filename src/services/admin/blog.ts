@@ -1,5 +1,6 @@
 'use server'
 
+import { requireAdmin } from "@/src/lib/auth-guard";
 import * as z from "zod";
 import prisma from "@/src/lib/prisma";
 import { deleteFromCloudinary, fileToBuffer, uploadToCloudinary } from "@/src/utils/server_functions";
@@ -46,6 +47,7 @@ const estimateReadTime = (html: string) => {
 };
 
 export const fetchAllBlogPosts = async (page: number = 1, pageSize: number = 20, searchTerm?: string) => {
+    await requireAdmin();
     return paginate<BlogPost>(prisma.blogPost, {
         page,
         pageSize,
@@ -57,6 +59,7 @@ export const fetchAllBlogPosts = async (page: number = 1, pageSize: number = 20,
 }
 
 export const fetchBlogPostById = async (id: string) => {
+    await requireAdmin();
     try {
         const post = await prisma.blogPost.findFirst({
             where: { id, deletedAt: null },
@@ -74,6 +77,7 @@ export const fetchBlogPostById = async (id: string) => {
 }
 
 export const createBlogPost = async (unsafeData: z.infer<typeof CreateBlogValidation>) => {
+    await requireAdmin();
     const { success, data, error } = CreateBlogValidation.safeParse(unsafeData);
 
     if (!success) {
@@ -126,6 +130,7 @@ export const createBlogPost = async (unsafeData: z.infer<typeof CreateBlogValida
 }
 
 export const updateBlogPost = async (id: string, unsafeData: z.infer<typeof CreateBlogValidation>) => {
+    await requireAdmin();
     const { success, data, error } = CreateBlogValidation.safeParse(unsafeData);
 
     if (!success) {
@@ -196,6 +201,7 @@ export const updateBlogPost = async (id: string, unsafeData: z.infer<typeof Crea
 }
 
 export const deleteBlogPost = async (id: string) => {
+    await requireAdmin();
     try {
         const existing = await prisma.blogPost.findFirst({ where: { id, deletedAt: null } });
 

@@ -2,12 +2,14 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import { requireAdmin } from "@/src/lib/auth-guard";
 import * as z from "zod";
 import prisma from "@/src/lib/prisma";
 import { getFirstErrorFromFieldSubmission } from "@/src/utils/client_functions";
 import { CreateCouponValidation } from "@/src/validations/CourseValidation";
 
 export const fetchAllCoupons = async () => {
+    await requireAdmin();
     try {
         const coupons = await prisma.coupon.findMany({
             where: { deletedAt: null },
@@ -35,6 +37,7 @@ export const fetchAllCoupons = async () => {
 }
 
 export const createCoupon = async (unsafeData: z.infer<typeof CreateCouponValidation>) => {
+    await requireAdmin();
     const { success, data, error } = CreateCouponValidation.safeParse(unsafeData);
 
     if (!success) {
@@ -91,6 +94,7 @@ export const createCoupon = async (unsafeData: z.infer<typeof CreateCouponValida
 }
 
 export const updateCoupon = async (id: string, unsafeData: z.infer<typeof CreateCouponValidation>) => {
+    await requireAdmin();
     const { success, data, error } = CreateCouponValidation.safeParse(unsafeData);
 
     if (!success) {
@@ -148,6 +152,7 @@ export const updateCoupon = async (id: string, unsafeData: z.infer<typeof Create
 }
 
 export const deleteCoupon = async (id: string) => {
+    await requireAdmin();
     try {
         const coupon = await prisma.coupon.findFirst({ where: { id, deletedAt: null } });
         if (!coupon) {

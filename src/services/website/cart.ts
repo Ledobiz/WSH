@@ -4,7 +4,7 @@ import { inngest } from "@/src/inngest/client";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import prisma from "@/src/lib/prisma";
-import { assignCourseToStudent } from "../admin/student";
+import { enrollStudentInCourse } from "@/src/lib/enrollment";
 
 export const myCart = async (userId: string) => {
     try {
@@ -350,7 +350,7 @@ export const assignFreeCourse = async (courseId: string, userId: string) => {
         return { success: false, message: 'Bad request! This course is not free' }
     }
 
-    return await assignCourseToStudent(userId, courseId, false);
+    return await enrollStudentInCourse(userId, courseId, false);
 }
 
 export const fetchNewlyPaidCourses = async (userId: string, reference: string) => {

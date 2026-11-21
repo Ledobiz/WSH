@@ -5,6 +5,8 @@
 import prisma from "@/src/lib/prisma";
 import { paginateQuery } from "@/src/utils/pagination";
 import { inngest } from "@/src/inngest/client";
+import { requireAdmin } from "@/src/lib/auth-guard";
+import { enrollStudentInCourse } from "@/src/lib/enrollment";
 import { removeStudentFromCourse, giveStudentNewlyAvailableLectureContents } from "@/src/services/student/course";
 import { courseProgress } from "@/src/utils/progress_functions";
 
@@ -28,6 +30,7 @@ export const getAllStudents = async (
     searchTerm?: string,
     filters: StudentListFilters = {},
 ) => {
+    await requireAdmin();
     try {
         const search = searchTerm?.trim();
         const from = parseDate(filters.registeredFrom);
@@ -107,6 +110,7 @@ export const getAllStudents = async (
 }
 
 export const getStudentStats = async () => {
+    await requireAdmin();
     try {
         const [total, active] = await Promise.all([
             prisma.user.count({ where: { role: 'student', deletedAt: null } }),
@@ -120,6 +124,7 @@ export const getStudentStats = async () => {
 }
 
 export const getStudentCourses = async (userId: string) => {
+    await requireAdmin();
     try {
         const courses = await prisma.student.findMany({
             where: {
@@ -163,6 +168,7 @@ export const getStudentCourses = async (userId: string) => {
 }
 
 export const getStudentCourseContent = async (userId: string, courseId: string) => {
+    await requireAdmin();
     try {
         // The student's OWN copy of the content (StudentModule / StudentModuleComponent),
         // which can lag behind the master course until an admin refreshes it.
@@ -223,62 +229,13 @@ export const getStudentCourseContent = async (userId: string, courseId: string) 
     }
 }
 
-export const assignCourseToStudent = async (userId: string, courseId: string, byAdmin = true) => {
-    try {
-        const student = await prisma.student.findFirst({
-            where: {
-                userId,
-                courseId,
-                deletedAt: null
-            }
-        });
-
-        if (student) {
-            return {
-                success: false,
-                message: byAdmin ? "Student is already enrolled in this course" : 'Bad request! You have already enrolled into the course before.',
-            };
-        }
-
-        const createdStudent = await prisma.student.create({
-            data: {
-                userId,
-                courseId,
-                courseContentAssigned: false,
-            }
-        });
-
-        if (!createdStudent) {
-            return {
-                success: false,
-                message: "Failed to assign course to student. Please try again",
-            }
-        }
-
-        const courseIds = [courseId];
-
-        await inngest.send({
-            name: 'course-content.requested',
-            data: {
-                userId,
-                courseIds,
-            }
-        });
-
-        return {
-            success: true,
-            message: byAdmin ? "Course assigned to student successfully" : 'Congratulations! You now have lifetime access to your free course',
-        }
-    } catch (error) {
-        console.log("Error assigning course to student:", error);
-        return {
-            success: false,
-            message: "Failed to assign course to student. Please try again",
-        }
-    }
+export const assignCourseToStudent = async (userId: string, courseId: string) => {
+    await requireAdmin();
+    return enrollStudentInCourse(userId, courseId, true);
 }
 
 export const courseReviews = async (page: number = 1, pageSize: number = 20) => {
+    await requireAdmin();
     try {
         return await paginateQuery<any>({
             page,
@@ -313,6 +270,7 @@ export const courseReviews = async (page: number = 1, pageSize: number = 20) => 
 }
 
 export const replyToCourseReview = async (reviewId: string, replyComment: string) => {
+    await requireAdmin();
     try {
         await prisma.studentReview.update({
             where: { id: reviewId },
@@ -339,6 +297,7 @@ export const replyToCourseReview = async (reviewId: string, replyComment: string
 }
 
 export const approveReviewWithoutReply = async (reviewId: string) => {
+    await requireAdmin();
     try {
         await prisma.studentReview.update({
             where: { id: reviewId },
@@ -362,6 +321,7 @@ export const approveReviewWithoutReply = async (reviewId: string) => {
 }
 
 export const markAsReviewedWithoutApproval = async (reviewId: string) => {
+    await requireAdmin();
     try {
         await prisma.studentReview.update({
             where: { id: reviewId },
@@ -385,6 +345,7 @@ export const markAsReviewedWithoutApproval = async (reviewId: string) => {
 }
 
 export const getCourseStudents = async (courseId: string, page: number = 1, pageSize: number = 20, searchTerm?: string) => {
+    await requireAdmin();
     try {
         const search = searchTerm?.trim();
 
@@ -490,6 +451,7 @@ export const getCourseStudents = async (courseId: string, page: number = 1, page
 }
 
 export const bulkRemoveStudentsFromCourse = async (courseId: string, studentIds: string[]) => {
+    await requireAdmin();
     try {
         if (!studentIds || studentIds.length === 0) {
             return {
@@ -542,6 +504,7 @@ export const bulkRemoveStudentsFromCourse = async (courseId: string, studentIds:
 }
 
 export const bulkUpdateStudentLectures = async (courseId: string, studentIds: string[]) => {
+    await requireAdmin();
     try {
         if (!studentIds || studentIds.length === 0) {
             return {

@@ -1,5 +1,6 @@
 'use server'
 
+import { requireAdmin } from "@/src/lib/auth-guard";
 import * as z from "zod";
 import prisma from "@/src/lib/prisma";
 import { deleteFromCloudinary, fileToBuffer, uploadToCloudinary } from "@/src/utils/server_functions";
@@ -9,6 +10,7 @@ import { paginate } from "@/src/utils/pagination";
 import { Course } from "@prisma/client";
 
 export const fetchAllCourses = async (page: number = 1, pageSize: number = 20, searchTerm?: string) => {
+    await requireAdmin();
     const result = await paginate<Course>(prisma.course, {
         page,
         pageSize,
@@ -62,6 +64,7 @@ export const fetchAllCourses = async (page: number = 1, pageSize: number = 20, s
 }
 
 export const fetchActiveCourses = async () => {
+    await requireAdmin();
     try {
         const courses = await prisma.course.findMany({
             where: {
@@ -104,6 +107,7 @@ export const fetchActiveCourses = async () => {
 }
 
 export const createCourse = async (unsafeData: z.infer<typeof CreateCourseValidation>) => {
+    await requireAdmin();
     const { success, data, error } = CreateCourseValidation.safeParse(unsafeData);
 
     if (!success) {
@@ -180,6 +184,7 @@ export const createCourse = async (unsafeData: z.infer<typeof CreateCourseValida
 }
 
 export const updateCourse = async (id: string, unsafeData: z.infer<typeof CreateCourseValidation>) => {
+    await requireAdmin();
     const { success, data, error } = CreateCourseValidation.safeParse(unsafeData);
 
     if (!success) {
@@ -304,6 +309,7 @@ export const updateCourse = async (id: string, unsafeData: z.infer<typeof Create
 }
 
 export const deleteCourse = async (id: string) => {
+    await requireAdmin();
     try {
         const course = await prisma.course.findFirst({
             where: {

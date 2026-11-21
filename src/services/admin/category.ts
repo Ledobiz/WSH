@@ -1,10 +1,12 @@
 'use server'
 
+import { requireAdmin } from "@/src/lib/auth-guard";
 import * as z from "zod";
 import prisma from "@/src/lib/prisma";
 import { sluggify } from "@/src/utils/client_functions";
 
 export const createCategory = async (name: string) => {
+    await requireAdmin();
     try {
         const alreadyExists = await prisma.category.findFirst({
             where: {
@@ -52,6 +54,7 @@ export const createCategory = async (name: string) => {
 }
 
 export const editCategory = async (id: string, name: string) => {
+    await requireAdmin();
     try {
         const category = await prisma.category.findFirst({
             where: {
@@ -145,6 +148,7 @@ export const fetchAllCategories = async () => {
 }
 
 export const deleteCategory = async (id: string) => {
+    await requireAdmin();
     try {
         const category = await prisma.category.findFirst({
             where: {

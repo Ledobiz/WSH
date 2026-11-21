@@ -2,6 +2,7 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import { requireAdmin } from "@/src/lib/auth-guard";
 import { Prisma } from "@prisma/client";
 import prisma from "@/src/lib/prisma";
 import { paginateQuery } from "@/src/utils/pagination";
@@ -54,6 +55,7 @@ const currentLagosYearMonth = () => {
 };
 
 export const getMonthlyRevenue = async (year?: number) => {
+    await requireAdmin();
     const { year: currentYear } = currentLagosYearMonth();
     const selectedYear = Number.isInteger(year) && year! >= 2000 && year! <= currentYear + 1 ? year! : currentYear;
 
@@ -115,6 +117,7 @@ export const getMonthlyRevenue = async (year?: number) => {
 }
 
 export const getRevenueSummary = async () => {
+    await requireAdmin();
     const { year, month } = currentLagosYearMonth();
 
     try {
@@ -143,6 +146,7 @@ export const getRevenueSummary = async () => {
 }
 
 export const getDashboardData = async () => {
+    await requireAdmin();
     try {
         const totalCourses = await prisma.course.count();
         const newReviews = await prisma.studentReview.count({
@@ -194,6 +198,7 @@ export const getDashboardData = async () => {
 }
 
 export const getSalesData = async (page: number = 1, pageSize: number = 20) => {
+    await requireAdmin();
     try {
         const totalSale = await prisma.transaction.aggregate({
             _sum: {

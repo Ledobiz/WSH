@@ -1,43 +1,50 @@
 import { NextResponse } from "next/server";
 import { getUserFromSession } from "@/src/utils/jwt";
-import { fetchComponentById } from "@/src/services/admin/module_component";
+import prisma from "@/src/lib/prisma";
 import { signVideoUrl } from "@/src/lib/bunny_token";
 
+type VideoSource = { type: string; vimeoVideoUrl: string | null; bunnyLibraryId: string | null };
+
 export async function POST(req: Request) {
-    const { videoId, isStudent } = await req.json();
-
     const user = await getUserFromSession();
-
     if (!user) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const result = await fetchComponentById(videoId, isStudent ? 'student' : 'admin');
+    const { videoId, isStudent } = await req.json().catch(() => ({}));
+    if (typeof videoId !== "string" || !videoId) {
+        return NextResponse.json({ error: "Bad request" }, { status: 400 });
+    }
 
-    if (result.component?.type !== 'video') {
+    const select = { type: true, vimeoVideoUrl: true, bunnyLibraryId: true } as const;
+    let component: VideoSource | null = null;
+
+    if (user.role === "admin") {
+        // Admins can play both course templates and a student's copy.
+        component = isStudent
+            ? await prisma.studentModuleComponent.findUnique({ where: { id: videoId }, select })
+            : await prisma.moduleComponent.findUnique({ where: { id: videoId }, select });
+    } else {
+        // Students only get lectures from their own active enrollment. The role
+        // comes from the session, never from the request body.
+        component = await prisma.studentModuleComponent.findFirst({
+            where: {
+                id: videoId,
+                deletedAt: null,
+                student: { userId: user.id, deletedAt: null },
+            },
+            select,
+        });
+    }
+
+    if (!component) {
+        return NextResponse.json({ error: "Lecture not found" }, { status: 404 });
+    }
+    if (component.type !== "video") {
         return NextResponse.json({ error: "Bad request. Make sure the lecture is a video" }, { status: 400 });
     }
 
-    /*let isEnrolled = false;
-
-    if (user.role !== 'admin') { // Check for enrolment
-        // TODO:: Check user is in enrolled table.
-        isEnrolled = true;
-    }
-    else {
-        isEnrolled = true;
-    }
-
-    if (!isEnrolled) {
-        return NextResponse.json({ error: "Not enrolled for course" }, { status: 403 });
-    }*/
-
-    const signedVideoUrl = signVideoUrl(
-        result.component?.vimeoVideoUrl,
-        (result.component as { bunnyLibraryId?: string | null })?.bunnyLibraryId,
-    );
-
     return NextResponse.json({
-        playbackUrl: signedVideoUrl,
+        playbackUrl: signVideoUrl(component.vimeoVideoUrl, component.bunnyLibraryId),
     });
 }
