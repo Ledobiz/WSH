@@ -48,6 +48,7 @@ const AdminCourseContent = ({ courseId }: { courseId: string }) => {
     const [compIsActive, setCompIsActive] = useState(true);
 
     const [submitting, setSubmitting] = useState(false);
+    const [deleting, setDeleting] = useState(false);
     const [deleteTarget, setDeleteTarget] = useState<{ kind: "module" | "component"; id: string; name: string } | null>(null);
 
     // Drag-and-drop reordering
@@ -180,17 +181,22 @@ const AdminCourseContent = ({ courseId }: { courseId: string }) => {
     };
 
     const handleDelete = async () => {
-        if (!deleteTarget) return;
-        const result = deleteTarget.kind === "module"
-            ? await deleteModule(deleteTarget.id)
-            : await deleteComponent(deleteTarget.id);
-        if (result.success) {
-            toast.success(result.message || "Deleted");
-            await loadModules();
-        } else {
-            toast.error(result.message || "Failed to delete");
+        if (!deleteTarget || deleting) return;
+        setDeleting(true);
+        try {
+            const result = deleteTarget.kind === "module"
+                ? await deleteModule(deleteTarget.id)
+                : await deleteComponent(deleteTarget.id);
+            if (result.success) {
+                toast.success(result.message || "Deleted");
+                await loadModules();
+            } else {
+                toast.error(result.message || "Failed to delete");
+            }
+        } finally {
+            setDeleting(false);
+            setDeleteTarget(null);
         }
-        setDeleteTarget(null);
     };
 
     // ---- Reorder handlers (native HTML5 drag & drop) ----
@@ -492,7 +498,7 @@ const AdminCourseContent = ({ courseId }: { courseId: string }) => {
             </Dialog>
 
             {/* Delete confirmation */}
-            <AlertDialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
+            <AlertDialog open={!!deleteTarget} onOpenChange={(open) => !open && !deleting && setDeleteTarget(null)}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle>Delete {deleteTarget?.kind === "module" ? "Module" : "Component"}?</AlertDialogTitle>
@@ -502,9 +508,9 @@ const AdminCourseContent = ({ courseId }: { courseId: string }) => {
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-                            Delete
+                        <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={(e) => { e.preventDefault(); handleDelete(); }} disabled={deleting} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                            {deleting ? <><Loader2 className="h-4 w-4 mr-1 animate-spin" /> Deleting...</> : "Delete"}
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>

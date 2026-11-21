@@ -35,6 +35,7 @@ const AdminReviews = () => {
     const [replyReviewId, setReplyReviewId] = useState<string | null>(null);
     const [replyText, setReplyText] = useState("");
     const [submitting, setSubmitting] = useState(false);
+    const [updatingId, setUpdatingId] = useState<string | null>(null);
 
     const load = async () => {
         const result = await courseReviews(1, 100);
@@ -95,17 +96,22 @@ const AdminReviews = () => {
         }
     };
 
-    const handleApprove = async (id: string) => {
-        const result = await approveReviewWithoutReply(id);
-        if (result.success) { toast.success(result.message); await load(); }
-        else toast.error(result.message);
+    // Shows a spinner on the review's status badge while the action runs.
+    const runReviewAction = async (id: string, action: (id: string) => Promise<{ success: boolean; message: string }>) => {
+        if (updatingId) return;
+        setUpdatingId(id);
+        try {
+            const result = await action(id);
+            if (result.success) { toast.success(result.message); await load(); }
+            else toast.error(result.message);
+        } finally {
+            setUpdatingId(null);
+        }
     };
 
-    const handleIgnore = async (id: string) => {
-        const result = await markAsReviewedWithoutApproval(id);
-        if (result.success) { toast.success(result.message); await load(); }
-        else toast.error(result.message);
-    };
+    const handleApprove = (id: string) => runReviewAction(id, approveReviewWithoutReply);
+
+    const handleIgnore = (id: string) => runReviewAction(id, markAsReviewedWithoutApproval);
 
     return (
         <>
@@ -163,7 +169,9 @@ const AdminReviews = () => {
                                         <div className="min-w-0">
                                             <div className="flex items-center gap-2 flex-wrap">
                                                 <p className="font-medium text-foreground text-sm">{reviewerName(review)}</p>
-                                                <span className={`text-xs px-2 py-0.5 rounded-full ${statusBadge(status)}`}>{status}</span>
+                                                <span className={`text-xs px-2 py-0.5 rounded-full ${statusBadge(status)}`}>
+                                                    {updatingId === review.id ? <span className="inline-flex items-center gap-1"><Loader2 className="h-3 w-3 animate-spin" /> updating...</span> : status}
+                                                </span>
                                             </div>
                                             <p className="text-xs text-muted-foreground mt-0.5">{review.course?.title}</p>
                                         </div>
@@ -176,12 +184,12 @@ const AdminReviews = () => {
                                                     <MessageSquare className="h-4 w-4 mr-2" /> Reply to Review
                                                 </DropdownMenuItem>
                                                 {status !== "published" && (
-                                                    <DropdownMenuItem onClick={() => handleApprove(review.id)} className="cursor-pointer">
+                                                    <DropdownMenuItem onClick={() => handleApprove(review.id)} disabled={!!updatingId} className="cursor-pointer">
                                                         <Eye className="h-4 w-4 mr-2" /> Approve &amp; Publish
                                                     </DropdownMenuItem>
                                                 )}
                                                 {status !== "hidden" && (
-                                                    <DropdownMenuItem onClick={() => handleIgnore(review.id)} className="cursor-pointer">
+                                                    <DropdownMenuItem onClick={() => handleIgnore(review.id)} disabled={!!updatingId} className="cursor-pointer">
                                                         <EyeOff className="h-4 w-4 mr-2" /> Ignore / Hide
                                                     </DropdownMenuItem>
                                                 )}

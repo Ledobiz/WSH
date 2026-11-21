@@ -20,6 +20,8 @@ const AdminCategories = () => {
     const [editingId, setEditingId] = useState<string | null>(null);
     const [editName, setEditName] = useState("");
     const [deleteTarget, setDeleteTarget] = useState<any>(null);
+    const [savingEdit, setSavingEdit] = useState(false);
+    const [deleting, setDeleting] = useState(false);
 
     const load = async () => {
         const result = await fetchAllCategories();
@@ -58,27 +60,37 @@ const AdminCategories = () => {
     };
 
     const handleSaveEdit = async (id: string) => {
-        if (!editName.trim()) return;
-        const result = await editCategory(id, editName.trim());
-        if (result.success) {
-            toast.success(result.message || "Category updated");
-            setEditingId(null);
-            await load();
-        } else {
-            toast.error(result.errors || "Failed to update category");
+        if (!editName.trim() || savingEdit) return;
+        setSavingEdit(true);
+        try {
+            const result = await editCategory(id, editName.trim());
+            if (result.success) {
+                toast.success(result.message || "Category updated");
+                setEditingId(null);
+                await load();
+            } else {
+                toast.error(result.errors || "Failed to update category");
+            }
+        } finally {
+            setSavingEdit(false);
         }
     };
 
     const handleDelete = async () => {
-        if (!deleteTarget) return;
-        const result = await deleteCategory(deleteTarget.id);
-        if (result.success) {
-            toast.success(result.message || "Category deleted");
-            await load();
-        } else {
-            toast.error(result.message || "Failed to delete category");
+        if (!deleteTarget || deleting) return;
+        setDeleting(true);
+        try {
+            const result = await deleteCategory(deleteTarget.id);
+            if (result.success) {
+                toast.success(result.message || "Category deleted");
+                await load();
+            } else {
+                toast.error(result.message || "Failed to delete category");
+            }
+        } finally {
+            setDeleting(false);
+            setDeleteTarget(null);
         }
-        setDeleteTarget(null);
     };
 
     return (
@@ -120,10 +132,10 @@ const AdminCategories = () => {
                                 {editingId === cat.id ? (
                                     <>
                                         <Input value={editName} onChange={(e) => setEditName(e.target.value)} className="flex-1" autoFocus />
-                                        <Button size="icon" variant="ghost" className="h-8 w-8 cursor-pointer" onClick={() => handleSaveEdit(cat.id)}>
-                                            <Check className="h-4 w-4 text-success" />
+                                        <Button size="icon" variant="ghost" className="h-8 w-8 cursor-pointer" onClick={() => handleSaveEdit(cat.id)} disabled={savingEdit} aria-label="Save">
+                                            {savingEdit ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4 text-success" />}
                                         </Button>
-                                        <Button size="icon" variant="ghost" className="h-8 w-8 cursor-pointer" onClick={() => setEditingId(null)}>
+                                        <Button size="icon" variant="ghost" className="h-8 w-8 cursor-pointer" onClick={() => setEditingId(null)} disabled={savingEdit} aria-label="Cancel">
                                             <X className="h-4 w-4 text-muted-foreground" />
                                         </Button>
                                     </>
@@ -150,7 +162,7 @@ const AdminCategories = () => {
                 )}
             </div>
 
-            <AlertDialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
+            <AlertDialog open={!!deleteTarget} onOpenChange={(open) => !open && !deleting && setDeleteTarget(null)}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle>Delete Category?</AlertDialogTitle>
@@ -159,9 +171,9 @@ const AdminCategories = () => {
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-                            Delete
+                        <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={(e) => { e.preventDefault(); handleDelete(); }} disabled={deleting} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                            {deleting ? <><Loader2 className="h-4 w-4 mr-1 animate-spin" /> Deleting...</> : "Delete"}
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>

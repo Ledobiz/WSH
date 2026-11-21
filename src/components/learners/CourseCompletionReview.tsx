@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Star, ImagePlus, X, PartyPopper } from "lucide-react";
+import { Star, ImagePlus, X, PartyPopper, Loader2 } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
 import { Textarea } from "@/src/components/ui/textarea";
 import { Checkbox } from "@/src/components/ui/checkbox";
@@ -9,7 +9,7 @@ import confetti from "canvas-confetti";
 
 interface CourseCompletionReviewProps {
   courseTitle: string;
-  onSubmit: (review: { rating: number; text: string; anonymous: boolean; images: string[] }) => void;
+  onSubmit: (review: { rating: number; text: string; anonymous: boolean; images: string[] }) => void | Promise<void>;
   /** Student already reviewed this course: show the celebration only, no form. */
   alreadyReviewed?: boolean;
   /** Shown as a "Continue" button when alreadyReviewed. */
@@ -86,7 +86,10 @@ const CourseCompletionReview = ({ courseTitle, onSubmit, alreadyReviewed = false
     e.target.value = "";
   };
 
-  const handleSubmit = () => {
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleSubmit = async () => {
+    if (submitting) return;
     if (rating === 0) {
       toast.error("Please select a rating");
       return;
@@ -95,7 +98,12 @@ const CourseCompletionReview = ({ courseTitle, onSubmit, alreadyReviewed = false
       toast.error("Please write a review");
       return;
     }
-    onSubmit({ rating, text, anonymous, images });
+    setSubmitting(true);
+    try {
+      await onSubmit({ rating, text, anonymous, images });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -221,8 +229,8 @@ const CourseCompletionReview = ({ courseTitle, onSubmit, alreadyReviewed = false
       </div>
 
       <div className="flex flex-col gap-2 mt-6">
-        <Button variant="hero" onClick={handleSubmit} className="w-full">
-          Submit Review
+        <Button variant="hero" onClick={handleSubmit} disabled={submitting} aria-busy={submitting} className="w-full">
+          {submitting ? <><Loader2 className="h-4 w-4 animate-spin" /> Submitting...</> : "Submit Review"}
         </Button>
       </div>
       </>

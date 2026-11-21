@@ -3,8 +3,9 @@
 import { useAuth } from "@/src/providers/AuthProvider";
 import { logOut } from "@/src/services/auth"
 import { loginUrl } from "@/src/utils/url";
-import { LogOut } from "lucide-react";
+import { Loader2, LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 type LogoutProps = {
     style?: React.CSSProperties;
@@ -14,7 +15,11 @@ const Logout = ({style}: LogoutProps) => {
     const { logout } = useAuth();
     const router = useRouter();
 
+    const [signingOut, setSigningOut] = useState(false);
+
     const handleLogout = async () => {
+        if (signingOut) return;
+        setSigningOut(true); // stays on until the redirect replaces the page
         try {
             // Clear the user state and localStorage (this sets user to null)
             await logout();
@@ -38,9 +43,9 @@ const Logout = ({style}: LogoutProps) => {
     }
 
     return (
-        <button onClick={handleLogout} style={style} className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-destructive hover:bg-destructive/10 transition-colors cursor-pointer">
-            <LogOut className="h-5 w-5" />
-            Sign Out
+        <button onClick={handleLogout} disabled={signingOut} aria-busy={signingOut} style={style} className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-destructive hover:bg-destructive/10 transition-colors cursor-pointer disabled:cursor-wait disabled:opacity-70">
+            {signingOut ? <Loader2 className="h-5 w-5 animate-spin" /> : <LogOut className="h-5 w-5" />}
+            {signingOut ? "Signing out..." : "Sign Out"}
         </button>
     )
 }

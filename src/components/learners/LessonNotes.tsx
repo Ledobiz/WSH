@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from "react";
-import { StickyNote, Plus, Trash2, Edit3, Check, X } from "lucide-react";
+import { StickyNote, Plus, Trash2, Edit3, Check, X, Loader2 } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
 import { Textarea } from "@/src/components/ui/textarea";
 import { motion, AnimatePresence } from "framer-motion";
@@ -11,7 +11,8 @@ interface LessonNotesProps {
   notes: any[];
   courseId: string;
   lessonId: string;
-  onAdd: (content: string) => void;
+  /** May return a promise resolving to false on failure (keeps the editor open). */
+  onAdd: (content: string) => void | Promise<boolean | void>;
   onEdit: (noteId: string, content: string) => void;
   onDelete: (noteId: string) => void;
 }
@@ -26,11 +27,18 @@ const LessonNotes = ({ notes, courseId, lessonId, onAdd, onEdit, onDelete }: Les
 
   const lessonNotes = notes.filter((n) => n.courseId === courseId && n.studentModuleComponentId === lessonId);
 
-  const handleAdd = () => {
-    if (newContent.trim()) {
-      onAdd(newContent.trim());
+  const [savingNew, setSavingNew] = useState(false);
+
+  const handleAdd = async () => {
+    if (!newContent.trim() || savingNew) return;
+    setSavingNew(true);
+    try {
+      const ok = await onAdd(newContent.trim());
+      if (ok === false) return; // keep the text so the student can retry
       setNewContent("");
       setIsAdding(false);
+    } finally {
+      setSavingNew(false);
     }
   };
 
@@ -76,12 +84,13 @@ const LessonNotes = ({ notes, courseId, lessonId, onAdd, onEdit, onDelete }: Les
                 autoFocus
               />
               <div className="flex gap-2">
-                <Button size="sm" onClick={handleAdd} className="gap-1 text-xs">
-                  <Check className="h-3 w-3" /> Save
+                <Button size="sm" onClick={handleAdd} disabled={savingNew} aria-busy={savingNew} className="gap-1 text-xs">
+                  {savingNew ? <><Loader2 className="h-3 w-3 animate-spin" /> Saving...</> : <><Check className="h-3 w-3" /> Save</>}
                 </Button>
                 <Button
                   size="sm"
                   variant="ghost"
+                  disabled={savingNew}
                   onClick={() => {
                     setIsAdding(false);
                     setNewContent("");
@@ -97,7 +106,7 @@ const LessonNotes = ({ notes, courseId, lessonId, onAdd, onEdit, onDelete }: Les
 
         {lessonNotes.length === 0 && !isAdding && (
           <p className="text-xs text-muted-foreground text-center py-4">
-            No notes for this lesson yet. Tap "Add Note" to start.
+            No notes for this lesson yet. Tap &quot;Add Note&quot; to start.
           </p>
         )}
 

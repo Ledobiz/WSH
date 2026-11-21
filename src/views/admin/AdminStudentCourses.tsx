@@ -26,6 +26,7 @@ const AdminStudentCourses = ({ userId }: { userId: string }) => {
     const [unenrollTarget, setUnenrollTarget] = useState<{ courseId: string; title: string } | null>(null);
     const [refreshTarget, setRefreshTarget] = useState<{ courseId: string; title: string } | null>(null);
     const [refreshing, setRefreshing] = useState(false);
+    const [unenrolling, setUnenrolling] = useState(false);
     const [enrollingId, setEnrollingId] = useState<string | null>(null);
     const goBack = useSmartBack(adminStudentsUrl);
 
@@ -60,15 +61,20 @@ const AdminStudentCourses = ({ userId }: { userId: string }) => {
     }, [userId]);
 
     const handleUnenroll = async () => {
-        if (!unenrollTarget) return;
-        const result = await removeStudentFromCourse(userId, unenrollTarget.courseId);
-        if (result.success) {
-            toast.success("Student unenrolled");
-            await load();
-        } else {
-            toast.error(result.message);
+        if (!unenrollTarget || unenrolling) return;
+        setUnenrolling(true);
+        try {
+            const result = await removeStudentFromCourse(userId, unenrollTarget.courseId);
+            if (result.success) {
+                toast.success("Student unenrolled");
+                await load();
+            } else {
+                toast.error(result.message);
+            }
+        } finally {
+            setUnenrolling(false);
+            setUnenrollTarget(null);
         }
-        setUnenrollTarget(null);
     };
 
     const handleRefresh = async () => {
@@ -236,7 +242,7 @@ const AdminStudentCourses = ({ userId }: { userId: string }) => {
                 </AlertDialogContent>
             </AlertDialog>
 
-            <AlertDialog open={!!unenrollTarget} onOpenChange={(open) => !open && setUnenrollTarget(null)}>
+            <AlertDialog open={!!unenrollTarget} onOpenChange={(open) => !open && !unenrolling && setUnenrollTarget(null)}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle>Unenroll Student?</AlertDialogTitle>
@@ -245,8 +251,10 @@ const AdminStudentCourses = ({ userId }: { userId: string }) => {
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleUnenroll} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Unenroll</AlertDialogAction>
+                        <AlertDialogCancel disabled={unenrolling}>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={(e) => { e.preventDefault(); handleUnenroll(); }} disabled={unenrolling} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                            {unenrolling ? <><Loader2 className="h-4 w-4 mr-1 animate-spin" /> Unenrolling...</> : "Unenroll"}
+                        </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>

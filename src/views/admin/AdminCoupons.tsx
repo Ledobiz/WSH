@@ -46,6 +46,7 @@ const AdminCoupons = () => {
     const [form, setForm] = useState<CouponForm>(emptyForm);
     const [submitting, setSubmitting] = useState(false);
     const [deleteTarget, setDeleteTarget] = useState<any>(null);
+    const [deleting, setDeleting] = useState(false);
 
     const load = async () => {
         const result = await fetchAllCoupons();
@@ -129,11 +130,16 @@ const AdminCoupons = () => {
     };
 
     const handleDelete = async () => {
-        if (!deleteTarget) return;
-        const result = await deleteCoupon(deleteTarget.id);
-        if (result.success) { toast.success(result.message); await load(); }
-        else toast.error(result.message);
-        setDeleteTarget(null);
+        if (!deleteTarget || deleting) return;
+        setDeleting(true);
+        try {
+            const result = await deleteCoupon(deleteTarget.id);
+            if (result.success) { toast.success(result.message); await load(); }
+            else toast.error(result.message);
+        } finally {
+            setDeleting(false);
+            setDeleteTarget(null);
+        }
     };
 
     const describeDiscount = (c: any) =>
@@ -285,7 +291,7 @@ const AdminCoupons = () => {
             </Dialog>
 
             {/* Delete confirm */}
-            <AlertDialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
+            <AlertDialog open={!!deleteTarget} onOpenChange={(open) => !open && !deleting && setDeleteTarget(null)}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle>Delete Coupon?</AlertDialogTitle>
@@ -294,8 +300,10 @@ const AdminCoupons = () => {
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Delete</AlertDialogAction>
+                        <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={(e) => { e.preventDefault(); handleDelete(); }} disabled={deleting} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                            {deleting ? <><Loader2 className="h-4 w-4 mr-1 animate-spin" /> Deleting...</> : "Delete"}
+                        </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>

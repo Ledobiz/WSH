@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Star, MessageSquare, ImagePlus, X, Camera, Edit3, Plus, Trash2 } from "lucide-react";
+import { Star, MessageSquare, ImagePlus, X, Camera, Edit3, Plus, Trash2, Loader2 } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
 import { Textarea } from "@/src/components/ui/textarea";
 import { Checkbox } from "@/src/components/ui/checkbox";
@@ -448,7 +448,7 @@ const ReviewsPage = () => {
                                             disabled={submitting}
                                             className="flex-1 sm:flex-none cursor-pointer"
                                         >
-                                            {submitting ? "Saving..." : editingId ? "Update Review" : "Submit Review"}
+                                            {submitting ? <><Loader2 className="h-4 w-4 animate-spin" /> Saving...</> : editingId ? "Update Review" : "Submit Review"}
                                         </Button>
                                         <Button variant="outline" onClick={resetForm} disabled={submitting}>Cancel</Button>
                                     </div>

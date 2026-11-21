@@ -11,7 +11,7 @@ import { courseLectureIsCompleted, deleteLectureNote, editLectureNote, getLectur
 import { toast } from "sonner";
 import { 
     BookOpen, CheckCircle2, ChevronLeft, ChevronRight, Download, File, FileSpreadsheet, 
-    FileText, Menu, Play, StickyNote, X
+    FileText, Loader2, Menu, Play, StickyNote, X
 } from "lucide-react";
 import PageTransition from "@/src/components/PageTransition";
 import { CoursePlayerSkeleton } from "@/src/components/learners/LMSSkeletons";
@@ -247,8 +247,23 @@ const CourseLectureContent = ({courseId}: { courseId: string }) => {
         );
     };
 
+    // Spinner + double-click guard (state for the UI, ref so a fast second click
+    // can't slip in before the re-render).
+    const [markingComplete, setMarkingComplete] = useState(false);
+    const markingRef = useRef(false);
     const markComplete = async () => {
-        await markLectureAsComplete();
+        if (markingRef.current) return;
+        markingRef.current = true;
+        setMarkingComplete(true);
+        try {
+            await markLectureAsComplete();
+        } catch (error) {
+            console.error('Error marking lecture as complete:', error);
+            toast.error('Failed to mark lecture as complete, please try again');
+        } finally {
+            markingRef.current = false;
+            setMarkingComplete(false);
+        }
     };
 
     const handleReviewSubmit = async (reviewData: { rating: number; text: string; anonymous: boolean; images: string[] }) => {
@@ -280,7 +295,7 @@ const CourseLectureContent = ({courseId}: { courseId: string }) => {
 
     const handleAddNote = async (content: string) => {
         const userId = user?.id;
-        if (!userId || !course?.id) return;
+        if (!userId || !course?.id) return false;
 
         const noteToAdd = await saveLectureNote(userId, course.id, currentComponent?.id, content);
 
@@ -299,9 +314,11 @@ const CourseLectureContent = ({courseId}: { courseId: string }) => {
             ]);
 
             toast.success(noteToAdd.message);
+            return true;
         }
         else {
             toast.error(noteToAdd.message);
+            return false;
         }
     };
 
@@ -645,8 +662,12 @@ const CourseLectureContent = ({courseId}: { courseId: string }) => {
                                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-4 border-t border-border">
                                     <div className="flex gap-2">
                                         {!completedLessons.has(currentLesson.id) && (
-                                            <Button variant="hero" onClick={markComplete} className="gap-2 flex-1 sm:flex-none text-sm">
-                                                <CheckCircle2 className="h-4 w-4" /> Mark Complete
+                                            <Button variant="hero" onClick={markComplete} disabled={markingComplete} aria-busy={markingComplete} className="gap-2 flex-1 sm:flex-none text-sm">
+                                                {markingComplete ? (
+                                                    <><Loader2 className="h-4 w-4 animate-spin" /> Marking...</>
+                                                ) : (
+                                                    <><CheckCircle2 className="h-4 w-4" /> Mark Complete</>
+                                                )}
                                             </Button>
                                         )}
                                         <Button

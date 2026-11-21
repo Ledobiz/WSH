@@ -60,6 +60,8 @@ const AdminCourses = () => {
     const [submitting, setSubmitting] = useState(false);
 
     const [deleteTarget, setDeleteTarget] = useState<any>(null);
+    const [deleting, setDeleting] = useState(false);
+    const [togglingId, setTogglingId] = useState<string | null>(null);
 
     const loadCourses = async () => {
         const result = await fetchAllCourses(1, 100);
@@ -170,6 +172,9 @@ const AdminCourses = () => {
     };
 
     const handleTogglePublish = async (course: any) => {
+        if (togglingId) return;
+        setTogglingId(course.id);
+        try {
         const payload = {
             title: course.title,
             categoryId: course.categoryId,
@@ -194,18 +199,26 @@ const AdminCourses = () => {
         } else {
             toast.error(result.message);
         }
+        } finally {
+            setTogglingId(null);
+        }
     };
 
     const handleDelete = async () => {
-        if (!deleteTarget) return;
-        const result = await deleteCourse(deleteTarget.id);
-        if (result.success) {
-            toast.success("Course deleted");
-            await loadCourses();
-        } else {
-            toast.error(result.message);
+        if (!deleteTarget || deleting) return;
+        setDeleting(true);
+        try {
+            const result = await deleteCourse(deleteTarget.id);
+            if (result.success) {
+                toast.success("Course deleted");
+                await loadCourses();
+            } else {
+                toast.error(result.message);
+            }
+        } finally {
+            setDeleting(false);
+            setDeleteTarget(null);
         }
-        setDeleteTarget(null);
     };
 
     const publishedCount = courses.filter((c) => c.isActive).length;
@@ -294,7 +307,7 @@ const AdminCourses = () => {
                                                         <Users className="h-4 w-4 mr-2" /> View Students
                                                     </Link>
                                                 </DropdownMenuItem>
-                                                <DropdownMenuItem onClick={() => handleTogglePublish(course)} className="cursor-pointer">
+                                                <DropdownMenuItem onClick={() => handleTogglePublish(course)} disabled={!!togglingId} className="cursor-pointer">
                                                     {course.isActive ? <><EyeOff className="h-4 w-4 mr-2" /> Unpublish</> : <><Eye className="h-4 w-4 mr-2" /> Publish</>}
                                                 </DropdownMenuItem>
                                                 <DropdownMenuItem className="text-destructive cursor-pointer" onClick={() => setDeleteTarget(course)}>
@@ -308,7 +321,7 @@ const AdminCourses = () => {
                                         <span>{course.isFree ? "Free" : `₦${course.discountedFee.toLocaleString()}`}</span>
                                         <span className="hidden sm:inline">{(course.courseModules?.length ?? 0)} modules • {totalLessons(course)} lessons</span>
                                         <span className={`px-2 py-0.5 rounded-full ${course.isActive ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"}`}>
-                                            {course.isActive ? "published" : "draft"}
+                                            {togglingId === course.id ? <span className="inline-flex items-center gap-1"><Loader2 className="h-3 w-3 animate-spin" /> updating...</span> : course.isActive ? "published" : "draft"}
                                         </span>
                                         {course.hasCertificate && (
                                             <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/10 text-primary">
@@ -436,7 +449,7 @@ const AdminCourses = () => {
             </Dialog>
 
             {/* Delete confirmation */}
-            <AlertDialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
+            <AlertDialog open={!!deleteTarget} onOpenChange={(open) => !open && !deleting && setDeleteTarget(null)}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle>Delete Course?</AlertDialogTitle>
@@ -445,9 +458,9 @@ const AdminCourses = () => {
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-                            Delete
+                        <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={(e) => { e.preventDefault(); handleDelete(); }} disabled={deleting} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                            {deleting ? <><Loader2 className="h-4 w-4 mr-1 animate-spin" /> Deleting...</> : "Delete"}
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>

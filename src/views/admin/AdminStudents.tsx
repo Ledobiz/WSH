@@ -58,6 +58,7 @@ const AdminStudents = () => {
     const [bulkEnrollDialogOpen, setBulkEnrollDialogOpen] = useState(false);
     const [bulkCourse, setBulkCourse] = useState("");
     const [confirmBulk, setConfirmBulk] = useState(false);
+    const [bulkEnrolling, setBulkEnrolling] = useState(false);
 
     const requestId = useRef(0);
     const invalidRange = Boolean(dateFrom && dateTo && dateFrom > dateTo);
@@ -180,18 +181,26 @@ const AdminStudents = () => {
     };
 
     const handleConfirmBulk = async () => {
-        if (!bulkCourse) return;
-        setConfirmBulk(false);
-        const results = await Promise.all(
-            selectedIds.map((userId) => assignCourseToStudent(userId, bulkCourse))
-        );
-        const succeeded = results.filter((r) => r.success).length;
-        toast.success(`${succeeded} student(s) enrolled.`);
-        if (results.length - succeeded > 0) toast.error(`${results.length - succeeded} already enrolled or failed.`);
-        setBulkEnrollDialogOpen(false);
-        setBulkCourse("");
-        setSelected({});
-        await loadStudents();
+        if (!bulkCourse || bulkEnrolling) return;
+        setBulkEnrolling(true);
+        try {
+            const results = await Promise.all(
+                selectedIds.map((userId) => assignCourseToStudent(userId, bulkCourse))
+            );
+            const succeeded = results.filter((r) => r.success).length;
+            toast.success(`${succeeded} student(s) enrolled.`);
+            if (results.length - succeeded > 0) toast.error(`${results.length - succeeded} already enrolled or failed.`);
+            setConfirmBulk(false);
+            setBulkEnrollDialogOpen(false);
+            setBulkCourse("");
+            setSelected({});
+            await loadStudents();
+        } catch (error) {
+            console.error("Bulk enrollment failed:", error);
+            toast.error("Bulk enrollment failed. Please try again.");
+        } finally {
+            setBulkEnrolling(false);
+        }
     };
 
     const handleExportCSV = () => {
@@ -457,7 +466,7 @@ const AdminStudents = () => {
             </Dialog>
 
             {/* Bulk confirm */}
-            <AlertDialog open={confirmBulk} onOpenChange={setConfirmBulk}>
+            <AlertDialog open={confirmBulk} onOpenChange={(open) => !bulkEnrolling && setConfirmBulk(open)}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle>Confirm Bulk Enrollment</AlertDialogTitle>
@@ -466,8 +475,10 @@ const AdminStudents = () => {
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleConfirmBulk}>Enroll Students</AlertDialogAction>
+                        <AlertDialogCancel disabled={bulkEnrolling}>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={(e) => { e.preventDefault(); handleConfirmBulk(); }} disabled={bulkEnrolling}>
+                            {bulkEnrolling ? <><Loader2 className="h-4 w-4 mr-1 animate-spin" /> Enrolling...</> : "Enroll Students"}
+                        </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>

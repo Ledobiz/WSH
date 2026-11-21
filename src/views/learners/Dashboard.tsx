@@ -7,7 +7,7 @@ import { Prisma } from "@prisma/client";
 import { motion } from "framer-motion";
 import { DashboardSkeleton } from "@/src/components/learners/LMSSkeletons";
 import EmptyState from "@/src/components/website/EmptyState";
-import { BookOpen, Clock, Award, TrendingUp, Play, CheckCircle2, ShoppingCart, Sparkles } from "lucide-react";
+import { BookOpen, Clock, Award, TrendingUp, Play, CheckCircle2, ShoppingCart, Sparkles, Loader2 } from "lucide-react";
 import { Progress } from "@/src/components/ui/progress";
 import { Badge } from "@/src/components/ui/badge";
 import { Button } from "@/src/components/ui/button";
@@ -91,7 +91,7 @@ const Dashboard = () => {
     const [loading, setLoading] = useState<boolean>(false);
 
     const { user } = useAuth();
-    const { addToCart, formatPrice } = useCart();
+    const { addToCart, formatPrice, loadingId } = useCart();
 
     const router = useRouter();
 
@@ -343,9 +343,14 @@ const Dashboard = () => {
                                                 variant="outline" 
                                                 size="sm" 
                                                 className="text-[9px] md:text-[10px] h-6 md:h-7 gap-1 px-2 md:px-3 cursor-pointer"
-                                                onClick={buyNewCourse}
+                                                onClick={() => buyNewCourse(course)}
+                                                disabled={loadingId === course.id}
+                                                aria-busy={loadingId === course.id}
                                             >
-                                                <ShoppingCart className="h-3 w-3" /> <span className="hidden sm:inline">Add to</span> Cart
+                                                {loadingId === course.id
+                                                    ? <Loader2 className="h-3 w-3 animate-spin" />
+                                                    : <ShoppingCart className="h-3 w-3" />}{" "}
+                                                <span className="hidden sm:inline">Add to</span> Cart
                                             </Button>
                                         </div>
                                     </div>
