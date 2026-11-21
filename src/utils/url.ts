@@ -10,6 +10,7 @@ export const faq = '/faq'
 export const aboutUsUrl = '/about-us'
 export const categoryUrl = '/category'
 export const blogUrl = '/blog'
+export const reviewsUrl = '/reviews'
 export const contactUsUrl = '/contact-us'
 
 // Student Routes

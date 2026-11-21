@@ -1,158 +1,113 @@
 'use client';
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
-import { useState, useRef, useEffect, useCallback } from "react";
-import { Star, Loader2 } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import Link from "next/link";
+import { Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
+import { Button } from "@/src/components/ui/button";
+import { Skeleton } from "@/src/components/ui/skeleton";
+import ReviewCard, { Stars } from "@/src/components/website/showcase/ReviewCard";
 import { courseReviews } from "@/src/services/website/course";
+import type { PublicReview } from "@/src/lib/public-showcase";
+import { reviewsUrl } from "@/src/utils/url";
 
 interface CourseReviewsProps {
-  courseId: string;
-  averageRating?: number;
-  reviewCount?: number;
+    courseId: string;
+    courseSlug?: string;
+    averageRating?: number;
+    reviewCount?: number;
 }
 
-const REVIEWS_PER_PAGE = 6;
+const PAGE = 3; // keep the course page short on phones; "Show more" adds 2 pages
 
-const getInitials = (name?: string | null) => {
-  if (!name) return "A";
-  return name
-    .trim()
-    .split(/\s+/)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase() ?? "")
-    .join("") || "A";
-};
+const CourseReviews = ({ courseId, courseSlug, averageRating = 0, reviewCount = 0 }: CourseReviewsProps) => {
+    const [reviews, setReviews] = useState<PublicReview[]>([]);
+    const [page, setPage] = useState(0);
+    const [total, setTotal] = useState(reviewCount);
+    const [loading, setLoading] = useState(true);
+    const [loadingMore, setLoadingMore] = useState(false);
 
-const CourseReviews = ({ courseId, averageRating = 0, reviewCount = 0 }: CourseReviewsProps) => {
-  const [reviews, setReviews] = useState<any[]>([]);
-  const [page, setPage] = useState(1);
-  const [totalCount, setTotalCount] = useState(reviewCount);
-  const [loading, setLoading] = useState(true);
-  const [loadingMore, setLoadingMore] = useState(false);
-  const sentinelRef = useRef<HTMLDivElement>(null);
+    const fetchPages = useCallback(async (from: number, count: number) => {
+        const results = await Promise.all(
+            Array.from({ length: count }, (_, i) => courseReviews(courseId, from + i, PAGE)),
+        );
+        setTotal(results[0]?.pagination?.totalCount ?? 0);
+        return results.flatMap((r) => (r.data ?? []) as PublicReview[]);
+    }, [courseId]);
 
-  const hasMore = reviews.length < totalCount;
+    useEffect(() => {
+        let active = true;
+        setLoading(true);
+        fetchPages(1, 1)
+            .then((rows) => { if (active) { setReviews(rows); setPage(1); } })
+            .catch((error) => console.log("Error loading reviews:", error))
+            .finally(() => { if (active) setLoading(false); });
+        return () => { active = false; };
+    }, [fetchPages]);
 
-  const fetchPage = useCallback(async (pageToLoad: number) => {
-    const result = await courseReviews(courseId, pageToLoad, REVIEWS_PER_PAGE);
-    const rows = (result as any).data || [];
-    setTotalCount((result as any).pagination?.totalCount ?? rows.length);
-    setReviews((prev) => (pageToLoad === 1 ? rows : [...prev, ...rows]));
-  }, [courseId]);
+    const showMore = async () => {
+        if (loadingMore) return;
+        setLoadingMore(true);
+        try {
+            const rows = await fetchPages(page + 1, 2);
+            setReviews((prev) => {
+                const seen = new Set(prev.map((r) => r.id));
+                return [...prev, ...rows.filter((r) => !seen.has(r.id))];
+            });
+            setPage((p) => p + 2);
+        } catch (error) {
+            console.log("Error loading more reviews:", error);
+        } finally {
+            setLoadingMore(false);
+        }
+    };
 
-  useEffect(() => {
-    let active = true;
-    setLoading(true);
-    fetchPage(1)
-      .catch((error) => console.log("Error loading reviews:", error))
-      .finally(() => {
-        if (active) setLoading(false);
-      });
-    return () => { active = false; };
-  }, [fetchPage]);
+    if (!loading && reviews.length === 0) return null;
 
-  const loadMore = useCallback(async () => {
-    if (loadingMore || loading || !hasMore) return;
-    setLoadingMore(true);
-    const next = page + 1;
-    try {
-      await fetchPage(next);
-      setPage(next);
-    } catch (error) {
-      console.log("Error loading more reviews:", error);
-    } finally {
-      setLoadingMore(false);
-    }
-  }, [loadingMore, loading, hasMore, page, fetchPage]);
+    const avg = averageRating > 0 ? averageRating : 0;
+    const remaining = Math.max(0, total - reviews.length);
 
-  useEffect(() => {
-    const sentinel = sentinelRef.current;
-    if (!sentinel) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) loadMore(); },
-      { rootMargin: "200px" }
-    );
-    observer.observe(sentinel);
-    return () => observer.disconnect();
-  }, [loadMore]);
-
-  // Nothing to show and nothing loading — hide the section entirely.
-  if (!loading && totalCount === 0 && reviews.length === 0) return null;
-
-  const avg = averageRating > 0 ? averageRating.toFixed(1) : "0.0";
-
-  return (
-    <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}>
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-foreground">Student Reviews</h2>
-        {totalCount > 0 && (
-          <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <Star key={i} className={`h-4 w-4 ${i < Math.round(Number(avg)) ? "fill-accent text-accent" : "text-border"}`} />
-              ))}
-            </div>
-            <span className="font-semibold text-foreground">{avg}</span>
-            <span className="text-muted-foreground text-sm">({totalCount} {totalCount === 1 ? "review" : "reviews"})</span>
-          </div>
-        )}
-      </div>
-
-      {loading ? (
-        <div className="flex justify-center py-10">
-          <Loader2 className="h-6 w-6 animate-spin text-primary" />
-        </div>
-      ) : (
-        <div className="space-y-4">
-          {reviews.map((review) => {
-            const name = review.isAnonymous ? "Anonymous" : (review.user?.name || "Student");
-            return (
-              <div key={review.id} className="bg-card rounded-xl border border-border p-5">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-3">
-                    {!review.isAnonymous && review.user?.image ? (
-                      <img src={review.user.image} alt={name} className="w-10 h-10 rounded-full object-cover" />
-                    ) : (
-                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-sm font-bold text-primary">
-                        {getInitials(name)}
-                      </div>
-                    )}
-                    <div>
-                      <p className="font-semibold text-sm text-foreground">{name}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {new Date(review.createdAt).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
-                      </p>
+    return (
+        <motion.section initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} aria-labelledby="course-reviews-heading">
+            <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                <h2 id="course-reviews-heading" className="text-xl font-bold text-foreground sm:text-2xl">Student Reviews</h2>
+                {total > 0 && (
+                    <div className="flex items-center gap-3 self-start rounded-xl bg-accent/10 px-3 py-2 sm:self-auto">
+                        <span className="text-2xl font-bold leading-none text-foreground">{avg.toFixed(1)}</span>
+                        <div>
+                            <Stars rating={Math.round(avg)} className="h-4 w-4" />
+                            <p className="mt-0.5 text-xs text-muted-foreground">{total} {total === 1 ? "review" : "reviews"}</p>
+                        </div>
                     </div>
-                  </div>
-                  <div className="flex items-center gap-0.5">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <Star key={i} className={`h-3.5 w-3.5 ${i < review.rating ? "fill-accent text-accent" : "text-border"}`} />
-                    ))}
-                  </div>
-                </div>
-                <p className="text-muted-foreground text-sm leading-relaxed whitespace-pre-wrap">{review.comment}</p>
-                {review.images?.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mt-3">
-                    {review.images.map((img: string, i: number) => (
-                      <img key={i} src={img} alt="" className="w-16 h-16 rounded-lg object-cover border border-border" />
-                    ))}
-                  </div>
                 )}
-              </div>
-            );
-          })}
-        </div>
-      )}
+            </div>
 
-      {hasMore && (
-        <div ref={sentinelRef} className="flex justify-center py-6">
-          {loadingMore && <Loader2 className="h-6 w-6 animate-spin text-primary" />}
-        </div>
-      )}
-    </motion.div>
-  );
+            {loading ? (
+                <div className="space-y-3">
+                    {[0, 1].map((i) => <Skeleton key={i} className="h-36 w-full rounded-2xl" />)}
+                </div>
+            ) : (
+                <div className="space-y-3">
+                    {reviews.map((review) => <ReviewCard key={review.id} review={review} showCourse={false} />)}
+                </div>
+            )}
+
+            {!loading && (remaining > 0 || courseSlug) && (
+                <div className="mt-4 flex flex-col gap-2 sm:flex-row">
+                    {remaining > 0 && (
+                        <Button variant="outline" onClick={showMore} disabled={loadingMore} className="w-full sm:w-auto">
+                            {loadingMore ? <><Loader2 className="h-4 w-4 animate-spin" /> Loading...</> : `Show more reviews (${remaining})`}
+                        </Button>
+                    )}
+                    {courseSlug && (
+                        <Button asChild variant="ghost" className="w-full text-primary sm:w-auto">
+                            <Link href={`${reviewsUrl}?course=${encodeURIComponent(courseSlug)}`}>See all reviews &amp; practicals</Link>
+                        </Button>
+                    )}
+                </div>
+            )}
+        </motion.section>
+    );
 };
 
 export default CourseReviews;

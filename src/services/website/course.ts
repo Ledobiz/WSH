@@ -5,6 +5,7 @@
 import prisma from "@/src/lib/prisma";
 import { paginate, paginateQuery } from "@/src/utils/pagination";
 import { Course } from "@prisma/client";
+import { PUBLIC_REVIEW_SELECT, PUBLISHED_REVIEW_WHERE, PublicReview, toPublicReview } from "@/src/lib/public-showcase";
 
 type WebsiteCoursesFilters = {
     pageSize?: number;
@@ -297,45 +298,34 @@ export const singleCourseWebsite = async (slug: string) => {
 }
 
 export const courseReviews = async (courseId: string, page: number = 1, pageSize: number = 20) => {
+    const safePageSize = Math.max(1, Math.min(Math.floor(Number(pageSize) || 20), 50));
     try {
-        return await paginateQuery<any>({
+        const where = { courseId, ...PUBLISHED_REVIEW_WHERE };
+        const result = await paginateQuery<any>({
             page,
-            pageSize,
+            pageSize: safePageSize,
             dataQuery: ({ skip, take }) => prisma.studentReview.findMany({
-                where: {
-                    courseId,
-                    isApproved: true,
-                    isReviewed: true
-                },
-                orderBy: {
-                    createdAt: 'desc'
-                },
+                where,
+                orderBy: [{ rating: 'desc' }, { createdAt: 'desc' }],
                 skip,
                 take,
-                include: {
-                    user: true,
-                    course: true,
-                }
+                // Public endpoint: only fields that are safe to show on the website.
+                select: PUBLIC_REVIEW_SELECT,
             }),
-            countQuery: () => prisma.studentReview.count({
-                where: {
-                    courseId,
-                    isApproved: true,
-                    isReviewed: true
-                }
-            })
+            countQuery: () => prisma.studentReview.count({ where }),
         });
+        return { ...result, data: (result.data ?? []).map(toPublicReview) };
     } catch (error) {
         console.log("Error fetching course reviews:", error);
         return {
             success: false,
             message: 'No result found',
-            data: [],
+            data: [] as PublicReview[],
             pagination: {
                 totalCount: 0,
                 totalPages: 0,
                 currentPage: page,
-                pageSize: pageSize,
+                pageSize: safePageSize,
             },
         }
     }

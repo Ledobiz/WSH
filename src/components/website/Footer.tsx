@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Heart, Facebook, Instagram } from "lucide-react";
-import { aboutUsUrl, blogUrl, contactUsUrl, coursesUrl, faq, privacyPolicyUrl, refundPolicyUrl, termsAndConditionsUrl } from "@/src/utils/url";
+import { aboutUsUrl, blogUrl, contactUsUrl, coursesUrl, faq, privacyPolicyUrl, refundPolicyUrl, reviewsUrl, termsAndConditionsUrl } from "@/src/utils/url";
 
 const Footer = () => {
     const appUrl = process.env.NEXT_PUBLIC_APP_URL!;
@@ -39,6 +39,7 @@ const Footer = () => {
                         <ul className="space-y-2 text-sm opacity-70">
                             <li><Link href={coursesUrl} className="hover:opacity-100 transition-opacity">All Courses</Link></li>
                             <li><Link href={aboutUsUrl} className="hover:opacity-100 transition-opacity">About Us</Link></li>
+                            <li><Link href={reviewsUrl} className="hover:opacity-100 transition-opacity">Reviews &amp; Practicals</Link></li>
                             <li><Link href={contactUsUrl} className="hover:opacity-100 transition-opacity">Contact</Link></li>
                             <li><Link href={blogUrl} className="hover:opacity-100 transition-opacity">Blog</Link></li>
                             <li><Link href={faq} className="hover:opacity-100 transition-opacity">FAQ</Link></li>

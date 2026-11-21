@@ -265,6 +265,9 @@ const CertificateRequestDialog = ({ open, onOpenChange, courseId, courseTitle, e
                                 Upload clear pictures and/or videos of your practical work for this course. You can add up to {CERTIFICATE_LIMITS.maxFiles} files
                                 (pictures up to {formatBytes(CERTIFICATE_LIMITS.maxImageBytes)}, videos up to {formatBytes(CERTIFICATE_LIMITS.maxVideoBytes)} each).
                             </p>
+                            <p className="mt-2 text-xs text-muted-foreground">
+                                Once your certificate is approved, your practicals may be shown on our website with your first name and last initial.
+                            </p>
 
                             <button
                                 type="button"

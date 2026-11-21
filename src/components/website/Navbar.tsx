@@ -8,7 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/src/components/ui/button";
 import CurrencySwitch from "@/src/components/website/CurrencySwitch";
 import { fetchNavbarCategories } from "@/src/services/website/course";
-import { aboutUsUrl, blogUrl, cartUrl, contactUsUrl, coursesUrl, loginUrl, registerUrl, studentDashboardUrl } from "@/src/utils/url";
+import { aboutUsUrl, blogUrl, cartUrl, contactUsUrl, coursesUrl, loginUrl, registerUrl, reviewsUrl, studentDashboardUrl } from "@/src/utils/url";
 import { usePathname } from "next/navigation";
 import { useCart } from "@/src/providers/CartProvider";
 import { useAuth } from "@/src/providers/AuthProvider";
@@ -19,6 +19,7 @@ const navLinksBeforeCategory = [
     { label: "Courses", path: coursesUrl },
 ];
 const navLinksAfterCategory = [
+    { label: "Reviews", path: reviewsUrl },
     { label: "Blog", path: blogUrl },
     { label: "Contact", path: contactUsUrl },
 ];

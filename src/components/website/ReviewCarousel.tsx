@@ -1,60 +1,106 @@
 'use client';
 
-import { reviews } from "@/src/data/reviews";
-import { Star, Quote } from "lucide-react";
-import { Badge } from "@/src/components/ui/badge";
-import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/src/components/ui/carousel";
-import Autoplay from "embla-carousel-autoplay";
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
+import Autoplay from "embla-carousel-autoplay";
+import { Badge } from "@/src/components/ui/badge";
+import { Button } from "@/src/components/ui/button";
+import { Carousel, CarouselApi, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/src/components/ui/carousel";
+import ReviewCard from "@/src/components/website/showcase/ReviewCard";
+import { getTopReviews } from "@/src/services/website/showcase";
+import type { PublicReview } from "@/src/lib/public-showcase";
+import { reviewsUrl } from "@/src/utils/url";
 
+// Testimonials: the 10 highest-rated published student reviews.
 const ReviewCarousel = () => {
-  return (
-    <section className="py-16 md:py-24 bg-secondary">
-      <div className="container">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center max-w-2xl mx-auto mb-12"
-        >
-          <Badge variant="secondary" className="mb-4 text-primary font-medium bg-primary/10">Testimonials</Badge>
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">What Our Students Say</h2>
-          <p className="text-muted-foreground text-lg">Real stories from women who transformed their skills and careers.</p>
-        </motion.div>
+    const [reviews, setReviews] = useState<PublicReview[] | null>(null);
+    const [api, setApi] = useState<CarouselApi>();
+    const [selected, setSelected] = useState(0);
 
-        <div className="max-w-5xl mx-auto px-12">
-          <Carousel opts={{ align: "start", loop: true }} plugins={[Autoplay({ delay: 3000, stopOnInteraction: false })]}>
-            <CarouselContent>
-              {reviews.slice(0, 10).map((review) => (
-                <CarouselItem key={review.id} className="md:basis-1/2 lg:basis-1/3">
-                  <div className="bg-card rounded-2xl border border-border p-6 h-full flex flex-col">
-                    <Quote className="h-6 w-6 text-primary/20 mb-3" />
-                    <p className="text-muted-foreground text-sm leading-relaxed flex-1 line-clamp-4">{review.comment}</p>
-                    <div className="flex items-center gap-1 my-3">
-                      {Array.from({ length: 5 }).map((_, i) => (
-                        <Star key={i} className={`h-3.5 w-3.5 ${i < review.rating ? "fill-accent text-accent" : "text-border"}`} />
-                      ))}
+    useEffect(() => {
+        let active = true;
+        getTopReviews(10).then((rows) => { if (active) setReviews(rows); }).catch(() => { if (active) setReviews([]); });
+        return () => { active = false; };
+    }, []);
+
+    useEffect(() => {
+        if (!api) return;
+        const onSelect = () => setSelected(api.selectedScrollSnap());
+        onSelect();
+        api.on("select", onSelect);
+        api.on("reInit", onSelect);
+        return () => { api.off("select", onSelect); api.off("reInit", onSelect); };
+    }, [api]);
+
+    // Hide the section until there is at least one real review to show.
+    if (!reviews || reviews.length === 0) return null;
+
+    const canLoop = reviews.length >= 3;
+
+    return (
+        <section className="bg-secondary py-14 md:py-24">
+            <div className="container">
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    className="mx-auto mb-8 max-w-2xl text-center md:mb-12"
+                >
+                    <Badge variant="secondary" className="mb-4 bg-primary/10 font-medium text-primary">Testimonials</Badge>
+                    <h2 className="mb-3 text-2xl font-bold text-foreground sm:text-3xl md:text-4xl">What Our Students Say</h2>
+                    <p className="text-base text-muted-foreground md:text-lg">Real reviews from women who learned with us.</p>
+                </motion.div>
+
+                <div className="mx-auto max-w-5xl md:px-12">
+                    <Carousel
+                        setApi={setApi}
+                        opts={{ align: "start", loop: canLoop }}
+                        plugins={canLoop ? [Autoplay({ delay: 5000, stopOnInteraction: true, stopOnMouseEnter: true })] : []}
+                    >
+                        <CarouselContent className={reviews.length < 3 ? "md:justify-center" : ""}>
+                            {reviews.map((review) => (
+                                <CarouselItem key={review.id} className="basis-[88%] sm:basis-[70%] md:basis-1/2 lg:basis-1/3">
+                                    <ReviewCard review={review} variant="carousel" />
+                                </CarouselItem>
+                            ))}
+                        </CarouselContent>
+                        {reviews.length > 1 && (
+                            <>
+                                <CarouselPrevious className="hidden md:flex" />
+                                <CarouselNext className="hidden md:flex" />
+                            </>
+                        )}
+                    </Carousel>
+
+                    {reviews.length > 1 && (
+                        <div className="mt-5 flex justify-center gap-1.5" role="tablist" aria-label="Choose a review">
+                            {reviews.map((review, i) => (
+                                <button
+                                    key={review.id}
+                                    type="button"
+                                    role="tab"
+                                    aria-selected={selected === i}
+                                    aria-label={`Review ${i + 1}`}
+                                    onClick={() => api?.scrollTo(i)}
+                                    className="flex h-6 items-center"
+                                >
+                                    <span className={`block h-2 rounded-full transition-all ${selected === i ? "w-6 bg-primary" : "w-2 bg-primary/25"}`} />
+                                </button>
+                            ))}
+                        </div>
+                    )}
+
+                    <div className="mt-6 text-center">
+                        <Button asChild variant="outline" className="gap-2">
+                            <Link href={reviewsUrl}>See all reviews &amp; practicals <ArrowRight className="h-4 w-4" /></Link>
+                        </Button>
                     </div>
-                    <div className="flex items-center gap-3 pt-3 border-t border-border">
-                      <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-xs font-bold text-primary">
-                        {review.avatar}
-                      </div>
-                      <div>
-                        <p className="font-semibold text-sm text-foreground">{review.name}</p>
-                        <p className="text-xs text-muted-foreground">{review.course}</p>
-                      </div>
-                    </div>
-                  </div>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselPrevious />
-            <CarouselNext />
-          </Carousel>
-        </div>
-      </div>
-    </section>
-  );
+                </div>
+            </div>
+        </section>
+    );
 };
 
 export default ReviewCarousel;

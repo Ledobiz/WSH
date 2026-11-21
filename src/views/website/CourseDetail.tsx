@@ -18,6 +18,7 @@ import { Skeleton } from "@/src/components/ui/skeleton";
 import EmptyState from "@/src/components/website/EmptyState";
 import LoadingButton from "@/src/components/website/LoadingButton";
 import CourseReviews from "@/src/components/website/CourseReviews";
+import CoursePracticals from "@/src/components/website/showcase/CoursePracticals";
 import { useCart } from "@/src/providers/CartProvider";
 import { singleCourseWebsite } from "@/src/services/website/course";
 import { cartUrl, coursesUrl } from "@/src/utils/url";
@@ -250,7 +251,7 @@ const CourseDetail = ({ slug }: { slug: string }) => {
                             </motion.div>
 
                             <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-                                <h2 className="text-2xl font-bold text-foreground mb-4">What You'll Learn</h2>
+                                <h2 className="text-2xl font-bold text-foreground mb-4">What You&apos;ll Learn</h2>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                     {whatYouWillLearn.map((item, i) => (
                                         <motion.div
@@ -276,6 +277,11 @@ const CourseDetail = ({ slug }: { slug: string }) => {
                                     />
                                 </motion.div>
                             )}
+
+                            {/* Social proof: on phones this comes right after the course details,
+                                before the price card; on desktop it sits beside the sticky card. */}
+                            <CourseReviews courseId={course.id} courseSlug={course.slug} averageRating={rating.average} reviewCount={rating.count} />
+                            <CoursePracticals courseSlug={course.slug} />
                         </div>
 
                         {/* Sticky sidebar */}
@@ -323,10 +329,6 @@ const CourseDetail = ({ slug }: { slug: string }) => {
                         </div>
                     </div>
 
-                    {/* Reviews */}
-                    <div className="mt-12 lg:col-span-2">
-                        <CourseReviews courseId={course.id} averageRating={rating.average} reviewCount={rating.count} />
-                    </div>
                 </div>
             </section>
 
